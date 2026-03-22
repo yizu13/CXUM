@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { useSettings } from "../../hooks/context/SettingsContext";
 import { STATS } from "../../types/EnumsOurImpact";
-import StatCard from "../ModularUI/StatsCards";
+import StatCard from "../modularUI/StatsCards";
 
 export default function OurImpact() {
   const { theme } = useSettings();
@@ -16,7 +16,7 @@ export default function OurImpact() {
     if (!el) return;
     const obs = new IntersectionObserver(
       ([entry]) => setInView(entry.isIntersecting),
-      { threshold: 0.2 }
+      { threshold: 0.2 },
     );
     obs.observe(el);
     return () => obs.disconnect();
@@ -28,7 +28,11 @@ export default function OurImpact() {
       opacity: 1,
       y: 0,
       filter: "blur(0px)",
-      transition: { duration: 0.7, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] as const },
+      transition: {
+        duration: 0.7,
+        delay: i * 0.1,
+        ease: [0.16, 1, 0.3, 1] as const,
+      },
     }),
     exit: {
       opacity: 0,
@@ -46,7 +50,6 @@ export default function OurImpact() {
       }`}
     >
       <div className="max-w-6xl mx-auto flex flex-col gap-14">
-
         <div className="flex flex-col items-center text-center gap-4">
           <motion.h2
             className={`font-black uppercase leading-none tracking-[-0.03em] ${
@@ -58,9 +61,7 @@ export default function OurImpact() {
             initial="hidden"
             animate={inView ? "visible" : "exit"}
           >
-            Nuestro{" "}
-            <span style={{ color: "#f59e0b" }}>impacto</span>{" "}
-            en acción
+            Nuestro <span style={{ color: "#f59e0b" }}>impacto</span> en acción
           </motion.h2>
 
           <motion.p
@@ -72,8 +73,12 @@ export default function OurImpact() {
             initial="hidden"
             animate={inView ? "visible" : "exit"}
           >
-            Cuadernos <span className={isDark ? "text-white/70" : "text-slate-700"}>X</span> Un Mañana recolecta, recicla y dona materiales
-            educativos para que ningún niño se quede sin aprender.
+            Cuadernos{" "}
+            <span className={isDark ? "text-white/70" : "text-slate-700"}>
+              X
+            </span>{" "}
+            Un Mañana recolecta, recicla y dona materiales educativos para que
+            ningún niño se quede sin aprender.
           </motion.p>
 
           <motion.div
@@ -82,9 +87,7 @@ export default function OurImpact() {
             custom={2}
             initial={{ width: 0, opacity: 0 }}
             animate={
-              inView
-                ? { width: 48, opacity: 1 }
-                : { width: 0, opacity: 0 }
+              inView ? { width: 48, opacity: 1 } : { width: 0, opacity: 0 }
             }
             transition={{ duration: 0.6, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
           />
