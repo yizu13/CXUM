@@ -3,6 +3,7 @@ import NavBar from "../layout/NavBar";
 import Hero from "../Sections/Hero";
 import OurImpact from "../Sections/OurImpact";
 import OurWork from "../Sections/OurWork";
+import WhoWeAre from "../Sections/WhoWeAre";
 
 
 
@@ -13,11 +14,12 @@ export default function LandingPage(){
         <>
         <NavBar/>
         {
-            navReady && 
-            <main>
+        navReady && 
+        <main>
         <Hero/>
         <OurWork/>
         <OurImpact/>
+        <WhoWeAre/>
         </main>
         }
         
