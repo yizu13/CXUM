@@ -1,150 +1,155 @@
 import Marquee from "react-fast-marquee";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { useSettings } from "../../hooks/context/SettingsContext";
+import { useAnimation } from "../../hooks/context/AnimationContext";
+import DefaultButton from "../ModularUI/GeneralButton";
+import avatar1 from "../../assets/imagen1.png"
+import avatar2 from "../../assets/imagen2.png"
+import avatar3 from "../../assets/imagen3.png"
+import avatar4 from "../../assets/imagen4.png"
+import avatar5 from "../../assets/imagen5.png"
+import avatar6 from "../../assets/imagen6.png"
+import avatar7 from "../../assets/imagen7.png"
+import avatar8 from "../../assets/imagen8.png"
 
 const palabrasRelacionadas = [
-  "reciclaje",
-  "educación",
-  "cuadernos",
-  "donación",
-  "sostenibilidad",
-  "voluntariado",
-  "papel",
-  "recolección",
-  "reutilización",
-  "impacto",
-  "comunidad",
-  "estudiantes",
-  "escuelas",
-  "solidaridad",
-  "esperanza",
-  "aprendizaje",
-  "transformación",
-  "hojas",
-  "acopio",
-  "clasificación",
-  "entrega",
-  "medioambiente",
-  "reciclado",
-  "útiles",
-  "niñez",
-  "juventud",
-  "inclusión",
-  "apoyo",
-  "conciencia",
-  "responsabilidad",
-  "acceso",
-  "futuro",
-  "oportunidades",
-  "fundación",
-  "emprendimiento",
-  "alianza",
-  "campaña",
-  "reusar",
-  "creatividad",
-  "servicio",
-  "cambio",
-  "recursos",
-  "vulnerabilidad",
-  "cartón",
-  "ecoeducación",
-  "generosidad",
-  "liderazgo",
-  "propósito",
-  "innovación",
-  "República Dominicana",
+  "reciclaje", "educación", "cuadernos", "donación", "sostenibilidad",
+  "voluntariado", "papel", "recolección", "reutilización", "impacto",
+  "comunidad", "estudiantes", "escuelas", "solidaridad", "esperanza",
+  "aprendizaje", "transformación", "hojas", "acopio", "clasificación",
+  "entrega", "medioambiente", "reciclado", "útiles", "niñez", "juventud",
+  "inclusión", "apoyo", "conciencia", "responsabilidad", "acceso", "futuro",
+  "oportunidades", "fundación", "emprendimiento", "alianza", "campaña",
+  "reusar", "creatividad", "servicio", "cambio", "recursos", "vulnerabilidad",
+  "cartón", "ecoeducación", "generosidad", "liderazgo", "propósito",
+  "innovación", "República Dominicana",
 ];
-
 const ROWS = 6;
 
-// Posiciones fijas de los avatares (% del viewport)
-const AVATAR_POSITIONS = [
-  { x: 27, y: 18, depth: 0.06 },
-  { x: 10, y: 45, depth: 0.09 },
-  { x: 14, y: 78, depth: 0.05 },
-  { x: 25, y: 60, depth: 0.07 },
-  { x: 75, y: 12, depth: 0.08 },
-  { x: 90, y: 35, depth: 0.06 },
-  { x: 88, y: 68, depth: 0.09 },
-  { x: 72, y: 82, depth: 0.05 },
-];
-
-// Avatares: reemplaza estas URLs con tus imágenes reales
-const AVATAR_IMGS = [
-  "https://api.dicebear.com/9.x/adventurer/svg?seed=recicla",
-  "https://api.dicebear.com/9.x/adventurer/svg?seed=verde",
-  "https://api.dicebear.com/9.x/adventurer/svg?seed=papel",
-  "https://api.dicebear.com/9.x/adventurer/svg?seed=escuela",
-  "https://api.dicebear.com/9.x/adventurer/svg?seed=futuro",
-  "https://api.dicebear.com/9.x/adventurer/svg?seed=comunidad",
-  "https://api.dicebear.com/9.x/adventurer/svg?seed=ninez",
-  "https://api.dicebear.com/9.x/adventurer/svg?seed=cambio",
+const AVATARS = [
+  { x: 26,  y: 16,  speed: 0.022, floatAmp: 7,  floatSpeed: 1.1, floatOffset: 0,    src: avatar1,  label: "Avatar 1" },
+  { x: 9,   y: 42,  speed: 0.038, floatAmp: 10, floatSpeed: 0.8, floatOffset: 1.2,  src: avatar2,    label: "Avatar 2" },
+  { x: 13,  y: 76,  speed: 0.018, floatAmp: 6,  floatSpeed: 1.4, floatOffset: 2.4,  src: avatar3,    label: "Avatar 3" },
+  { x: 24,  y: 58,  speed: 0.030, floatAmp: 9,  floatSpeed: 0.9, floatOffset: 0.6,  src: avatar4,  label: "Avatar 4" },
+  { x: 76,  y: 13,  speed: 0.034, floatAmp: 8,  floatSpeed: 1.2, floatOffset: 3.0,  src: avatar5,   label: "Avatar 5" },
+  { x: 91,  y: 38,  speed: 0.024, floatAmp: 11, floatSpeed: 0.7, floatOffset: 1.8,  src: avatar6,label: "Avatar 6" },
+  { x: 87,  y: 70,  speed: 0.042, floatAmp: 7,  floatSpeed: 1.3, floatOffset: 0.9,  src: avatar7,    label: "Avatar 7" },
+  { x: 73,  y: 83,  speed: 0.020, floatAmp: 9,  floatSpeed: 1.0, floatOffset: 2.1,  src: avatar8,   label: "Avatar 8" },
 ];
 
 function FloatingAvatar({
-  x,
-  y,
-  depth,
-  src,
+  avatar,
   mouse,
   isDark,
+  visible,
+  enterDelay,
 }: {
-  x: number;
-  y: number;
-  depth: number;
-  src: string;
+  avatar: typeof AVATARS[0];
   mouse: { x: number; y: number };
   isDark: boolean;
+  visible: boolean;
+  enterDelay: number;
 }) {
-  const offsetX = (mouse.x - 0.5) * depth * 420;
-  const offsetY = (mouse.y - 0.5) * depth * 420;
+  const [floatY, setFloatY] = useState(0);
+  const rafRef = useRef<number>(0);
+  const startRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const animate = (ts: number) => {
+      if (!startRef.current) startRef.current = ts;
+      const elapsed = (ts - startRef.current) / 1000;
+      const y = Math.sin(elapsed * avatar.floatSpeed + avatar.floatOffset) * avatar.floatAmp;
+      setFloatY(y);
+      rafRef.current = requestAnimationFrame(animate);
+    };
+    rafRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [avatar.floatSpeed, avatar.floatOffset, avatar.floatAmp]);
+
+  const mouseOffsetX = (mouse.x - 0.5) * avatar.speed * window.innerWidth;
+  const mouseOffsetY = (mouse.y - 0.5) * avatar.speed * window.innerHeight;
 
   return (
-    <div
-      className="absolute"
-      style={{
-        left: `${x}%`,
-        top: `${y}%`,
-        transform: `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`,
-        transition: "transform 0.12s cubic-bezier(0.25,0.46,0.45,0.94)",
-        willChange: "transform",
-      }}
-    >
-      <img
-        src={src}
-        alt="avatar"
-        draggable={false}
-        className={`h-14 w-14 rounded-full object-cover select-none border-2 shadow-xl ${
-          isDark
-            ? "border-white/10 bg-white/5 shadow-black/40"
-            : "border-black/8 bg-white shadow-black/15"
-        }`}
-      />
-    </div>
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          className="absolute pointer-events-none"
+          style={{ left: `${avatar.x}%`, top: `${avatar.y}%` }}
+          initial={{ opacity: 0, scale: 0.6, filter: "blur(12px)" }}
+          animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+          exit={{ opacity: 0, scale: 0.6 }}
+          transition={{ duration: 0.7, delay: enterDelay, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <div
+            style={{
+              transform: `translate(calc(-50% + ${mouseOffsetX}px), calc(-50% + ${mouseOffsetY + floatY}px))`,
+              transition: "transform 0.18s cubic-bezier(0.25,0.46,0.45,0.94)",
+              willChange: "transform",
+            }}
+          >
+            <img
+              src={avatar.src}
+              alt={avatar.label}
+              draggable={false}
+              className={`h-14 w-14 rounded-full object-cover select-none border-2 shadow-xl ${
+                isDark
+                  ? "border-white/10 bg-white/5 shadow-black/40"
+                  : "border-black/8 bg-white shadow-black/15"
+              }`}
+            />
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
 export default function Hero() {
   const { theme } = useSettings();
+  const { navReady } = useAnimation();
   const isDark = theme === "dark";
   const sectionRef = useRef<HTMLElement>(null);
   const [mouse, setMouse] = useState({ x: 0.5, y: 0.5 });
 
-  const wordColor = isDark ? "text-white/10" : "text-slate-950/[0.08]";
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    setMouse({
+      x: (e.clientX - rect.left) / rect.width,
+      y: (e.clientY - rect.top) / rect.height,
+    });
+  }, []);
 
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
-    const handleMove = (e: MouseEvent) => {
-      const rect = el.getBoundingClientRect();
-      setMouse({
-        x: (e.clientX - rect.left) / rect.width,
-        y: (e.clientY - rect.top) / rect.height,
-      });
-    };
-    el.addEventListener("mousemove", handleMove);
-    return () => el.removeEventListener("mousemove", handleMove);
-  }, []);
+    el.addEventListener("mousemove", handleMouseMove);
+    return () => el.removeEventListener("mousemove", handleMouseMove);
+  }, [handleMouseMove]);
+
+  const wordColor = isDark ? "text-white/10" : "text-slate-950/[0.08]";
+
+  const heroVariants = {
+    hidden: { opacity: 0, filter: "blur(18px)", scale: 0.97 },
+    visible: {
+      opacity: 1,
+      filter: "blur(0px)",
+      scale: 1,
+      transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] as const },
+    },
+  };
+
+  const textVariants = {
+    hidden: { opacity: 0, y: 20, filter: "blur(8px)" },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      filter: "blur(0px)",
+      transition: { duration: 0.7, delay: 0.15 + i * 0.1, ease: [0.16, 1, 0.3, 1] as const },
+    }),
+  };
 
   return (
     <section
@@ -153,8 +158,12 @@ export default function Hero() {
         isDark ? "bg-[#05070b]" : "bg-[#f8fafc]"
       }`}
     >
-      {/* Marquee de fondo */}
-      <div className="absolute inset-0 flex flex-col justify-evenly">
+      <motion.div
+        className="absolute inset-0 flex flex-col justify-evenly"
+        variants={heroVariants}
+        initial="hidden"
+        animate={navReady ? "visible" : "hidden"}
+      >
         {Array.from({ length: ROWS }).map((_, rowIndex) => {
           const direction = rowIndex % 2 === 0 ? "left" : "right";
           return (
@@ -178,99 +187,73 @@ export default function Hero() {
             </Marquee>
           );
         })}
-      </div>
+      </motion.div>
 
-      {/* Viñeta radial */}
-      <div
-        className={`pointer-events-none absolute inset-0 ${
-          isDark
-            ? "bg-[radial-gradient(ellipse_at_center,transparent_30%,rgba(5,7,11,0.3)_60%,rgba(5,7,11,0.72)_100%)]"
-            : "bg-[radial-gradient(ellipse_at_center,transparent_30%,rgba(248,250,252,0.28)_60%,rgba(248,250,252,0.72)_100%)]"
-        }`}
-      />
-
-      {/* Blur radial central — desvanecimiento hacia los bordes */}
-      <div
-        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-        style={{
-          width: "min(90vw, 820px)",
-          height: "min(70vw, 620px)",
-          backdropFilter: "blur(28px)",
-          WebkitBackdropFilter: "blur(28px)",
-          maskImage:
-            "radial-gradient(ellipse 55% 55% at 50% 50%, black 30%, transparent 100%)",
-          WebkitMaskImage:
-            "radial-gradient(ellipse 55% 55% at 50% 50%, black 30%, transparent 100%)",
-        }}
-      />
-
-      {/* Avatares flotantes reactivos al mouse */}
-      {AVATAR_POSITIONS.map((pos, i) => (
+      {AVATARS.map((avatar, i) => (
         <FloatingAvatar
           key={i}
-          x={pos.x}
-          y={pos.y}
-          depth={pos.depth}
-          src={AVATAR_IMGS[i]}
+          avatar={avatar}
           mouse={mouse}
           isDark={isDark}
+          visible={navReady}
+          enterDelay={i * 0.07}
         />
       ))}
 
-      {/* Contenido central */}
-      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-5 px-6 text-center">
-        {/* Badge */}
-        <span
-          className={`rounded-full border px-4 py-1.5 text-sm font-medium ${
-            isDark
-              ? "border-white/10 bg-white/5 text-white/60"
-              : "border-black/10 bg-[#f0f0c8] text-black/60"
-          }`}
-        >
-          Reciclaje con propósito
-        </span>
+      <div className="absolute inset-0 flex flex-col items-center justify-center px-6">
+        <div className="relative flex flex-col items-center gap-5 text-center">
 
-        {/* Título */}
-        <h1
-          className={`max-w-3xl text-5xl font-black leading-tight tracking-tight sm:text-6xl lg:text-7xl ${
-            isDark ? "text-white" : "text-slate-950"
-          }`}
-        >
-          Papel usado, futuro
-          <br />
-          <span className={isDark ? "text-white/70" : "text-slate-950/70"}>
-            construido
-          </span>
-        </h1>
+          <div
+            className="pointer-events-none absolute"
+            style={{
+              inset: "-80px -120px",
+              backdropFilter: "blur(32px)",
+              WebkitBackdropFilter: "blur(32px)",
+              maskImage:
+                "radial-gradient(ellipse 60% 60% at 50% 50%, black 20%, rgba(0,0,0,0.6) 50%, transparent 80%)",
+              WebkitMaskImage:
+                "radial-gradient(ellipse 60% 60% at 50% 50%, black 20%, rgba(0,0,0,0.6) 50%, transparent 80%)",
+            }}
+          />
 
-        {/* Descripción */}
-        <p
-          className={`max-w-md text-base leading-relaxed ${
-            isDark ? "text-white/40" : "text-slate-700/70"
-          }`}
-        >
-          Recogemos cuadernos usados y los convertimos en herramientas
-          educativas para comunidades vulnerables de República Dominicana.
-        </p>
-
-        {/* CTAs */}
-        <div className="pointer-events-auto mt-2 flex gap-3">
-          <button
-            className={`rounded-full px-7 py-3 text-sm font-semibold transition-opacity hover:opacity-80 ${
-              isDark ? "bg-white text-[#05070b]" : "bg-slate-950 text-white"
+          <motion.h1
+            className={`relative z-10 max-w-7xl text-5xl font-black leading-tight tracking-tight sm:text-6xl lg:text-7xl cursor-default ${
+              isDark ? "text-white" : "text-slate-950"
             }`}
+            custom={1}
+            variants={textVariants}
+            initial="hidden"
+            animate={navReady ? "visible" : "hidden"}
           >
-            Donar ahora
-          </button>
-          <button
-            className={`rounded-full border px-7 py-3 text-sm font-semibold transition-opacity hover:opacity-70 ${
-              isDark
-                ? "border-white/15 text-white/70"
-                : "border-black/15 text-slate-950/70"
+            Construyendo oportunidades
+            <br />
+            <span className={`cursor-default ${isDark ? "text-white/70" : "text-slate-950/70"}`}>
+              hoy para un mañana mejor
+            </span>
+          </motion.h1>
+
+          <motion.p
+            className={`relative z-10 max-w-md text-base leading-relaxed cursor-default ${
+              isDark ? "text-white/40" : "text-slate-700/70"
             }`}
+            custom={2}
+            variants={textVariants}
+            initial="hidden"
+            animate={navReady ? "visible" : "hidden"}
           >
-            Conocer más
-          </button>
+            Transformamos vidas a través del voluntariado, la educación y el compromiso con el medio ambiente en República Dominicana.
+          </motion.p>
+
+          <motion.div
+            className="relative z-10 mt-2 flex gap-3"
+            custom={3}
+            variants={textVariants}
+            initial="hidden"
+            animate={navReady ? "visible" : "hidden"}
+          >
+            <DefaultButton textString="Donar Ahora"/>
+            <DefaultButton textString="Quiero Ser Voluntario" inverted/>
+          </motion.div>
         </div>
       </div>
     </section>

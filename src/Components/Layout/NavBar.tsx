@@ -2,14 +2,16 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import CXUMLOGO from "../../assets/LogoCXUM.png";
 import { useSettings } from "../../hooks/context/SettingsContext";
+import { useAnimation } from "../../hooks/context/AnimationContext";
 import Iconify from "../ModularUI/IconsMock";
+import DefaultButton from "../ModularUI/GeneralButton";
 
 const NAV_LINKS = ["Inicio", "Plataforma", "Recursos", "Precios"];
 
 export default function NavBar() {
   const [phase, setPhase] = useState(0);
   const { theme, setTheme } = useSettings();
-  const [buttonAnimation, setAnimation] = useState(false)
+  const { setNavReady } = useAnimation();
   const isDark = theme === "dark";
 
   const glassStyles = {
@@ -34,7 +36,7 @@ export default function NavBar() {
             initial={{ width: 52, opacity: 0 }}
             animate={{ width: "100%", opacity: 1 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            onAnimationComplete={() => setTimeout(() => setPhase(2), 100)}
+            onAnimationComplete={() => setTimeout(() => { setPhase(2); setTimeout(() => setNavReady(true), 350); }, 100)}
             className={`absolute -left-2 top-1/2 -translate-y-1/2 z-1
                        h-16 rounded-full pointer-events-auto
                        flex items-center border backdrop-blur-xl
@@ -102,33 +104,7 @@ export default function NavBar() {
                     }
                   </motion.button>
 
-                  <motion.button
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{
-                      opacity: 1,
-                      scale: 1,
-                      backgroundColor: buttonAnimation ? (isDark ? "rgba(255,255,255,0.03)" : "rgba(255,255,255,0.45)") : (isDark ? "rgba(255,255,255,1)" : "rgba(2,6,23,1)"),
-                      color: buttonAnimation ? (isDark ? "rgba(255,255,255,1)" : "rgba(15,23,42,1)") : (isDark ? "rgba(0,0,0,1)" : "rgba(255,255,255,1)"),
-                      borderColor: buttonAnimation ? (isDark ? "rgba(255,255,255,0.22)" : "rgba(15,23,42,0.18)") : "rgba(255,255,255,0)",
-                    }}
-                    whileTap={{ scale: 0.98 }}
-                    transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-                    onHoverStart={() => setAnimation(true)}
-                    onHoverEnd={() => setAnimation(false)}
-                    className="relative overflow-hidden inline-flex items-center justify-center gap-2 rounded-full border px-7 py-2.5 text-[0.85rem] font-bold cursor-pointer transition-all shadow-md"
-                  >
-                    <span>Donar Ahora</span>
-                    <motion.span
-                      animate={{
-                        width: buttonAnimation ? 16 : 0,
-                        opacity: buttonAnimation ? 1 : 0,
-                        x: buttonAnimation ? 0 : -5,
-                      }}
-                      className="overflow-hidden"
-                    >
-                      <Iconify IconString="ep:arrow-right-bold" Size={14} />
-                    </motion.span>
-                  </motion.button>
+                  <DefaultButton textString="Donar Ahora"/>
                 </>
               )}
             </div>
