@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { SettingsContext } from "./context/SettingsContext";
-import { AnimationProvider } from "./context/AnimationContext";
+import { AnimationProvider } from "./AnimationProvider";
+
 
 type ProviderType = {
   children: ReactNode;
