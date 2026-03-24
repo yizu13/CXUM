@@ -1,4 +1,4 @@
-import NavBar from "../Layout/NavBar";
+import NavBar from "../layout/NavBar";
 import Hero from "../Sections/Hero";
 
 

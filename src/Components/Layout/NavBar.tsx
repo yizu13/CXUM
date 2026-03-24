@@ -1,63 +1,81 @@
 import { useState } from "react";
 import { motion } from "motion/react";
 import CXUMLOGO from "../../assets/LogoCXUM.png";
+import { useSettings } from "../../hooks/context/SettingsContext";
+import Iconify from "../ModularUI/IconsMock";
 
 const NAV_LINKS = ["Inicio", "Plataforma", "Recursos", "Precios"];
 
 export default function NavBar() {
   const [phase, setPhase] = useState(0);
+  const { theme, setTheme } = useSettings();
+  const [buttonAnimation, setAnimation] = useState(false)
+  const isDark = theme === "dark";
+
+  const glassStyles = {
+    container: isDark 
+      ? "bg-[#0a0c12]/80 border-white/[0.08] shadow-[0_24px_48px_-12px_rgba(0,0,0,0.5)] ring-1 ring-white/[0.05]" 
+      : "bg-white/80 border-black/[0.05] shadow-[0_15px_35px_rgba(0,0,0,0.05)] ring-1 ring-black/[0.01]",
+    text: isDark ? "text-slate-400 hover:text-white" : "text-slate-500 hover:text-slate-900",
+    button: isDark 
+      ? "bg-white text-black hover:bg-slate-100" 
+      : "bg-slate-950 text-white hover:bg-slate-800",
+    themeBtn: isDark 
+      ? "bg-white/[0.05] border-white/10 text-amber-400 hover:bg-white/10" 
+      : "bg-black/[0.03] border-black/5 text-blue-600 hover:bg-black/[0.08]"
+  };
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-100 flex justify-center items-center px-4 pt-3.5 pointer-events-none">
-
-      <div className="relative flex items-center w-full max-w-225">
-
+    <div className="fixed top-0 left-0 right-0 z-100 flex justify-center items-center px-6 pt-8 pointer-events-none font-outfit">
+      <div className="relative flex items-center w-full max-w-280">
+        
         {phase >= 1 && (
           <motion.div
-            initial={{ width: 52 }}
-            animate={{ width: "100%" }}
-            transition={{ duration: 0.65, ease: "easeInOut" }}
-            onAnimationComplete={() => setTimeout(() => setPhase(2), 120)}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-1
-                       h-13 rounded-full overflow-hidden pointer-events-auto
-                       flex items-center justify-between
-                       border border-white/8
-                       bg-[rgba(10,15,30,0.92)] backdrop-blur-[18px]
-                       shadow-[0_8px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.05)]"
-            style={{ paddingLeft: 60, paddingRight: 10 }}
+            initial={{ width: 52, opacity: 0 }}
+            animate={{ width: "100%", opacity: 1 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            onAnimationComplete={() => setTimeout(() => setPhase(2), 100)}
+            className={`absolute -left-2 top-1/2 -translate-y-1/2 z-1
+                       h-16 rounded-full pointer-events-auto
+                       flex items-center border backdrop-blur-xl
+                       transition-all duration-700
+                       ${glassStyles.container}`}
+            style={{ paddingLeft: 74, paddingRight: 14 }}
           >
-            {phase >= 2 && (
-              <motion.div
-                initial={{ opacity: 0, x: -6 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.35 }}
-                className="flex flex-col leading-tight shrink-0"
-              >
-                <span className="text-[0.68rem] font-semibold tracking-[0.07em] uppercase text-[#0278c0]">
-                  Cuadernos{" "}
-                  <span className="text-amber-400">X</span>
-                  {" "}Un Mañana
-                </span>
-              </motion.div>
-            )}
+            <div className="flex-1 flex items-center">
+              {phase >= 2 && (
+                <motion.div
+                  initial={{ opacity: 0, x: -12 }}
+                  animate={{ opacity: 1, x: -8 }}
+                  className="flex items-center shrink-0 tracking-tight select-none"
+                >
+                  <span className={`text-[1.05rem] font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                    Cuadernos
+                  </span>
+                  <span className="mx-1.5 text-amber-500 font-black mt-0.5">X</span>
+                  <span className={`text-[1.05rem] font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                    Un Mañana
+                  </span>
+                </motion.div>
+              )}
+            </div>
 
             {phase >= 2 && (
               <motion.nav
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.35 }}
-                className="absolute left-1/2 -translate-x-1/2 flex items-center gap-0.5"
+                className="flex items-center gap-8" 
               >
                 {NAV_LINKS.map((link, i) => (
                   <motion.a
                     key={link}
-                    initial={{ opacity: 0, y: -5 }}
+                    initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.06, duration: 0.28 }}
-                    className="text-[0.82rem] font-normal tracking-[0.02em] text-white/60
-                               px-3.5 py-1.5 rounded-lg whitespace-nowrap cursor-pointer
-                               no-underline transition-colors duration-200
-                               hover:text-white hover:bg-white/8"
+                    transition={{ delay: i * 0.04 + 0.1 }}
+                    className={`text-[0.82rem] font-semibold px-2 py-1 rounded-md
+                               transition-all duration-300 cursor-pointer 
+                               tracking-[0.05em] uppercase // Agregamos tracking y sutil
+                               ${glassStyles.text}`}
                   >
                     {link}
                   </motion.a>
@@ -65,42 +83,71 @@ export default function NavBar() {
               </motion.nav>
             )}
 
-            {phase >= 2 && (
-              <motion.button
-                initial={{ opacity: 0, scale: 0.88 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2, duration: 0.3 }}
-                className="shrink-0 bg-white text-[#0a0f1e] text-[0.82rem] font-semibold
-                           tracking-[0.02em] rounded-full px-5 py-2 whitespace-nowrap
-                           border-none cursor-pointer
-                           transition-all duration-200
-                           hover:bg-[#e8f0ff] hover:scale-[1.03]"
-              >
-                Comenzar
-              </motion.button>
-            )}
+            <div className="flex-1 flex justify-end items-center gap-3">
+              {phase >= 2 && (
+                <>
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setTheme(isDark ? "light" : "dark")}
+                    className={`flex items-center justify-center w-10 h-10 rounded-full border 
+                               transition-all duration-300 cursor-pointer shadow-sm
+                               ${glassStyles.themeBtn}`}
+                  >
+                    {isDark ? 
+                      <Iconify IconString="solar:sun-fog-bold-duotone" Size={20}/> : 
+                      <Iconify IconString="duo-icons:moon-stars" Size={20}/>
+                    }
+                  </motion.button>
+
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{
+                      opacity: 1,
+                      scale: 1,
+                      backgroundColor: buttonAnimation ? (isDark ? "rgba(255,255,255,0.03)" : "rgba(255,255,255,0.45)") : (isDark ? "rgba(255,255,255,1)" : "rgba(2,6,23,1)"),
+                      color: buttonAnimation ? (isDark ? "rgba(255,255,255,1)" : "rgba(15,23,42,1)") : (isDark ? "rgba(0,0,0,1)" : "rgba(255,255,255,1)"),
+                      borderColor: buttonAnimation ? (isDark ? "rgba(255,255,255,0.22)" : "rgba(15,23,42,0.18)") : "rgba(255,255,255,0)",
+                    }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                    onHoverStart={() => setAnimation(true)}
+                    onHoverEnd={() => setAnimation(false)}
+                    className="relative overflow-hidden inline-flex items-center justify-center gap-2 rounded-full border px-7 py-2.5 text-[0.85rem] font-bold cursor-pointer transition-all shadow-md"
+                  >
+                    <span>Donar Ahora</span>
+                    <motion.span
+                      animate={{
+                        width: buttonAnimation ? 16 : 0,
+                        opacity: buttonAnimation ? 1 : 0,
+                        x: buttonAnimation ? 0 : -5,
+                      }}
+                      className="overflow-hidden"
+                    >
+                      <Iconify IconString="ep:arrow-right-bold" Size={14} />
+                    </motion.span>
+                  </motion.button>
+                </>
+              )}
+            </div>
           </motion.div>
         )}
 
         <motion.div
-          initial={{ x: "55vw" }}
-          animate={{ x: 0 }}
-          transition={{ duration: 0.8, ease:"easeInOut" }}
-          onAnimationComplete={() => setTimeout(() => setPhase(1), 180)}
-          className="relative z-2 shrink-0 pointer-events-auto
+          initial={{ x: "50vw", rotate: -90 }}
+          animate={{ x: 0, rotate: 0 }}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          onAnimationComplete={() => setTimeout(() => setPhase(1), 150)}
+          className={`relative z-10 shrink-0 pointer-events-auto
                      w-12 h-12 rounded-full flex items-center justify-center
-                     bg-linear-to-br from-[#0278c0] to-[#014f8a]
-                     shadow-[0_0_0_3px_rgba(255,255,255,0.1),0_4px_20px_rgba(2,120,192,0.45)]"
+                     bg-linear-to-tr from-[#0278c0] via-[#028ce0] to-[#60a5fa]
+                     shadow-[0_8px_25px_rgba(2,120,192,0.4)]
+                     ${isDark ? 'ring-2 ring-white/10' : 'ring-2 ring-white'}`}
         >
-          <img
-            src={CXUMLOGO}
-            width={34}
-            height={34}
-            alt="CXUM Logo"
-            className="rounded-full object-contain"
-          />
+          <img src={CXUMLOGO} width={28} height={28} alt="Logo" className="rounded-full object-contain" />
         </motion.div>
-
       </div>
     </div>
   );
