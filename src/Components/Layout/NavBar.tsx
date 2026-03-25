@@ -179,14 +179,13 @@ export default function NavBar() {
           onAnimationComplete={() => setTimeout(() => setPhase(1), 150)}
           className={`relative z-10 shrink-0 pointer-events-auto
                      w-12 h-12 rounded-full flex items-center justify-center
-                     bg-linear-to-tr from-[#0278c0] via-[#028ce0] to-[#60a5fa]
-                     shadow-[0_8px_25px_rgba(2,120,192,0.4)]
+                     bg-linear-to-tr from-[#f97316] via-[#fb923c] to-[#fdba74]
+                     shadow-[0_8px_25px_rgba(249,115,22,0.4)]
                      ${isDark ? "ring-2 ring-white/10" : "ring-2 ring-white"}`}
         >
           <img src={CXUMLOGO} width={28} height={28} alt="Logo" className="rounded-full object-contain" />
         </motion.div>
       </div>
-
             <NavBarDropDown show={show} cardWidth={cardWidth} 
             setFlag={setFlag} contentRef={(el) => {contentRef.current = el;}} activeIndex={activeIndex} glassStyles={glassStyles}/>
     </div>

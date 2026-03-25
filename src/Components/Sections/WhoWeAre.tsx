@@ -26,6 +26,7 @@ export default function WhoWeAre() {
 
   return (
     <section 
+    id="Quiénessomos"
       className={`relative flex flex-col md:flex-row items-center justify-between w-full min-h-[80vh] px-8 py-20 gap-12 overflow-hidden transition-colors duration-500 ${
         isDark ? "bg-[#05070b]" : "bg-[#f4f4ef]"
       }`}

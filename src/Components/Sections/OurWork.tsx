@@ -113,6 +113,7 @@ export default function OurWork() {
 
   return (
     <motion.div
+    id="NuestroTrabajo"
       ref={sectionRef}
       className="relative w-full h-screen overflow-hidden"
       variants={sectionVariants}
@@ -267,5 +268,6 @@ export default function OurWork() {
         </div>
       </div>
     </motion.div>
+
   );
 }

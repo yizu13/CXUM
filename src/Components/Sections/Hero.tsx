@@ -59,6 +59,7 @@ export default function Hero() {
 
   return (
     <section
+    id="inicio"
       ref={sectionRef}
       className={`relative h-screen w-full overflow-hidden ${
         isDark ? "bg-[#05070b]" : "bg-[#f8fafc]"

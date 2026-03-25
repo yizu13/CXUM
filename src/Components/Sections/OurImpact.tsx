@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { useSettings } from "../../hooks/context/SettingsContext";
 import { STATS } from "../../types/EnumsOurImpact";
-import StatCard from "../modularUI/StatsCards";
+import StatCard from "../ModularUI/StatsCards";
 
 export default function OurImpact() {
   const { theme } = useSettings();
@@ -44,6 +44,7 @@ export default function OurImpact() {
 
   return (
     <section
+    id="NuestroImpacto"
       ref={sectionRef}
       className={`w-full py-32 px-6 md:px-16 lg:px-24 ${
         isDark ? "bg-[#05070b]" : "bg-[#f4f4ef]"
