@@ -3,8 +3,8 @@ import { motion } from "motion/react";
 import CXUMLOGO from "../../assets/LogoCXUM.png";
 import { useSettings } from "../../hooks/context/SettingsContext";
 import { useAnimation } from "../../hooks/context/AnimationContext";
-import Iconify from "../ModularUI/IconsMock";
-import DefaultButton from "../ModularUI/GeneralButton";
+import Iconify from "../modularUI/IconsMock";
+import DefaultButton from "../modularUI/GeneralButton";
 
 const NAV_LINKS = ["Inicio", "Plataforma", "Recursos", "Precios"];
 
@@ -15,28 +15,34 @@ export default function NavBar() {
   const isDark = theme === "dark";
 
   const glassStyles = {
-    container: isDark 
-      ? "bg-[#0a0c12]/80 border-white/[0.08] shadow-[0_24px_48px_-12px_rgba(0,0,0,0.5)] ring-1 ring-white/[0.05]" 
+    container: isDark
+      ? "bg-[#0a0c12]/80 border-white/[0.08] shadow-[0_24px_48px_-12px_rgba(0,0,0,0.5)] ring-1 ring-white/[0.05]"
       : "bg-white/80 border-black/[0.05] shadow-[0_15px_35px_rgba(0,0,0,0.05)] ring-1 ring-black/[0.01]",
-    text: isDark ? "text-slate-400 hover:text-white" : "text-slate-500 hover:text-slate-900",
-    button: isDark 
-      ? "bg-white text-black hover:bg-slate-100" 
+    text: isDark
+      ? "text-slate-400 hover:text-white"
+      : "text-slate-500 hover:text-slate-900",
+    button: isDark
+      ? "bg-white text-black hover:bg-slate-100"
       : "bg-slate-950 text-white hover:bg-slate-800",
-    themeBtn: isDark 
-      ? "bg-white/[0.05] border-white/10 text-amber-400 hover:bg-white/10" 
-      : "bg-black/[0.03] border-black/5 text-blue-600 hover:bg-black/[0.08]"
+    themeBtn: isDark
+      ? "bg-white/[0.05] border-white/10 text-amber-400 hover:bg-white/10"
+      : "bg-black/[0.03] border-black/5 text-blue-600 hover:bg-black/[0.08]",
   };
 
   return (
     <div className="fixed top-0 left-0 right-0 z-100 flex justify-center items-center px-6 pt-8 pointer-events-none font-outfit">
       <div className="relative flex items-center w-full max-w-280">
-        
         {phase >= 1 && (
           <motion.div
             initial={{ width: 52, opacity: 0 }}
             animate={{ width: "100%", opacity: 1 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            onAnimationComplete={() => setTimeout(() => { setPhase(2); setTimeout(() => setNavReady(true), 350); }, 100)}
+            onAnimationComplete={() =>
+              setTimeout(() => {
+                setPhase(2);
+                setTimeout(() => setNavReady(true), 350);
+              }, 100)
+            }
             className={`absolute -left-2 top-1/2 -translate-y-1/2 z-1
                        h-16 rounded-full pointer-events-auto
                        flex items-center border backdrop-blur-xl
@@ -51,11 +57,17 @@ export default function NavBar() {
                   animate={{ opacity: 1, x: -8 }}
                   className="flex items-center shrink-0 tracking-tight select-none"
                 >
-                  <span className={`text-[1.05rem] font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                  <span
+                    className={`text-[1.05rem] font-bold ${isDark ? "text-white" : "text-slate-900"}`}
+                  >
                     Cuadernos
                   </span>
-                  <span className="mx-1.5 text-amber-500 font-black mt-0.5">X</span>
-                  <span className={`text-[1.05rem] font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                  <span className="mx-1.5 text-amber-500 font-black mt-0.5">
+                    X
+                  </span>
+                  <span
+                    className={`text-[1.05rem] font-medium ${isDark ? "text-slate-400" : "text-slate-500"}`}
+                  >
                     Un Mañana
                   </span>
                 </motion.div>
@@ -66,7 +78,7 @@ export default function NavBar() {
               <motion.nav
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="flex items-center gap-8" 
+                className="flex items-center gap-8"
               >
                 {NAV_LINKS.map((link, i) => (
                   <motion.a
@@ -98,13 +110,17 @@ export default function NavBar() {
                                transition-all duration-300 cursor-pointer shadow-sm
                                ${glassStyles.themeBtn}`}
                   >
-                    {isDark ? 
-                      <Iconify IconString="solar:sun-fog-bold-duotone" Size={20}/> : 
-                      <Iconify IconString="duo-icons:moon-stars" Size={20}/>
-                    }
+                    {isDark ? (
+                      <Iconify
+                        IconString="solar:sun-fog-bold-duotone"
+                        Size={20}
+                      />
+                    ) : (
+                      <Iconify IconString="duo-icons:moon-stars" Size={20} />
+                    )}
                   </motion.button>
 
-                  <DefaultButton textString="Donar Ahora"/>
+                  <DefaultButton textString="Donar Ahora" />
                 </>
               )}
             </div>
@@ -120,9 +136,15 @@ export default function NavBar() {
                      w-12 h-12 rounded-full flex items-center justify-center
                      bg-linear-to-tr from-[#0278c0] via-[#028ce0] to-[#60a5fa]
                      shadow-[0_8px_25px_rgba(2,120,192,0.4)]
-                     ${isDark ? 'ring-2 ring-white/10' : 'ring-2 ring-white'}`}
+                     ${isDark ? "ring-2 ring-white/10" : "ring-2 ring-white"}`}
         >
-          <img src={CXUMLOGO} width={28} height={28} alt="Logo" className="rounded-full object-contain" />
+          <img
+            src={CXUMLOGO}
+            width={28}
+            height={28}
+            alt="Logo"
+            className="rounded-full object-contain"
+          />
         </motion.div>
       </div>
     </div>

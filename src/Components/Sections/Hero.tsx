@@ -3,9 +3,152 @@ import { useRef, useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useSettings } from "../../hooks/context/SettingsContext";
 import { useAnimation } from "../../hooks/context/AnimationContext";
-import DefaultButton from "../ModularUI/GeneralButton";
-import { AVATARS, palabrasRelacionadas, ROWS } from "../../types/EnumHero";
+import DefaultButton from "../modularUI/GeneralButton";
+import avatar1 from "../../assets/imagen1.png";
+import avatar2 from "../../assets/imagen2.png";
+import avatar3 from "../../assets/imagen3.png";
+import avatar4 from "../../assets/imagen4.png";
+import avatar5 from "../../assets/imagen5.png";
+import avatar6 from "../../assets/imagen6.png";
+import avatar7 from "../../assets/imagen7.png";
+import avatar8 from "../../assets/imagen8.png";
 
+const palabrasRelacionadas = [
+  "reciclaje",
+  "educación",
+  "cuadernos",
+  "donación",
+  "sostenibilidad",
+  "voluntariado",
+  "papel",
+  "recolección",
+  "reutilización",
+  "impacto",
+  "comunidad",
+  "estudiantes",
+  "escuelas",
+  "solidaridad",
+  "esperanza",
+  "aprendizaje",
+  "transformación",
+  "hojas",
+  "acopio",
+  "clasificación",
+  "entrega",
+  "medioambiente",
+  "reciclado",
+  "útiles",
+  "niñez",
+  "juventud",
+  "inclusión",
+  "apoyo",
+  "conciencia",
+  "responsabilidad",
+  "acceso",
+  "futuro",
+  "oportunidades",
+  "fundación",
+  "emprendimiento",
+  "alianza",
+  "campaña",
+  "reusar",
+  "creatividad",
+  "servicio",
+  "cambio",
+  "recursos",
+  "vulnerabilidad",
+  "cartón",
+  "ecoeducación",
+  "generosidad",
+  "liderazgo",
+  "propósito",
+  "innovación",
+  "República Dominicana",
+];
+const ROWS = 6;
+
+const AVATARS = [
+  {
+    x: 26,
+    y: 16,
+    speed: 0.022,
+    floatAmp: 7,
+    floatSpeed: 1.1,
+    floatOffset: 0,
+    src: avatar1,
+    label: "Avatar 1",
+  },
+  {
+    x: 9,
+    y: 42,
+    speed: 0.038,
+    floatAmp: 10,
+    floatSpeed: 0.8,
+    floatOffset: 1.2,
+    src: avatar2,
+    label: "Avatar 2",
+  },
+  {
+    x: 13,
+    y: 76,
+    speed: 0.018,
+    floatAmp: 6,
+    floatSpeed: 1.4,
+    floatOffset: 2.4,
+    src: avatar3,
+    label: "Avatar 3",
+  },
+  {
+    x: 24,
+    y: 58,
+    speed: 0.03,
+    floatAmp: 9,
+    floatSpeed: 0.9,
+    floatOffset: 0.6,
+    src: avatar4,
+    label: "Avatar 4",
+  },
+  {
+    x: 76,
+    y: 13,
+    speed: 0.034,
+    floatAmp: 8,
+    floatSpeed: 1.2,
+    floatOffset: 3.0,
+    src: avatar5,
+    label: "Avatar 5",
+  },
+  {
+    x: 91,
+    y: 38,
+    speed: 0.024,
+    floatAmp: 11,
+    floatSpeed: 0.7,
+    floatOffset: 1.8,
+    src: avatar6,
+    label: "Avatar 6",
+  },
+  {
+    x: 87,
+    y: 70,
+    speed: 0.042,
+    floatAmp: 7,
+    floatSpeed: 1.3,
+    floatOffset: 0.9,
+    src: avatar7,
+    label: "Avatar 7",
+  },
+  {
+    x: 73,
+    y: 83,
+    speed: 0.02,
+    floatAmp: 9,
+    floatSpeed: 1.0,
+    floatOffset: 2.1,
+    src: avatar8,
+    label: "Avatar 8",
+  },
+];
 
 function FloatingAvatar({
   avatar,
@@ -14,7 +157,7 @@ function FloatingAvatar({
   visible,
   enterDelay,
 }: {
-  avatar: typeof AVATARS[0];
+  avatar: (typeof AVATARS)[0];
   mouse: { x: number; y: number };
   isDark: boolean;
   visible: boolean;
@@ -28,7 +171,9 @@ function FloatingAvatar({
     const animate = (ts: number) => {
       if (!startRef.current) startRef.current = ts;
       const elapsed = (ts - startRef.current) / 1000;
-      const y = Math.sin(elapsed * avatar.floatSpeed + avatar.floatOffset) * avatar.floatAmp;
+      const y =
+        Math.sin(elapsed * avatar.floatSpeed + avatar.floatOffset) *
+        avatar.floatAmp;
       setFloatY(y);
       rafRef.current = requestAnimationFrame(animate);
     };
@@ -48,7 +193,11 @@ function FloatingAvatar({
           initial={{ opacity: 0, scale: 0.6, filter: "blur(12px)" }}
           animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
           exit={{ opacity: 0, scale: 0.6 }}
-          transition={{ duration: 0.7, delay: enterDelay, ease: [0.16, 1, 0.3, 1] }}
+          transition={{
+            duration: 0.7,
+            delay: enterDelay,
+            ease: [0.16, 1, 0.3, 1],
+          }}
         >
           <div
             style={{
@@ -116,7 +265,11 @@ export default function Hero() {
       opacity: 1,
       y: 0,
       filter: "blur(0px)",
-      transition: { duration: 0.7, delay: 0.15 + i * 0.1, ease: [0.16, 1, 0.3, 1] as const },
+      transition: {
+        duration: 0.7,
+        delay: 0.15 + i * 0.1,
+        ease: [0.16, 1, 0.3, 1] as const,
+      },
     }),
   };
 
@@ -148,7 +301,10 @@ export default function Hero() {
                 <span
                   key={word}
                   className={`select-none font-black uppercase leading-none tracking-[-0.05em] ${wordColor}`}
-                  style={{ fontSize: "clamp(4rem, 7vw, 7.5rem)", marginRight: "3.5rem" }}
+                  style={{
+                    fontSize: "clamp(4rem, 7vw, 7.5rem)",
+                    marginRight: "3.5rem",
+                  }}
                 >
                   {word}
                 </span>
@@ -171,7 +327,6 @@ export default function Hero() {
 
       <div className="absolute inset-0 flex flex-col items-center justify-center px-6">
         <div className="relative flex flex-col items-center gap-5 text-center">
-
           <div
             className="pointer-events-none absolute"
             style={{
@@ -196,7 +351,9 @@ export default function Hero() {
           >
             Construyendo oportunidades
             <br />
-            <span className={`cursor-default ${isDark ? "text-white/70" : "text-slate-950/70"}`}>
+            <span
+              className={`cursor-default ${isDark ? "text-white/70" : "text-slate-950/70"}`}
+            >
               hoy para un mañana mejor
             </span>
           </motion.h1>
@@ -210,7 +367,8 @@ export default function Hero() {
             initial="hidden"
             animate={navReady ? "visible" : "hidden"}
           >
-            Transformamos vidas a través del voluntariado, la educación y el compromiso con el medio ambiente en República Dominicana.
+            Transformamos vidas a través del voluntariado, la educación y el
+            compromiso con el medio ambiente en República Dominicana.
           </motion.p>
 
           <motion.div
@@ -220,8 +378,8 @@ export default function Hero() {
             initial="hidden"
             animate={navReady ? "visible" : "hidden"}
           >
-            <DefaultButton textString="Donar Ahora"/>
-            <DefaultButton textString="Quiero Ser Voluntario" inverted/>
+            <DefaultButton textString="Donar Ahora" />
+            <DefaultButton textString="Quiero Ser Voluntario" inverted />
           </motion.div>
         </div>
       </div>
