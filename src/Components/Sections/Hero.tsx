@@ -4,39 +4,8 @@ import { motion, AnimatePresence } from "motion/react";
 import { useSettings } from "../../hooks/context/SettingsContext";
 import { useAnimation } from "../../hooks/context/AnimationContext";
 import DefaultButton from "../ModularUI/GeneralButton";
-import avatar1 from "../../assets/imagen1.png"
-import avatar2 from "../../assets/imagen2.png"
-import avatar3 from "../../assets/imagen3.png"
-import avatar4 from "../../assets/imagen4.png"
-import avatar5 from "../../assets/imagen5.png"
-import avatar6 from "../../assets/imagen6.png"
-import avatar7 from "../../assets/imagen7.png"
-import avatar8 from "../../assets/imagen8.png"
+import { AVATARS, palabrasRelacionadas, ROWS } from "../../types/EnumHero";
 
-const palabrasRelacionadas = [
-  "reciclaje", "educación", "cuadernos", "donación", "sostenibilidad",
-  "voluntariado", "papel", "recolección", "reutilización", "impacto",
-  "comunidad", "estudiantes", "escuelas", "solidaridad", "esperanza",
-  "aprendizaje", "transformación", "hojas", "acopio", "clasificación",
-  "entrega", "medioambiente", "reciclado", "útiles", "niñez", "juventud",
-  "inclusión", "apoyo", "conciencia", "responsabilidad", "acceso", "futuro",
-  "oportunidades", "fundación", "emprendimiento", "alianza", "campaña",
-  "reusar", "creatividad", "servicio", "cambio", "recursos", "vulnerabilidad",
-  "cartón", "ecoeducación", "generosidad", "liderazgo", "propósito",
-  "innovación", "República Dominicana",
-];
-const ROWS = 6;
-
-const AVATARS = [
-  { x: 26,  y: 16,  speed: 0.022, floatAmp: 7,  floatSpeed: 1.1, floatOffset: 0,    src: avatar1,  label: "Avatar 1" },
-  { x: 9,   y: 42,  speed: 0.038, floatAmp: 10, floatSpeed: 0.8, floatOffset: 1.2,  src: avatar2,    label: "Avatar 2" },
-  { x: 13,  y: 76,  speed: 0.018, floatAmp: 6,  floatSpeed: 1.4, floatOffset: 2.4,  src: avatar3,    label: "Avatar 3" },
-  { x: 24,  y: 58,  speed: 0.030, floatAmp: 9,  floatSpeed: 0.9, floatOffset: 0.6,  src: avatar4,  label: "Avatar 4" },
-  { x: 76,  y: 13,  speed: 0.034, floatAmp: 8,  floatSpeed: 1.2, floatOffset: 3.0,  src: avatar5,   label: "Avatar 5" },
-  { x: 91,  y: 38,  speed: 0.024, floatAmp: 11, floatSpeed: 0.7, floatOffset: 1.8,  src: avatar6,label: "Avatar 6" },
-  { x: 87,  y: 70,  speed: 0.042, floatAmp: 7,  floatSpeed: 1.3, floatOffset: 0.9,  src: avatar7,    label: "Avatar 7" },
-  { x: 73,  y: 83,  speed: 0.020, floatAmp: 9,  floatSpeed: 1.0, floatOffset: 2.1,  src: avatar8,   label: "Avatar 8" },
-];
 
 function FloatingAvatar({
   avatar,
