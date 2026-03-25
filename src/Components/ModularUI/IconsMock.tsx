@@ -1,13 +1,15 @@
 import { Icon } from "@iconify/react";
 
 
-type IconType = {
+interface IconType {
     IconString: string
     Size?: number
+    Color?: string
+    Style? : object
 }
 
-export default function Iconify({IconString, Size} : IconType){
+export default function Iconify({IconString, Size, Color, Style} : IconType){
     return (
-        <Icon icon={IconString} fontSize={Size}/>
+        <Icon icon={IconString} fontSize={Size} color={Color} style={Style}/>
     )
 }
