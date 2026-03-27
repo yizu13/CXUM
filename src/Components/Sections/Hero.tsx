@@ -163,7 +163,7 @@ export default function Hero() {
             initial="hidden"
             animate={navReady ? "visible" : "hidden"}
           >
-            <DefaultButton textString="Donar Ahora" />
+            <DefaultButton textString="Ser Centro de Acopio" />
             <DefaultButton textString="Quiero Ser Voluntario" inverted />
           </motion.div>
         </div>
