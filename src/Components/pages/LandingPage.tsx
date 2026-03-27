@@ -4,9 +4,12 @@ import Hero from "../Sections/Hero";
 import OurImpact from "../Sections/OurImpact";
 import OurWork from "../Sections/OurWork";
 import WhoWeAre from "../Sections/WhoWeAre";
-import RecentNews from "../Sections/RecentNews";
 import CollectionMap from "../Sections/CollectionMap";
+import RecentNews from "../Sections/RecentNews";
 import ScrollToTopButton from "../ModularUI/ScrollToTopButton";
+import OurTeam from "../Sections/OurTeam";
+import MisionVisionValores from "../Sections/MisionVisionValores";
+import Footer from "../layout/Footer";
 
 export default function LandingPage() {
   const { navReady } = useAnimation();
@@ -19,11 +22,14 @@ export default function LandingPage() {
           <OurWork />
           <OurImpact />
           <WhoWeAre />
+          <MisionVisionValores />
           <CollectionMap />
+          <OurTeam/>
           <RecentNews />
           <ScrollToTopButton heroId="inicio" />
         </main>
       )}
+      <Footer/>
     </>
   );
 }
