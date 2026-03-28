@@ -74,17 +74,7 @@ export default function OurTeam() {
         }}
       />
 
-      {/* Encabezado */}
       <div className="relative z-10 mb-20 flex flex-col items-center text-center">
-        <motion.p
-          className="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-orange-500"
-          custom={0}
-          variants={titleVariants}
-          initial="hidden"
-          whileInView="visible"
-        >
-          Nuestra Esencia
-        </motion.p>
 
         <motion.h2
           className={`text-5xl font-black leading-tight sm:text-6xl lg:text-7xl tracking-tighter ${
