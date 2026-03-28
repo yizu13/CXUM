@@ -1,40 +1,43 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSettings } from "../../hooks/context/SettingsContext";
+import KarlaFaxas from "../../assets/KarlaFaxas.jpg";
+import PedroOlavarrieta from "../../assets/PedroOlavarrieta.jpeg";
+import AngelicaRoa from "../../assets/AngelicaRoa.png";
+import jomi from "../../assets/jomi.png";
+import DarlynContreras from "../../assets/DarlynConteras.png";
+import pendiente from "../../assets/pendiente.png";
 
-// ─────────────────────────────────────────────────────────────
-//  EQUIPO — Edita los datos aquí
-// ─────────────────────────────────────────────────────────────
 const TEAM_MEMBERS = [
   {
     name: "Karla Faxas",
     role: "Presidenta de la Fundación",
-    src: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=800&h=1200&fit=crop", // Reemplazar con tu local
+    src: KarlaFaxas,
   },
   {
-    name: "Marco Valerio",
-    role: "Vicepresidente",
-    src: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800&h=1200&fit=crop",
+    name: "Pedro Olavarrieta",
+    role: "Encargado de Marketing",
+    src: PedroOlavarrieta,
   },
   {
-    name: "Ana Martínez",
-    role: "Coordinadora de Voluntariado",
-    src: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&h=1200&fit=crop",
+    name: "Angélica Roa",
+    role: "Coordinadora de Voluntariado / pendiente*",
+    src: AngelicaRoa,
   },
   {
-    name: "Luis Sánchez",
-    role: "Director de Logística",
-    src: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800&h=1200&fit=crop",
+    name: "Jomi ",
+    role: "Director de Logística / pendiente*",
+    src: jomi,
   },
   {
-    name: "Elena Gómez",
-    role: "Relaciones Públicas",
-    src: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&h=1200&fit=crop",
+    name: "Darlyn Contreras",
+    role: "Relaciones Públicas / pendiente*",
+    src: DarlynContreras,
   },
   {
-    name: "David Ruiz",
-    role: "Tesorero",
-    src: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=800&h=1200&fit=crop",
+    name: "Pendiente",
+    role: "Tesorero pendiente*",
+    src: pendiente,
   },
 ];
 
@@ -47,7 +50,7 @@ const titleVariants = {
     transition: {
       duration: 0.8,
       delay: i * 0.1,
-      ease: [0.16, 1, 0.3, 1],
+      ease: [0.16, 1, 0.3, 1] as const,
     },
   }),
 };
@@ -64,7 +67,6 @@ export default function OurTeam() {
         isDark ? "bg-[#05070b]" : "bg-[#f4f4ef]"
       }`}
     >
-      {/* Fondo decorativo: Resplandor radial superior */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
@@ -91,7 +93,6 @@ export default function OurTeam() {
         </motion.h2>
       </div>
 
-      {/* ── CONTENEDOR DEL ACORDEÓN ── */}
       <div className="relative z-10 mx-auto flex items-center justify-center">
         <motion.div
           className="flex items-stretch justify-center gap-4 w-full"
@@ -122,12 +123,11 @@ export default function OurTeam() {
                   flexGrow: isHovered ? 5 : 1,
                   flexBasis: isHovered ? "450px" : someoneHovered ? "70px" : "180px",
                   transition: "all 0.7s cubic-bezier(0.2, 1, 0.2, 1)",
-                  cursor: "pointer",
+                  cursor: "default",
                   borderRadius: "28px",
                   zIndex: isHovered ? 20 : 1,
                 }}
               >
-                {/* ── EFECTO DE BLUR / GLOW EXTERIOR ── */}
                 <AnimatePresence>
                   {isHovered && (
                     <motion.div
@@ -144,9 +144,7 @@ export default function OurTeam() {
                   )}
                 </AnimatePresence>
 
-                {/* CONTENEDOR DE IMAGEN (Clip) */}
                 <div className="relative w-full h-full overflow-hidden rounded-[28px] shadow-2xl">
-                  {/* Imagen */}
                   <motion.img
                     src={member.src}
                     alt={member.name}
@@ -161,7 +159,6 @@ export default function OurTeam() {
                     }}
                   />
 
-                  {/* Overlays de degradado */}
                   <div
                     className={`absolute inset-0 transition-opacity duration-700 ${
                       isHovered ? "opacity-100" : "opacity-60"
@@ -173,12 +170,10 @@ export default function OurTeam() {
                     }}
                   />
 
-                  {/* Resplandor naranja en la base al hacer hover */}
                   <div 
-                    className={`absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-orange-500/20 to-transparent transition-opacity duration-500 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+                    className={`absolute bottom-0 left-0 right-0 h-32 bg-linear-to-t from-orange-500/20 to-transparent transition-opacity duration-500 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
                   />
 
-                  {/* CONTENIDO TEXTUAL (Solo visible al expandir) */}
                   <div
                     className="absolute bottom-0 left-0 w-full p-8 transition-all duration-500"
                     style={{
@@ -196,7 +191,6 @@ export default function OurTeam() {
                     </h3>
                   </div>
 
-                  {/* NOMBRE VERTICAL (Estado colapsado) */}
                   <div
                     className={`absolute inset-0 flex items-center justify-center transition-opacity duration-500 ${
                       someoneHovered ? "opacity-0" : "opacity-100"
@@ -213,11 +207,10 @@ export default function OurTeam() {
         </motion.div>
       </div>
 
-      {/* Separador decorativo final */}
       <div className="relative z-10 mx-auto mt-24 flex max-w-xs items-center gap-6 opacity-30">
-        <div className={`h-[1px] flex-1 ${isDark ? "bg-white" : "bg-black"}`} />
+        <div className={`h-px flex-1 ${isDark ? "bg-white" : "bg-black"}`} />
         <div className="h-2 w-2 rounded-full bg-orange-500" />
-        <div className={`h-[1px] flex-1 ${isDark ? "bg-white" : "bg-black"}`} />
+        <div className={`h-px flex-1 ${isDark ? "bg-white" : "bg-black"}`} />
       </div>
     </section>
   );

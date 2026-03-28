@@ -1,24 +1,18 @@
-import { createBrowserRouter } from "react-router-dom";
-import { RouterProvider } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LandingPage from "../components/pages/LandingPage";
 import ContactPage from "../components/pages/ContactPage";
 import VolunteersPage from "../components/pages/VolunteersPage";
-
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <LandingPage />,
-  },
-  {
-    path: "/Contacto",
-    element: <ContactPage />,
-  },
-  {
-    path: "/Voluntarios",
-    element: <VolunteersPage />,
-  },
-]);
+import ScrollToTop from "../hooks/ScrollToTop";
 
 export default function AppRouter() {
-  return <RouterProvider router={router} />;
+  return (
+    <BrowserRouter>
+      <ScrollToTop />
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/Contacto" element={<ContactPage />} />
+        <Route path="/Voluntarios" element={<VolunteersPage />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }

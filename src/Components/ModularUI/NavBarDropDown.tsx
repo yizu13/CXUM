@@ -1,37 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion"
 import Iconify from "./IconsMock"
-import { InfoCards } from "../../types/NavBarLinks"
-
-interface GlassStyles {
-    container: string
-    container2: string
-    text: string
-    themeBtn: string
-}
-
-interface DropDownProps {
-    show: boolean
-    cardWidth: number
-    setFlag: (h: boolean) => void
-    activeIndex: number | null
-    contentRef: (instance: HTMLDivElement | null) => void
-    glassStyles: GlassStyles
-}
-
-interface VariantCard1 {
-    glassStyles: GlassStyles
-    title: string
-    subTitle?: string
-    IconString?: string
-    link: string
-}
-
-interface VariantCard2 {
-    glassStyles: GlassStyles
-    title: string
-    link: string
-    IconString: string
-}
+import { InfoCards, type DropDownProps, type VariantCard1, type VariantCard2 } from "../../types/NavBarLinks"
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function NavBarDropDown({ show, cardWidth, setFlag, contentRef, activeIndex, glassStyles }: DropDownProps) {
     return (
@@ -80,6 +50,7 @@ export default function NavBarDropDown({ show, cardWidth, setFlag, contentRef, a
                                                                 IconString={m.IconsString}
                                                                 link={m.link}
                                                                 glassStyles={glassStyles}
+                                                                currentPath={m.path}
                                                             />
                                                         )}
                                                         {m.cardType === 2 && (
@@ -88,6 +59,7 @@ export default function NavBarDropDown({ show, cardWidth, setFlag, contentRef, a
                                                                 link={m.link}
                                                                 glassStyles={glassStyles}
                                                                 IconString={m.IconsString}
+                                                                currentPath={m.path}
                                                             />
                                                         )}
                                                         {m.cardType === 3 && <></>}
@@ -107,10 +79,27 @@ export default function NavBarDropDown({ show, cardWidth, setFlag, contentRef, a
 }
 
 
-function CardVariant1({ title, subTitle, glassStyles, IconString, link }: VariantCard1) {
+function CardVariant1({ title, subTitle, glassStyles, IconString, link, currentPath }: VariantCard1) {
+    const location = useLocation();
+    const navigate = useNavigate();
     const handleClick = () => {
-        const el = document.querySelector(link);
-        if (el) el.scrollIntoView({ behavior: "smooth" });
+
+        if(currentPath !== location.pathname){
+            navigate(currentPath);
+            document.documentElement.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: "instant", 
+            });
+            setTimeout(() => {
+            const el = document.querySelector(link);
+            if (el) el.scrollIntoView({ behavior: "smooth" });
+            }, 1000);
+
+        }else{
+            const el = document.querySelector(link);
+            if (el) el.scrollIntoView({ behavior: "smooth" });
+        }
     };
 
     return (
@@ -130,10 +119,28 @@ function CardVariant1({ title, subTitle, glassStyles, IconString, link }: Varian
 }
 
 
-function CardVariant2({ title, glassStyles, link, IconString }: VariantCard2) {
-    const handleClick = () => {
-        const el = document.querySelector(link);
-        if (el) el.scrollIntoView({ behavior: "smooth" });
+function CardVariant2({ title, glassStyles, link, IconString, currentPath }: VariantCard2) {
+     const location = useLocation();
+     const navigate = useNavigate();
+     const handleClick = () => {
+
+        if(currentPath !== location.pathname){
+            navigate(currentPath);
+            document.documentElement.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: "instant", 
+            });
+            setTimeout(() => {
+            const el = document.querySelector(link);
+            if (el) el.scrollIntoView({ behavior: "smooth" });
+        }, 1000);
+        }else{
+            const el = document.querySelector(link);
+            if (el) el.scrollIntoView({ behavior: "smooth" });
+        }
+        
+        
     };
 
     return (

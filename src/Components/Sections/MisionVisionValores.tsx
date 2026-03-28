@@ -1,7 +1,7 @@
 import { useRef} from "react";
 import { motion, useInView } from "motion/react";
 import { useSettings } from "../../hooks/context/SettingsContext";
-import Iconify from "../ModularUI/IconsMock";
+import Iconify from "../modularUI/IconsMock";
 import visionImage from "../../assets/VisionCard.jpg"
 import misionImage from "../../assets/misionCard.jpg"
 import globalExpantion from "../../assets/ExpansionGlobal.jpg"
@@ -39,13 +39,13 @@ export default function MisionVisionValores() {
   const bg = isDark ? "bg-[#05070b]" : "bg-[#f4f4ef]";
   const textPrimary = isDark ? "text-white" : "text-slate-900";
   const textSub = isDark ? "text-white/50" : "text-slate-500";
-  const textBody = isDark ? "text-white/60" : "text-slate-600";
+  const textBody = isDark ? "text-white" : "text-slate-600";
 
   const cardLight = isDark
     ? "bg-white/[0.04] border border-white/[0.08]"
     : "bg-white border border-slate-200/70";
   const cardDark = isDark
-    ? "bg-[#1a2a1a] border border-white/[0.06]"
+    ? "bg-[#1a2a1a] border border-transparent"
     : "bg-[#2d4a2d] border border-transparent";
   const cardAccent = isDark
     ? "bg-orange-500/15 border border-orange-500/20"
@@ -80,7 +80,6 @@ export default function MisionVisionValores() {
           </motion.p>
         </div>
 
-        {/* ── BENTO GRID ── */}
         <div className="grid grid-cols-1 md:grid-cols-12 grid-rows-[auto] gap-4">
 
           <motion.div
@@ -110,8 +109,18 @@ export default function MisionVisionValores() {
                 />
               ))}
             </div>
+            <div
+              className="absolute inset-0 w-full h-full z-10 backdrop-blur-xl bg-white/30"
+              style={{
+                WebkitMaskImage: 
+                  "linear-gradient(to top, black 0%, black 30%, rgba(0,0,0,0.5) 70%, transparent 100%)",
+                maskImage: 
+                  "linear-gradient(to top, black 0%, black 30%, rgba(0,0,0,0.5) 70%, transparent 100%)",
+              }}
+            />
 
-            <div className="relative z-10 flex flex-col gap-2">             
+            <div className="relative z-10 flex flex-col gap-2">  
+                         
               <h3 className={`text-xl md:text-2xl font-black ${textPrimary}`}>
               Misión
               </h3>
@@ -129,12 +138,21 @@ export default function MisionVisionValores() {
             animate={section ? "visible" : "exit"}
             className={`md:col-span-5 relative rounded-2xl overflow-hidden min-h-65 flex flex-col justify-between p-7 ${cardDark}`}
           >
-            <div className="flex justify-between items-start">
+            <div className="flex justify-between items-start z-10">
               <span />
               <span className="text-2xl">
-                <Iconify IconString="solar:eye-bold-duotone" Size={56} Style={{color: "white"}}/>
+                <Iconify IconString="solar:eye-bold" Size={56} Style={{color: isDark ? "white" : "#ff6900"}}/>
               </span>
             </div>
+            <div
+              className="absolute inset-0 w-full h-full z-10 backdrop-blur-xl bg-white/30"
+              style={{
+                WebkitMaskImage: 
+                  "linear-gradient(to top, black 0%, black 30%, rgba(0,0,0,0.5) 70%, transparent 100%)",
+                maskImage: 
+                  "linear-gradient(to top, black 0%, black 30%, rgba(0,0,0,0.5) 70%, transparent 100%)",
+              }}
+            />
 
             <div className="flex flex-col gap-2">
               <h3 className="text-xl font-black text-white z-10">
@@ -166,26 +184,33 @@ export default function MisionVisionValores() {
           </motion.div>
 
          <motion.div
-  custom={5}
-  variants={fadeUp}
-  initial="hidden"
-  animate={section ? "visible" : "exit"}
-  className={`md:col-span-8 relative rounded-2xl overflow-hidden min-h-45 flex flex-col md:flex-row gap-0 ${cardLight}`}
->
-  <div className="flex-1 flex flex-col justify-center gap-2 p-6 z-10">
-    {/* Blur backdrop behind the text */}
-    <div className="absolute inset-0 md:w-1/2 backdrop-blur-md bg-white/10 z-0 rounded-2xl md:rounded-r-none" />
-    
-    <h3 className={`relative text-lg md:text-xl font-black z-10 ${textPrimary}`}>
-      Expansión <span className="text-orange-500">Nacional</span>
-    </h3>
-    <p className={`relative text-xs leading-relaxed max-w-xs z-10 ${textBody}`}>
-      Implementamos el modelo de Cuadernos X Un Mañana (CXUM) a nivel nacional en la República Dominicana para combatir el desperdicio escolar urbano y mejorar el acceso a la educación. A través de la recolección y reutilización de cuadernos usados, transformamos residuos en recursos educativos para estudiantes de bajos ingresos, promoviendo la sostenibilidad, la economía circular y una cultura de solidaridad en todo el país.
-    </p>
-  </div>
+          custom={5}
+          variants={fadeUp}
+          initial="hidden"
+          animate={section ? "visible" : "exit"}
+          className={`md:col-span-8 relative rounded-2xl overflow-hidden min-h-45 flex flex-col md:flex-row gap-0 ${cardLight}`}
+        >
+          <div className="flex-1 flex flex-col justify-center gap-2 p-6 z-10">
+            <div
+              className="absolute inset-0 w-full md:w-2/3 h-full z-10 backdrop-blur-xl bg-white/30"
+              style={{
+                WebkitMaskImage: 
+                  "linear-gradient(to right, black 40%, rgba(0,0,0,0.8) 60%, transparent 100%)",
+                maskImage: 
+                  "linear-gradient(to right, black 40%, rgba(0,0,0,0.8) 60%, transparent 100%)",
+              }}
+            />
+            
+            <h3 className={`relative text-lg md:text-xl font-black z-10 ${textPrimary}`}>
+              Expansión <span className="text-orange-500">Nacional</span>
+            </h3>
+            <p className={`relative text-xs leading-relaxed max-w-xs z-10 ${textBody}`}>
+              Implementamos el modelo de Cuadernos X Un Mañana (CXUM) a nivel nacional en la República Dominicana para combatir el desperdicio escolar urbano y mejorar el acceso a la educación. A través de la recolección y reutilización de cuadernos usados, transformamos residuos en recursos educativos para estudiantes de bajos ingresos, promoviendo la sostenibilidad, la economía circular y una cultura de solidaridad en todo el país.
+            </p>
+          </div>
 
-  <img src={globalExpantion} className="absolute inset-0 w-full h-full object-cover z-0 opacity-50" />
-</motion.div>
+          <img src={globalExpantion} className="absolute inset-0 w-full h-full object-cover z-0 opacity-50" />
+        </motion.div>
 
           <motion.div
             custom={6}
@@ -194,7 +219,8 @@ export default function MisionVisionValores() {
             animate={section ? "visible" : "exit"}
             className={`md:col-span-3 relative rounded-2xl overflow-hidden min-h-40 flex flex-col justify-between p-6 ${cardLight}`}
           >
-            <span className="text-xl">♻️</span>
+            
+              <Iconify IconString="solar:leaf-bold" Size={32} Style={{color: isDark ? "white" : "#ff6900"}}/>
             <div className="flex flex-col gap-1">
               <h3 className={`text-sm font-black ${textPrimary}`}>Sostenibilidad</h3>
               <p className={`text-xs leading-relaxed ${textBody}`}>
@@ -210,7 +236,7 @@ export default function MisionVisionValores() {
             animate={section ? "visible" : "exit"}
             className={`md:col-span-3 relative rounded-2xl overflow-hidden min-h-40 flex flex-col justify-between p-6 ${cardAccent}`}
           >
-            <span className="text-xl">🤝</span>
+            <Iconify IconString="mdi:deal" Size={32} Style={{color: isDark ? "white" : "#ff6900"}}/>
             <div className="flex flex-col gap-1">
               <h3 className={`text-sm font-black ${textPrimary}`}>Solidaridad</h3>
               <p className={`text-xs leading-relaxed ${textBody}`}>

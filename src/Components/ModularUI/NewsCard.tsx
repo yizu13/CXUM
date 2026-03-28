@@ -18,7 +18,7 @@ export default function NewsCard({
 
   return (
     <motion.article
-      className={`group relative flex flex-col rounded-2xl overflow-hidden cursor-pointer ${
+      className={`group relative flex flex-col rounded-2xl overflow-hidden cursor-default ${
         isDark ? "bg-white/4" : "bg-white"
       }`}
       style={{

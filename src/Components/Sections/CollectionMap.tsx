@@ -8,32 +8,10 @@ import { useSettings } from "../../hooks/context/SettingsContext";
 import {
   COLLECTION_CENTERS,
   type CollectionCenter,
-  type CollectionCenterStatus,
 } from "../../types/EnumsCollectionCenters";
+import Iconify from "../modularUI/IconsMock";
+import { headVariants, mapVariants, STATUS_COLOR, STATUS_LABEL } from "../../types/EnumsCollectionCenters";
 
-// ─── AWS Location Service v2 ─────────────────────────────────────────────────
-const REGION  = import.meta.env.VITE_AWS_REGION  || "us-east-1";
-const API_KEY = import.meta.env.VITE_AWS_API_KEY || "";
-
-const getTileUrl = (isDark: boolean) =>
-  `https://maps.geo.${REGION}.amazonaws.com/v2/tiles/vector.basemap/${
-    isDark ? "Dark" : "Light"
-  }/{z}/{x}/{y}?key=${API_KEY}`;
-
-// ─── Status tokens ───────────────────────────────────────────────────────────
-const STATUS_COLOR: Record<CollectionCenterStatus, string> = {
-  open:         "#22c55e",
-  closing_soon: "#f59e0b",
-  closed:       "#ef4444",
-};
-
-const STATUS_LABEL: Record<CollectionCenterStatus, string> = {
-  open:         "Abierto",
-  closing_soon: "Cierra pronto",
-  closed:       "Cerrado",
-};
-
-// ─── Fly-to controller ───────────────────────────────────────────────────────
 function MapController({ center }: { center: CollectionCenter | null }) {
   const map = useMap();
   useEffect(() => {
@@ -42,7 +20,6 @@ function MapController({ center }: { center: CollectionCenter | null }) {
   return null;
 }
 
-// ─── Dot marker ──────────────────────────────────────────────────────────────
 const makeIcon = (color: string, active = false) =>
   L.divIcon({
     className: "cxum-marker",
@@ -64,7 +41,6 @@ const makeIcon = (color: string, active = false) =>
     popupAnchor: [0, -12],
   });
 
-// ─── Section ─────────────────────────────────────────────────────────────────
 export default function CollectionMap() {
   const { theme } = useSettings();
   const isDark = theme === "dark";
@@ -84,9 +60,9 @@ export default function CollectionMap() {
 
   useEffect(() => {
     if (selected && !filteredCenters.find((c) => c.id === selected.id))
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelected(null);
   }, [filteredCenters, selected]);
-  // IntersectionObserver — igual que OurImpact
   const sectionRef = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
   useEffect(() => {
@@ -100,44 +76,6 @@ export default function CollectionMap() {
     return () => obs.disconnect();
   }, []);
 
-  // Heading animation variants (same as OurImpact)
-  const headVariants = {
-    hidden: { opacity: 0, y: 28, filter: "blur(14px)" },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      filter: "blur(0px)",
-      transition: {
-        duration: 0.7,
-        delay: i * 0.1,
-        ease: [0.16, 1, 0.3, 1] as const,
-      },
-    }),
-    exit: {
-      opacity: 0,
-      y: -20,
-      filter: "blur(10px)",
-      transition: { duration: 0.45, ease: [0.76, 0, 0.24, 1] as const },
-    },
-  };
-
-  const mapVariants = {
-    hidden: { opacity: 0, y: 40, filter: "blur(12px)" },
-    visible: {
-      opacity: 1,
-      y: 0,
-      filter: "blur(0px)",
-      transition: { duration: 0.85, delay: 0.3, ease: [0.16, 1, 0.3, 1] as const },
-    },
-    exit: {
-      opacity: 0,
-      y: 20,
-      filter: "blur(8px)",
-      transition: { duration: 0.45, ease: [0.76, 0, 0.24, 1] as const },
-    },
-  };
-
-  // Theme tokens — aligned with the rest of the project
   const bg     = isDark ? "bg-[#05070b]" : "bg-[#f4f4ef]";
   const border = isDark ? "#30363d"       : "#e2e8f0";
   const text   = isDark ? "#e6edf3"       : "#0f172a";
@@ -154,7 +92,6 @@ export default function CollectionMap() {
     >
       <div className="max-w-6xl mx-auto flex flex-col gap-14">
 
-        {/* ── Section heading — identical structure to OurImpact ── */}
         <div className="flex flex-col items-center text-center gap-4">
           <motion.h2
             className={`font-black uppercase leading-none tracking-[-0.03em] ${
@@ -198,7 +135,6 @@ export default function CollectionMap() {
           />
         </div>
 
-        {/* ── Map widget ── */}
         <motion.div
           variants={mapVariants}
           initial="hidden"
@@ -208,24 +144,22 @@ export default function CollectionMap() {
         >
           <div className="flex h-full flex-col lg:flex-row">
 
-            {/* Sidebar */}
             <aside
-              className="flex w-full shrink-0 flex-col lg:w-[340px]"
+              className="flex w-full shrink-0 flex-col lg:w-85"
               style={{
                 borderRight: `1px solid ${border}`,
                 background: cardBg,
               }}
             >
-              {/* Header */}
               <div
                 className="px-5 pt-5 pb-4"
                 style={{ borderBottom: `1px solid ${border}` }}
               >
                 <p
-                  className="text-[10px] font-semibold uppercase tracking-[0.14em]"
+                  className="text-[20px] font-semibold "
                   style={{ color: "#f59e0b" }}
                 >
-                  Centros de acopio
+                  Listado de Centros
                 </p>
                 <p className="mt-1 text-xs" style={{ color: muted }}>
                   {COLLECTION_CENTERS.filter((c) => c.status === "open").length} centros
@@ -233,7 +167,6 @@ export default function CollectionMap() {
                 </p>
               </div>
 
-              {/* Search */}
               <div className="px-3 pt-3">
                 <div className="relative">
                   <svg
@@ -270,7 +203,6 @@ export default function CollectionMap() {
                 </div>
               </div>
 
-              {/* Cards */}
               <div
                 className="flex-1 overflow-y-auto p-3 space-y-2"
                 style={{ scrollbarWidth: "none" }}
@@ -298,7 +230,6 @@ export default function CollectionMap() {
                         boxShadow:  isActive ? `0 6px 20px ${color}18` : "none",
                       }}
                     >
-                      {/* Title + badge */}
                       <div className="flex items-start justify-between gap-2">
                         <p
                           className="text-sm font-semibold leading-tight truncate"
@@ -314,7 +245,6 @@ export default function CollectionMap() {
                         </span>
                       </div>
 
-                      {/* Subtitle */}
                       <p
                         className="mt-0.5 text-xs font-medium"
                         style={{ color: muted }}
@@ -322,25 +252,23 @@ export default function CollectionMap() {
                         {center.subtitle}
                       </p>
 
-                      {/* Address & schedule */}
                       <div className="mt-2 space-y-0.5">
                         <p
                           className="flex items-center gap-1 text-[11px] truncate"
                           style={{ color: muted }}
                         >
-                          <span>📌</span>
+                          <Iconify IconString="mdi:map-marker" Color="red"/>
                           <span className="truncate">{center.address}</span>
                         </p>
                         <p
                           className="flex items-center gap-1 text-[11px]"
                           style={{ color: muted }}
                         >
-                          <span>🕐</span>
+                          <Iconify IconString="mdi:clock" />
                           {center.schedule}
                         </p>
                       </div>
 
-                      {/* Accepted items — shown only when selected */}
                       {isActive && (
                         <div
                           className="mt-3 pt-3"
@@ -375,7 +303,6 @@ export default function CollectionMap() {
               </div>
             </aside>
 
-            {/* Map */}
             <div className="relative flex-1">
               <MapContainer
                 center={[18.48, -69.93]}
@@ -403,9 +330,9 @@ export default function CollectionMap() {
                     )}
                     eventHandlers={{ click: () => setSelected(center) }}
                   >
-                    <Popup offset={[0, -8]}>
+                    <Popup offset={[0, -8]} className="my-popup">
                       <div
-                        style={{ padding: "10px 12px", minWidth: "195px" }}
+                        style={{ padding: "20px", minWidth: "195px" }}
                       >
                         <p
                           style={{
@@ -422,34 +349,40 @@ export default function CollectionMap() {
                             margin: "0 0 3px",
                             fontSize: "11px",
                             color: "#64748b",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "4px",
                           }}
                         >
-                          📌 {center.address}
+                          <Iconify IconString="solar:pin-bold-duotone" Color="red"/> {center.address}
                         </p>
                         <p
                           style={{
                             margin: "0 0 8px",
                             fontSize: "11px",
                             color: "#64748b",
-                          }}
-                        >
-                          🕐 {center.schedule}
-                        </p>
-                        <span
-                          style={{
                             display: "inline-flex",
                             alignItems: "center",
+                            gap: "4px",
+                          }}
+                        >
+                         <Iconify IconString="solar:clock-circle-bold-duotone"/>
+                        {center.schedule}
+                        </p>
+                        <div
+                          style={{
                             gap: "4px",
                             padding: "3px 9px",
                             borderRadius: "999px",
                             fontSize: "10px",
                             fontWeight: 700,
+                            width: "fit-content",
                             background: `${STATUS_COLOR[center.status]}18`,
                             color: STATUS_COLOR[center.status],
                           }}
                         >
                           {STATUS_LABEL[center.status]}
-                        </span>
+                        </div>
                       </div>
                     </Popup>
                   </Marker>

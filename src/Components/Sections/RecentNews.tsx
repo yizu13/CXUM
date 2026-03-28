@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { useSettings } from "../../hooks/context/SettingsContext";
-import Iconify from "../ModularUI/IconsMock";
+import Iconify from "../modularUI/IconsMock";
 import { NEWS } from "../../types/newsSection";
 import NewsCard from "../modularUI/NewsCard";
 

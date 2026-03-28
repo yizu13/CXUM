@@ -6,11 +6,13 @@ import { useSettings } from "../../hooks/context/SettingsContext"
 interface DefaultButtonType {
   textString: string
   inverted?: boolean
+  onClick?: () => void
 }
 
 export default function DefaultButton({
   textString,
   inverted = false,
+  onClick,
 }: DefaultButtonType) {
   const [buttonAnimation, setAnimation] = useState(false)
   const { theme } = useSettings()
@@ -51,6 +53,7 @@ export default function DefaultButton({
       transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
       onHoverStart={() => setAnimation(true)}
       onHoverEnd={() => setAnimation(false)}
+      onClick={onClick}
       className="relative overflow-hidden inline-flex items-center justify-center gap-2 rounded-full border px-7 py-2.5 text-[0.85rem] font-bold cursor-pointer transition-all shadow-md"
     >
       <span>{textString}</span>

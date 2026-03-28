@@ -3,15 +3,17 @@ import { motion } from "framer-motion";
 import CXUMLOGO from "../../assets/LogoCXUM.png";
 import { useSettings } from "../../hooks/context/SettingsContext";
 import { useAnimation } from "../../hooks/context/AnimationContext";
-import Iconify from "../ModularUI/IconsMock";
-import DefaultButton from "../ModularUI/GeneralButton";
+import Iconify from "../modularUI/IconsMock";
+import DefaultButton from "../modularUI/GeneralButton";
 import { NAV_LINKS } from "../../types/NavBarLinks";
-import NavBarDropDown from "../ModularUI/NavBarDropDown";
+import NavBarDropDown from "../modularUI/NavBarDropDown";
+import { useNavigate } from "react-router-dom";
 
 export default function NavBar() {
   const [phase, setPhase] = useState(0);
   const { theme, setTheme } = useSettings();
   const { setNavReady } = useAnimation();
+  const navigate = useNavigate();
   const [iconHover, setIconHover] = useState([false, false, false, false]);
   const [flag, setFlag] = useState(false);
   const [show, setShow] = useState(false);
@@ -165,7 +167,7 @@ export default function NavBar() {
                       <Iconify IconString="duo-icons:moon-stars" Size={20} />
                     )}
                   </motion.button>
-                  <DefaultButton textString="Donar Ahora" />
+                  <DefaultButton textString="Donar Ahora" onClick={() => navigate("/Contacto")} />
                 </>
               )}
             </div>
