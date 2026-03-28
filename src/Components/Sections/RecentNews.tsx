@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 import { useSettings } from "../../hooks/context/SettingsContext";
 import Iconify from "../ModularUI/IconsMock";
 import { NEWS } from "../../types/newsSection";
-import NewsCard from "../ModularUI/NewsCard";
+import NewsCard from "../modularUI/NewsCard";
 
 
 export default function RecentNews() {

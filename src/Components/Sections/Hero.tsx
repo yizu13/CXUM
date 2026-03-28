@@ -5,7 +5,7 @@ import { useSettings } from "../../hooks/context/SettingsContext";
 import { useAnimation } from "../../hooks/context/AnimationContext";
 import DefaultButton from "../ModularUI/GeneralButton";
 import { AVATARS, palabrasRelacionadas, ROWS } from "../../types/EnumHero";
-import FloatingAvatar from "../ModularUI/FloatingAvatar";
+import FloatingAvatar from "../modularUI/FloatingAvatar";
 
 export default function Hero() {
   const { theme } = useSettings();

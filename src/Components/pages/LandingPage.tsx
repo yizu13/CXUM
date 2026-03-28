@@ -6,7 +6,7 @@ import OurWork from "../Sections/OurWork";
 import WhoWeAre from "../Sections/WhoWeAre";
 import CollectionMap from "../Sections/CollectionMap";
 import RecentNews from "../Sections/RecentNews";
-import ScrollToTopButton from "../ModularUI/ScrollToTopButton";
+import ScrollToTopButton from "../modularUI/ScrollToTopButton";
 import OurTeam from "../Sections/OurTeam";
 import MisionVisionValores from "../Sections/MisionVisionValores";
 import Footer from "../layout/Footer";
@@ -27,9 +27,9 @@ export default function LandingPage() {
           <OurTeam/>
           <RecentNews />
           <ScrollToTopButton heroId="inicio" />
+          <Footer/>
         </main>
       )}
-      <Footer/>
     </>
   );
 }
