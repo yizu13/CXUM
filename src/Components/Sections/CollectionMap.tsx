@@ -86,8 +86,6 @@ export default function CollectionMap() {
     if (selected && !filteredCenters.find((c) => c.id === selected.id))
       setSelected(null);
   }, [filteredCenters, selected]);
-  const tileUrl = getTileUrl(isDark);
-
   // IntersectionObserver — igual que OurImpact
   const sectionRef = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
@@ -168,8 +166,8 @@ export default function CollectionMap() {
             initial="hidden"
             animate={inView ? "visible" : "exit"}
           >
-            Puntos de{" "}
-            <span style={{ color: "#f59e0b" }}>entrega</span>
+            Centros de{" "}
+            <span style={{ color: "#f59e0b" }}>acopio</span>
           </motion.h2>
 
           <motion.p
