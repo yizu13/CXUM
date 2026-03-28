@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import { RouterProvider } from "react-router-dom";
 import LandingPage from "../components/pages/LandingPage";
 import ContactPage from "../components/pages/ContactPage";
+import VolunteersPage from "../components/pages/VolunteersPage";
 
 const router = createBrowserRouter([
   {
@@ -10,8 +11,12 @@ const router = createBrowserRouter([
   },
   {
     path: "/Contacto",
-    element: <ContactPage/>
-  }
+    element: <ContactPage />,
+  },
+  {
+    path: "/Voluntarios",
+    element: <VolunteersPage />,
+  },
 ]);
 
 export default function AppRouter() {
