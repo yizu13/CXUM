@@ -147,7 +147,6 @@ export default function MisionVisionValores() {
             <img src={visionImage} className=" absolute inset-0 w-full h-full object-cover z-0 opacity-20"/>
           </motion.div>
 
-          {/* ROW 2 — col 1-4: Valor 1 pequeño */}
           <motion.div
             custom={4}
             variants={fadeUp}
@@ -166,31 +165,27 @@ export default function MisionVisionValores() {
             </div>
           </motion.div>
 
-          <motion.div
-            custom={5}
-            variants={fadeUp}
-            initial="hidden"
-            animate={section ? "visible" : "exit"}
-            className={`md:col-span-8 relative rounded-2xl overflow-hidden min-h-45 flex flex-col md:flex-row gap-0 ${cardLight}`}
-          >
-            <div className="flex-1 flex flex-col justify-center gap-2 p-6 z-10">
-              <h3 className={`text-lg md:text-xl font-black text-white`}>
-                Expansión <span className="text-orange-500">Global</span>
-              </h3>
-              <p className={`text-xs leading-relaxed max-w-xs text-white`}>
-                Llevamos el modelo Cuadernos X Un Mañana a economías emergentes del Sudeste Asiático y Sudamérica para combatir el desperdicio escolar urbano.
-              </p>
-            </div>
-            <div
-              className="w-full md:w-44 shrink-0 min-h-30 md:min-h-0 rounded-b-2xl md:rounded-b-none md:rounded-r-2xl overflow-hidden"
-              style={{
-                background:
-                  "radial-gradient(circle at 50% 50%, #1a3a5c 0%, #0d1f35 40%, #06101e 100%)",
-              }}
-            >
-                <img src={globalExpantion} className="absolute inset-0 w-full h-full object-cover z-0"/>
-            </div>
-          </motion.div>
+         <motion.div
+  custom={5}
+  variants={fadeUp}
+  initial="hidden"
+  animate={section ? "visible" : "exit"}
+  className={`md:col-span-8 relative rounded-2xl overflow-hidden min-h-45 flex flex-col md:flex-row gap-0 ${cardLight}`}
+>
+  <div className="flex-1 flex flex-col justify-center gap-2 p-6 z-10">
+    {/* Blur backdrop behind the text */}
+    <div className="absolute inset-0 md:w-1/2 backdrop-blur-md bg-white/10 z-0 rounded-2xl md:rounded-r-none" />
+    
+    <h3 className={`relative text-lg md:text-xl font-black z-10 ${textPrimary}`}>
+      Expansión <span className="text-orange-500">Nacional</span>
+    </h3>
+    <p className={`relative text-xs leading-relaxed max-w-xs z-10 ${textBody}`}>
+      Implementamos el modelo de Cuadernos X Un Mañana (CXUM) a nivel nacional en la República Dominicana para combatir el desperdicio escolar urbano y mejorar el acceso a la educación. A través de la recolección y reutilización de cuadernos usados, transformamos residuos en recursos educativos para estudiantes de bajos ingresos, promoviendo la sostenibilidad, la economía circular y una cultura de solidaridad en todo el país.
+    </p>
+  </div>
+
+  <img src={globalExpantion} className="absolute inset-0 w-full h-full object-cover z-0 opacity-50" />
+</motion.div>
 
           <motion.div
             custom={6}
