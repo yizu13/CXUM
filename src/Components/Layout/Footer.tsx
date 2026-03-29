@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useSettings } from "../../hooks/context/SettingsContext";
-import Iconify from "../ModularUI/IconsMock";
+import Iconify from "../modularUI/IconsMock";
 import CXUMLOGO from "../../assets/logcxum.png";
 
 const FOOTER_SECTIONS = [
@@ -47,7 +47,6 @@ export default function Footer() {
 
   const bg = isDark ? "bg-[#05070b]" : "bg-[#f0f4f8]";
   const border = isDark ? "border-white/[0.07]" : "border-black/[0.07]";
-  const textPrimary = isDark ? "text-white" : "text-slate-900";
   const textSecondary = isDark ? "text-white/40" : "text-slate-500";
   const linkHover = isDark ? "hover:text-white" : "hover:text-slate-900";
 

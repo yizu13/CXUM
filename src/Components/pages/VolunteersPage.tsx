@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useSettings } from "../../hooks/context/SettingsContext";
 import NavBar from "../layout/NavBar";
 import Footer from "../layout/Footer";
-import Iconify from "../ModularUI/IconsMock";
+import Iconify from "../modularUI/IconsMock";
 import { VOLUNTEER_MEMBERS, type VolunteerMember } from "../../types/EnumsVolunteers";
 
 const AREAS = [
