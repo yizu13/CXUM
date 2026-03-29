@@ -3,7 +3,7 @@ import { useRef, useEffect, useState, useCallback } from "react";
 import { motion } from "motion/react";
 import { useSettings } from "../../hooks/context/SettingsContext";
 import { useAnimation } from "../../hooks/context/AnimationContext";
-import DefaultButton from "../ModularUI/GeneralButton";
+import DefaultButton from "../modularUI/GeneralButton";
 import { AVATARS, palabrasRelacionadas, ROWS } from "../../types/EnumHero";
 import FloatingAvatar from "../modularUI/FloatingAvatar";
 

@@ -33,6 +33,7 @@ export interface VariantCard2 {
     currentPath: string
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const InfoCards = [
     {
         sections: [
