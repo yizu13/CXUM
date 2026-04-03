@@ -76,11 +76,6 @@ export default function NewsCard({
             <Iconify Size={13} IconString="solar:clock-circle-bold-duotone" />
             <span className="text-xs font-medium">{news.readTime} min</span>
           </span>
-          <span className="text-xs">·</span>
-          <span className="flex items-center gap-1">
-            <Iconify Size={13} IconString="solar:eye-bold-duotone" />
-            <span className="text-xs font-medium">{news.views.toLocaleString()}</span>
-          </span>
         </div>
 
         <h3

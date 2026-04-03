@@ -35,10 +35,10 @@ const FOOTER_SECTIONS = [
 ];
 
 const SOCIAL_LINKS = [
-  { icon: "mdi:instagram", href: "#", label: "Instagram" },
-  { icon: "mdi:facebook", href: "#", label: "Facebook" },
-  { icon: "mdi:twitter", href: "#", label: "Twitter" },
-  { icon: "mdi:whatsapp", href: "#", label: "WhatsApp" },
+  { icon: "mdi:instagram", href: "https://www.instagram.com/cuadernosxmanana/", label: "Instagram" },
+//  { icon: "mdi:facebook", href: "#", label: "Facebook" },
+  { icon: "mdi:linkedin", href: "https://www.linkedin.com/company/cuadernos-x-un-ma%C3%B1ana/?originalSubdomain=do", label: "LinkedIn" },
+//  { icon: "mdi:whatsapp", href: "#", label: "WhatsApp" },
 ];
 
 export default function Footer() {
@@ -62,10 +62,8 @@ export default function Footer() {
     <footer className={`w-full border-t ${bg} ${border}`}>
       <div className="max-w-6xl mx-auto px-6 md:px-16 lg:px-24 py-16">
 
-        {/* ── Top: brand + columns ── */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-14">
 
-          {/* Brand block — spans 2 cols */}
           <div className="lg:col-span-2 flex flex-col gap-5">
             <div className="flex items-center gap-3">
                 <img src={CXUMLOGO} width={154} height={154} alt="CXUM Logo" className="-mb-14 -mt-5"  />
@@ -76,7 +74,6 @@ export default function Footer() {
               compromiso con el medio ambiente en República Dominicana.
             </p>
 
-            {/* Social icons */}
             <div className="flex gap-2 flex-wrap">
               {SOCIAL_LINKS.map((s) => (
                 <motion.a
@@ -85,9 +82,10 @@ export default function Footer() {
                   aria-label={s.label}
                   whileHover={{ scale: 1.1, y: -2 }}
                   whileTap={{ scale: 0.95 }}
+                  target="_blanck"
                   className={`w-9 h-9 rounded-full border flex items-center justify-center transition-all duration-300
                     ${isDark
-                      ? "border-white/10 bg-white/[0.04] text-white/50 hover:bg-white/10 hover:text-white hover:border-amber-500/40"
+                      ? "border-white/10 bg-white/4 text-white/50 hover:bg-white/10 hover:text-white hover:border-amber-500/40"
                       : "border-black/[0.07] bg-white text-slate-400 hover:bg-amber-50 hover:text-amber-600 hover:border-amber-300"
                     }`}
                 >
@@ -97,7 +95,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Nav columns */}
           {FOOTER_SECTIONS.map((section) => (
             <div key={section.title} className="flex flex-col gap-4">
               <span
@@ -132,10 +129,8 @@ export default function Footer() {
           ))}
         </div>
 
-        {/* ── Divider ── */}
         <div className={`w-full h-px ${isDark ? "bg-white/[0.07]" : "bg-black/[0.07]"} mb-8`} />
 
-        {/* ── Bottom bar ── */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className={`text-xs ${textSecondary}`}>
             © {new Date().getFullYear()} Cuadernos X Un Mañana. Todos los derechos reservados.

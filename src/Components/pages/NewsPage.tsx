@@ -11,7 +11,7 @@ import { NEWS_BY_DATE, type NewsItem } from "../../types/newsSection";
 const ALL_CATEGORIES = ["Todas", ...Array.from(new Set(NEWS_BY_DATE.map((n) => n.category)))];
 
 // ─── Featured Hero Card ───────────────────────────────────────────────────────
-function HeroCard({ news, isDark }: { news: NewsItem; isDark: boolean }) {
+function HeroCard({ news }: { news: NewsItem; isDark: boolean }) {
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
 
@@ -73,11 +73,6 @@ function HeroCard({ news, isDark }: { news: NewsItem; isDark: boolean }) {
             <Iconify Size={13} IconString="solar:clock-circle-bold-duotone" />
             {news.readTime} min lectura
           </span>
-          <span>·</span>
-          <span className="flex items-center gap-1">
-            <Iconify Size={13} IconString="solar:eye-bold-duotone" />
-            {news.views.toLocaleString()} vistas
-          </span>
         </div>
 
         <h2
@@ -119,8 +114,8 @@ function SideCard({ news, index, isDark }: { news: NewsItem; index: number; isDa
       onHoverEnd={() => setHovered(false)}
       className={`flex gap-4 p-4 rounded-2xl cursor-pointer transition-all duration-300 ${
         isDark
-          ? hovered ? "bg-white/[0.05]" : "bg-white/[0.02]"
-          : hovered ? "bg-black/[0.04]" : "bg-transparent"
+          ? hovered ? "bg-white/5" : "bg-white/2"
+          : hovered ? "bg-black/4" : "bg-transparent"
       }`}
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
@@ -168,8 +163,8 @@ function SideCard({ news, index, isDark }: { news: NewsItem; index: number; isDa
             className="flex items-center gap-0.5 text-[10px]"
             style={{ color: isDark ? "rgba(255,255,255,0.3)" : "#94a3b8" }}
           >
-            <Iconify Size={10} IconString="solar:eye-bold-duotone" />
-            {news.views.toLocaleString()}
+            <Iconify Size={10} IconString="solar:clock-circle-bold-duotone" />
+            {news.readTime} min
           </span>
         </div>
       </div>
@@ -189,7 +184,7 @@ function GridCard({ news, index, isDark }: { news: NewsItem; index: number; isDa
       onHoverEnd={() => setHovered(false)}
       whileHover={{ y: -5 }}
       className={`flex flex-col rounded-2xl overflow-hidden cursor-pointer ${
-        isDark ? "bg-white/[0.03]" : "bg-white"
+        isDark ? "bg-white/3" : "bg-white"
       }`}
       style={{
         boxShadow: isDark
@@ -235,11 +230,6 @@ function GridCard({ news, index, isDark }: { news: NewsItem; index: number; isDa
             <Iconify Size={12} IconString="solar:clock-circle-bold-duotone" />
             {news.readTime} min
           </span>
-          <span>·</span>
-          <span className="flex items-center gap-1">
-            <Iconify Size={12} IconString="solar:eye-bold-duotone" />
-            {news.views.toLocaleString()}
-          </span>
         </div>
 
         <h3
@@ -282,7 +272,6 @@ function GridCard({ news, index, isDark }: { news: NewsItem; index: number; isDa
   );
 }
 
-// ─── Main Page ────────────────────────────────────────────────────────────────
 export default function NewsPage() {
   const { theme } = useSettings();
   const isDark = theme === "dark";
@@ -297,7 +286,6 @@ export default function NewsPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Filtrado
   const filtered = NEWS_BY_DATE.filter((n) => {
     const matchCat = activeCategory === "Todas" || n.category === activeCategory;
     const q = searchQuery.toLowerCase();
@@ -310,12 +298,12 @@ export default function NewsPage() {
   });
 
   const featured = filtered[0];
-  const sideNews = filtered.slice(1, 4);  // max 3 en la columna lateral
-  const gridNews = filtered.slice(4);     // resto en grid
+  const sideNews = filtered.slice(1, 4);
+  const gridNews = filtered.slice(4);
 
-  const bg            = isDark ? "bg-[#05070b]"                        : "bg-[#f8fafc]";
-  const textPrimary   = isDark ? "text-white"                          : "text-slate-900";
-  const textSecondary = isDark ? "text-white/45"                       : "text-slate-500";
+  const bg            = isDark ? "bg-[#05070b]"   : "bg-[#f8fafc]";
+  const textPrimary   = isDark ? "text-white"      : "text-slate-900";
+  const textSecondary = isDark ? "text-white/45"   : "text-slate-500";
   const chipBase      = "px-4 py-2 rounded-full text-xs font-bold border transition-all duration-200 cursor-pointer";
 
   const fadeUp = (delay = 0) => ({
@@ -336,7 +324,6 @@ export default function NewsPage() {
       >
         <div className="max-w-6xl mx-auto flex flex-col gap-14">
 
-          {/* ── Header ── */}
           <div className="flex flex-col items-center text-center gap-4">
             <motion.span
               variants={fadeUp(0)} initial="hidden" animate={inView ? "visible" : "hidden"}
@@ -378,12 +365,10 @@ export default function NewsPage() {
             />
           </div>
 
-          {/* ── Filtros ── */}
           <motion.div
             variants={fadeUp(0.18)} initial="hidden" animate={inView ? "visible" : "hidden"}
             className="flex flex-col gap-4"
           >
-            {/* Buscador */}
             <div className="relative max-w-md mx-auto w-full">
               <Iconify
                 IconString="solar:magnifer-bold-duotone"
@@ -405,13 +390,12 @@ export default function NewsPage() {
                 className={`w-full pl-11 pr-4 py-3 rounded-2xl border text-sm font-medium outline-none
                   transition-all duration-300 focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/60
                   ${isDark
-                    ? "bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/25"
+                    ? "bg-white/4 border-white/8 text-white placeholder:text-white/25"
                     : "bg-white border-black/[0.07] text-slate-800 placeholder:text-slate-400"
                   }`}
               />
             </div>
 
-            {/* Category chips */}
             <div className="flex flex-wrap gap-2 justify-center">
               {ALL_CATEGORIES.map((cat) => {
                 const active = cat === activeCategory;
@@ -440,7 +424,6 @@ export default function NewsPage() {
             </div>
           </motion.div>
 
-          {/* ── Contenido principal ── */}
           <AnimatePresence mode="wait">
             {filtered.length === 0 ? (
               <motion.div
@@ -469,15 +452,11 @@ export default function NewsPage() {
                 transition={{ duration: 0.4 }}
                 className="flex flex-col gap-12"
               >
-                {/* ── Hero + Sidebar ── */}
                 {featured && (
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Hero (2/3) */}
                     <div className="lg:col-span-2">
                       <HeroCard news={featured} isDark={isDark} />
                     </div>
-
-                    {/* Sidebar (1/3) */}
                     <div className="flex flex-col gap-1">
                       <p
                         className="text-[10px] font-black tracking-[0.2em] uppercase mb-3 px-2"
@@ -492,21 +471,19 @@ export default function NewsPage() {
                   </div>
                 )}
 
-                {/* ── Separador ── */}
                 {gridNews.length > 0 && (
                   <div className="flex items-center gap-4">
-                    <div className={`flex-1 h-px ${isDark ? "bg-white/[0.06]" : "bg-black/[0.05]"}`} />
+                    <div className={`flex-1 h-px ${isDark ? "bg-white/6" : "bg-black/5"}`} />
                     <span
                       className="text-[10px] font-black tracking-[0.2em] uppercase shrink-0"
                       style={{ color: isDark ? "rgba(255,255,255,0.25)" : "#94a3b8" }}
                     >
                       Archivo
                     </span>
-                    <div className={`flex-1 h-px ${isDark ? "bg-white/[0.06]" : "bg-black/[0.05]"}`} />
+                    <div className={`flex-1 h-px ${isDark ? "bg-white/6" : "bg-black/5"}`} />
                   </div>
                 )}
 
-                {/* ── Grid restante ── */}
                 {gridNews.length > 0 && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {gridNews.map((n, i) => (
@@ -518,7 +495,6 @@ export default function NewsPage() {
             )}
           </AnimatePresence>
 
-          {/* ── Contador ── */}
           {filtered.length > 0 && (
             <motion.p
               className={`text-center text-xs ${textSecondary}`}

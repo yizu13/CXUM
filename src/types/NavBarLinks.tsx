@@ -128,7 +128,7 @@ export const InfoCards = [
                         CardSubtitle: "",
                         IconsString: "ph:cube-duotone",
                         link: "#inicio",
-                        path: "/"
+                        path: "/plataforma/login"
 
                     },
                     {
