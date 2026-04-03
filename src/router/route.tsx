@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LandingPage from "../components/pages/LandingPage";
 import ContactPage from "../components/pages/ContactPage";
 import VolunteersPage from "../components/pages/VolunteersPage";
+import NotFoundPage from "../components/pages/NotFoundPage";
 import ScrollToTop from "../hooks/ScrollToTop";
 
 export default function AppRouter() {
@@ -12,6 +13,7 @@ export default function AppRouter() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/Contacto" element={<ContactPage />} />
         <Route path="/Voluntarios" element={<VolunteersPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   );

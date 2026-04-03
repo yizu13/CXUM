@@ -1,55 +1,67 @@
 const daysAbbreviations = [
   "Dom", "Lun", "Mar", "Miér", "Jue", "Vie", "Sáb"
-]
+];
 
 export const StatusCheckFunction = (schedule: string) => {
-  const generatedArray = schedule.split(" ");
-  const timeConsiderated = generatedArray[1].split("-");
-  const daysConsiderated = generatedArray[0].split("-");
+  const parts = schedule.split(" ");
+  if (parts.length < 2) return "closed";
 
-  const openDays = daysAbbreviations.slice(
-    daysAbbreviations.indexOf(daysConsiderated[0]),
-    daysAbbreviations.indexOf(daysConsiderated[1]) + 1
-  );
+  const [daysPart, timePart] = parts;
+  const daysConsiderated = daysPart.split("-");
+  const timeConsiderated = timePart.split("-");
 
-  const [startHour, endhour] = timeConsiderated;
+  if (daysConsiderated.length < 2 || timeConsiderated.length < 2) return "closed";
+
+  const startDayIdx = daysAbbreviations.indexOf(daysConsiderated[0]);
+  const endDayIdx   = daysAbbreviations.indexOf(daysConsiderated[1]);
+
+  if (startDayIdx === -1 || endDayIdx === -1) return "closed";
+
+  const openDays: string[] = [];
+  let idx = startDayIdx;
+  while (idx !== endDayIdx) {
+    openDays.push(daysAbbreviations[idx]);
+    idx = (idx + 1) % 7;
+  }
+  openDays.push(daysAbbreviations[endDayIdx]);
 
   const now = new Date();
-  const currentHour = now.getHours();
   const currentDay = daysAbbreviations[now.getDay()];
 
-  const start = to24Hour(startHour);
-  const end = to24Hour(endhour);
+  if (!openDays.includes(currentDay)) return "closed";
 
-  if (!openDays.includes(currentDay)) {
-    return "closed";
-  }
+  const start = toTotalMinutes(timeConsiderated[0]);
+  const end   = toTotalMinutes(timeConsiderated[1]);
 
-  let isOpen;
+  if (start === null || end === null) return "closed";
 
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+  let isOpen: boolean;
   if (start < end) {
-    isOpen = currentHour >= start && currentHour < end;
-  } 
-  else {
-    isOpen = currentHour >= start || currentHour < end;
+    isOpen = currentMinutes >= start && currentMinutes < end;
+  } else {
+    isOpen = currentMinutes >= start || currentMinutes < end;
   }
-  if (!isOpen) {
-    return "closed";
-  }
-  const hoursToClose = (end - currentHour + 24) % 24;
 
-  if (hoursToClose <= 2) {
-    return "closing_soon";
-  }
+  if (!isOpen) return "closed";
+
+  const minutesToClose = (end - currentMinutes + 1440) % 1440;
+
+  if (minutesToClose <= 120) return "closing_soon"; 
   return "open";
 };
 
-function to24Hour(time: string) {
-  const isPM = time.includes("PM");
-  let hour = Number(time.replace(/AM|PM/, ""));
+function toTotalMinutes(time: string): number | null {
+  const match = time.match(/^(\d{1,2})(?::(\d{2}))?(AM|PM)$/i);
+  if (!match) return null;
 
-  if (isPM && hour !== 12) hour += 12;
-  if (!isPM && hour === 12) hour = 0;
+  let hour   = parseInt(match[1], 10);
+  const mins = parseInt(match[2] ?? "0", 10);
+  const period = match[3].toUpperCase();
 
-  return hour;
+  if (period === "PM" && hour !== 12) hour += 12;
+  if (period === "AM" && hour === 12) hour = 0;
+
+  return hour * 60 + mins;
 }

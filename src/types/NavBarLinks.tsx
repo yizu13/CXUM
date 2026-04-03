@@ -137,7 +137,7 @@ export const InfoCards = [
                         CardSubtitle: "",
                         IconsString: "solar:heart-pulse-bold-duotone",
                         link: "#inicio",
-                        path: "/"
+                        path: "/Voluntarios"
 
                     },
                 ],

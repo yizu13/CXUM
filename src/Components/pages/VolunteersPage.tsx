@@ -19,7 +19,6 @@ const AREAS = [
 
 const AVAILABILITY = ["Fines de semana", "Entre semana", "Tiempo completo", "Eventos puntuales"];
 
-// ── Avatar card ───────────────────────────────────────────────
 interface AvatarCardProps {
   member: VolunteerMember;
   isDark: boolean;
@@ -45,7 +44,6 @@ function AvatarCard({ member, isDark, textPrimary }: AvatarCardProps) {
             : `linear-gradient(135deg, ${member.color}22, ${member.color}0a)`,
       }}
     >
-      {/* ── Photo ── */}
       {hasImage && (
         <img
           src={member.imageUrl}
@@ -55,7 +53,6 @@ function AvatarCard({ member, isDark, textPrimary }: AvatarCardProps) {
         />
       )}
 
-      {/* ── Gradient overlay for legibility ── */}
       {hasImage && (
         <div
           className="absolute inset-0"
@@ -65,7 +62,6 @@ function AvatarCard({ member, isDark, textPrimary }: AvatarCardProps) {
         />
       )}
 
-      {/* ── Initials fallback ── */}
       {!hasImage && (
         <div
           className={`${isLarge ? "w-16 h-16 text-xl" : isMedium ? "w-12 h-12 text-base" : "w-8 h-8 text-xs"}
@@ -79,7 +75,6 @@ function AvatarCard({ member, isDark, textPrimary }: AvatarCardProps) {
         </div>
       )}
 
-      {/* ── Name & role (large / medium) ── */}
       {(isLarge || isMedium) && (
         <div className={`relative z-10 text-center px-2 ${hasImage ? "absolute bottom-2" : "mt-2"}`}>
           <p className={`font-bold text-xs leading-tight ${hasImage ? "text-white" : textPrimary}`}>
@@ -91,7 +86,6 @@ function AvatarCard({ member, isDark, textPrimary }: AvatarCardProps) {
         </div>
       )}
 
-      {/* ── Tooltip for small cards ── */}
       {!isLarge && !isMedium && (
         <div
           className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 rounded-lg
@@ -103,7 +97,6 @@ function AvatarCard({ member, isDark, textPrimary }: AvatarCardProps) {
         </div>
       )}
 
-      {/* ── Hover shine (no-photo state) ── */}
       {!hasImage && (
         <div
           className="absolute inset-0 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 rounded-2xl"
@@ -114,7 +107,6 @@ function AvatarCard({ member, isDark, textPrimary }: AvatarCardProps) {
   );
 }
 
-// ── Main page ────────────────────────────────────────────────
 export default function VolunteersPage() {
   const { theme } = useSettings();
   const isDark = theme === "dark";
@@ -166,10 +158,8 @@ export default function VolunteersPage() {
       >
         <div className="max-w-6xl mx-auto flex flex-col gap-24">
 
-          {/* ════ COLLAGE SECTION ════ */}
           <div className="flex flex-col items-center gap-12">
 
-            {/* Title */}
             <div className="flex flex-col items-center text-center gap-4">
               <motion.span
                 variants={fadeUp(0)} initial="hidden" animate={inView ? "visible" : "hidden"}
@@ -229,7 +219,6 @@ export default function VolunteersPage() {
           Quiero unirme ya
         </motion.button>
        
-            {/* ── Collage Grid ── */}
             <motion.div
               variants={fadeUp(0.2)} initial="hidden" animate={inView ? "visible" : "hidden"}
               className="w-full"
@@ -254,7 +243,6 @@ export default function VolunteersPage() {
                   );
                 })}
 
-                {/* "+185 más" card */}
                 <motion.div
                   className="col-span-2 row-span-2"
                   initial={{ opacity: 0, scale: 0.85 }}
@@ -279,7 +267,6 @@ export default function VolunteersPage() {
               </div>
             </motion.div>
 
-            {/* CTA divider */}
             <motion.div
               variants={fadeUp(0.35)} initial="hidden" animate={inView ? "visible" : "hidden"}
               className="flex flex-col items-center gap-3 text-center"
@@ -293,7 +280,6 @@ export default function VolunteersPage() {
             </motion.div>
           </div>
 
-          {/* ════ VOLUNTEER REGISTRATION FORM ════ */}
           <motion.div id="form"
             variants={fadeUp(0.1)} initial="hidden" animate={inView ? "visible" : "hidden"}
             className="flex flex-col gap-4"
@@ -315,7 +301,6 @@ export default function VolunteersPage() {
             <div className={`w-full max-w-3xl mx-auto p-8 md:p-12 rounded-3xl border backdrop-blur-md ${cardBg}`}>
               <div className="flex flex-col gap-8">
 
-                {/* Personal */}
                 <div className="flex flex-col gap-3">
                   <SectionLabel icon="solar:user-bold-duotone" label="Información Personal" isDark={isDark} />
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -331,7 +316,6 @@ export default function VolunteersPage() {
 
                 <Divider isDark={isDark} />
 
-                {/* Contact */}
                 <div className="flex flex-col gap-3">
                   <SectionLabel icon="solar:phone-bold-duotone" label="Datos de Contacto" isDark={isDark} />
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -343,7 +327,6 @@ export default function VolunteersPage() {
 
                 <Divider isDark={isDark} />
 
-                {/* Professional */}
                 <div className="flex flex-col gap-3">
                   <SectionLabel icon="solar:bag-bold-duotone" label="Perfil Profesional" isDark={isDark} />
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -366,7 +349,6 @@ export default function VolunteersPage() {
 
                 <Divider isDark={isDark} />
 
-                {/* Areas */}
                 <div className="flex flex-col gap-3">
                   <SectionLabel icon="solar:star-bold-duotone" label="Áreas de Interés" isDark={isDark} />
                   <p className={`text-xs ${textSecondary}`}>Selecciona una o más áreas en las que te gustaría colaborar:</p>
@@ -391,7 +373,6 @@ export default function VolunteersPage() {
 
                 <Divider isDark={isDark} />
 
-                {/* Availability */}
                 <div className="flex flex-col gap-3">
                   <SectionLabel icon="solar:calendar-bold-duotone" label="Disponibilidad" isDark={isDark} />
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -415,7 +396,6 @@ export default function VolunteersPage() {
 
                 <Divider isDark={isDark} />
 
-                {/* Motivation */}
                 <div className="flex flex-col gap-3">
                   <SectionLabel icon="solar:heart-bold-duotone" label="Motivación" isDark={isDark} />
                   <div className="flex flex-col gap-1.5">
@@ -435,7 +415,6 @@ export default function VolunteersPage() {
 
                 <Divider isDark={isDark} />
 
-                {/* Emergency */}
                 <div className="flex flex-col gap-3">
                   <SectionLabel icon="solar:shield-bold-duotone" label="Contacto de Emergencia" isDark={isDark} />
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -445,12 +424,11 @@ export default function VolunteersPage() {
                   <FormField label="Teléfono de Emergencia" placeholder="+1 (809) 000-0000" type="tel" isDark={isDark} inputClass={inputClass} textSecondary={textSecondary} />
                 </div>
 
-                {/* Terms & Submit */}
                 <div className="flex flex-col gap-5 pt-2">
                   <label className="flex items-start gap-3 cursor-pointer group">
                     <div className={`mt-0.5 w-5 h-5 rounded-md border flex items-center justify-center shrink-0
                       transition-all duration-200 group-hover:border-amber-500/60
-                      ${isDark ? "border-white/20 bg-white/[0.04]" : "border-black/15 bg-white"}`}
+                      ${isDark ? "border-white/20 bg-white/4" : "border-black/15 bg-white"}`}
                     />
                     <span className={`text-xs leading-relaxed ${textSecondary}`}>
                       Acepto los{" "}
@@ -490,7 +468,6 @@ export default function VolunteersPage() {
   );
 }
 
-// ── Reusable helpers ──────────────────────────────────────────
 
 interface FormFieldProps {
   label: string;
@@ -543,5 +520,5 @@ function SectionLabel({ icon, label, isDark }: { icon: string; label: string; is
 }
 
 function Divider({ isDark }: { isDark: boolean }) {
-  return <div className={`h-px w-full ${isDark ? "bg-white/[0.06]" : "bg-black/[0.05]"}`} />;
+  return <div className={`h-px w-full ${isDark ? "bg-white/6" : "bg-black/5"}`} />;
 }
