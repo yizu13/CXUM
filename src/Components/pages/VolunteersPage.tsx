@@ -5,20 +5,11 @@ import NavBar from "../layout/NavBar";
 import Footer from "../layout/Footer";
 import Iconify from "../modularUI/IconsMock";
 import { VOLUNTEER_MEMBERS, type VolunteerMember } from "../../types/EnumsVolunteers";
+import { VolunteerFormSection } from "../FormComponents";
 
-const AREAS = [
-  "Educación y Capacitación",
-  "Salud Comunitaria",
-  "Medio Ambiente",
-  "Arte y Cultura",
-  "Tecnología e Innovación",
-  "Comunicaciones y Redes",
-  "Logística y Operaciones",
-  "Apoyo Administrativo",
-];
-
-const AVAILABILITY = ["Fines de semana", "Entre semana", "Tiempo completo", "Eventos puntuales"];
-
+// ─────────────────────────────────────────────────────────────────────────────
+//  AvatarCard
+// ─────────────────────────────────────────────────────────────────────────────
 interface AvatarCardProps {
   member: VolunteerMember;
   isDark: boolean;
@@ -57,7 +48,8 @@ function AvatarCard({ member, isDark, textPrimary }: AvatarCardProps) {
         <div
           className="absolute inset-0"
           style={{
-            background: "linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.08) 55%, transparent 100%)",
+            background:
+              "linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.08) 55%, transparent 100%)",
           }}
         />
       )}
@@ -107,46 +99,40 @@ function AvatarCard({ member, isDark, textPrimary }: AvatarCardProps) {
   );
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+//  Page
+// ─────────────────────────────────────────────────────────────────────────────
 export default function VolunteersPage() {
   const { theme } = useSettings();
   const isDark = theme === "dark";
 
   const sectionRef = useRef<HTMLElement>(null);
-  const [inView, setInView]               = useState(false);
-  const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
-  const [availability, setAvailability]   = useState<string>("");
+  const [inView, setInView] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setInView(true), 100);
     return () => clearTimeout(timer);
   }, []);
 
-  const toggleArea = (area: string) => {
-    setSelectedAreas((prev) =>
-      prev.includes(area) ? prev.filter((a) => a !== area) : [...prev, area]
-    );
-  };
-
   const fadeUp = (delay = 0) => ({
-    hidden:  { opacity: 0, y: 40, filter: "blur(10px)" },
+    hidden: { opacity: 0, y: 40, filter: "blur(10px)" },
     visible: {
-      opacity: 1, y: 0, filter: "blur(0px)",
+      opacity: 1,
+      y: 0,
+      filter: "blur(0px)",
       transition: { duration: 0.75, delay, ease: [0.16, 1, 0.3, 1] as const },
     },
   });
 
   const scrollToForm = () => {
-    const hero = document.getElementById("form");
-    if (hero) hero.scrollIntoView({ behavior: "smooth" });
+    const el = document.getElementById("form");
+    if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
-  const bg            = isDark ? "bg-[#05070b]"                         : "bg-[#f8fafc]";
-  const cardBg        = isDark ? "bg-white/[0.03] border-white/[0.07]"  : "bg-white/80 border-black/[0.06]";
-  const textPrimary   = isDark ? "text-white"                           : "text-slate-900";
-  const textSecondary = isDark ? "text-white/45"                        : "text-slate-500";
-  const inputClass    = isDark
-    ? "bg-white/[0.04] border-white/[0.09] text-white placeholder:text-white/25"
-    : "bg-white border-black/[0.07] text-slate-800 placeholder:text-slate-400";
+  const bg            = isDark ? "bg-[#05070b]"                        : "bg-[#f8fafc]";
+  const cardBg        = isDark ? "bg-white/[0.03] border-white/[0.07]" : "bg-white/80 border-black/[0.06]";
+  const textPrimary   = isDark ? "text-white"                          : "text-slate-900";
+  const textSecondary = isDark ? "text-white/45"                       : "text-slate-500";
 
   return (
     <>
@@ -158,8 +144,10 @@ export default function VolunteersPage() {
       >
         <div className="max-w-6xl mx-auto flex flex-col gap-24">
 
+          {/* ── Hero: grid de voluntarios ── */}
           <div className="flex flex-col items-center gap-12">
 
+            {/* Header */}
             <div className="flex flex-col items-center text-center gap-4">
               <motion.span
                 variants={fadeUp(0)} initial="hidden" animate={inView ? "visible" : "hidden"}
@@ -175,11 +163,13 @@ export default function VolunteersPage() {
                 style={{ fontSize: "clamp(2.2rem, 5.5vw, 4rem)" }}
               >
                 Estos ya forman{" "}
-                <span style={{
-                  background: "linear-gradient(135deg, #f59e0b, #fb923c)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                }}>
+                <span
+                  style={{
+                    background: "linear-gradient(135deg, #f59e0b, #fb923c)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                  }}
+                >
                   parte de nuestro equipo
                 </span>
               </motion.h1>
@@ -201,24 +191,26 @@ export default function VolunteersPage() {
               />
             </div>
 
-          <motion.button
-          onClick={scrollToForm}
-          className="bottom-6 gap-2 font-bold right-6 z-50 flex items-center justify-center rounded-full shadow-lg cursor-pointer border-none outline-none pr-4 pl-4 pt-2 pb-2"
-          style={{
-            background: "#f59e0b",
-            boxShadow: "0 4px 24px rgba(245,158,11,0.2)",
-          }}
-          initial={{ opacity: 0, scale: 0.6, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.6, y: 20 }}
-          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-          whileHover={{ scale: 1.07, boxShadow: "0 6px 32px rgba(245,158,11,0.6)" }}
-          whileTap={{ scale: 0.94 }}
-        >
-           <Iconify Size={26} IconString="duo-icons:folder-open" />
-          Quiero unirme ya
-        </motion.button>
-       
+            {/* CTA button */}
+            <motion.button
+              onClick={scrollToForm}
+              className="gap-2 font-bold z-50 flex items-center justify-center rounded-full shadow-lg cursor-pointer border-none outline-none px-6 py-2.5"
+              style={{
+                background: "#f59e0b",
+                boxShadow: "0 4px 24px rgba(245,158,11,0.2)",
+              }}
+              initial={{ opacity: 0, scale: 0.6, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.6, y: 20 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              whileHover={{ scale: 1.07, boxShadow: "0 6px 32px rgba(245,158,11,0.6)" }}
+              whileTap={{ scale: 0.94 }}
+            >
+              <Iconify Size={22} IconString="duo-icons:folder-open" />
+              Quiero unirme ya
+            </motion.button>
+
+            {/* Avatar grid */}
             <motion.div
               variants={fadeUp(0.2)} initial="hidden" animate={inView ? "visible" : "hidden"}
               className="w-full"
@@ -243,6 +235,7 @@ export default function VolunteersPage() {
                   );
                 })}
 
+                {/* +185 tile */}
                 <motion.div
                   className="col-span-2 row-span-2"
                   initial={{ opacity: 0, scale: 0.85 }}
@@ -267,6 +260,7 @@ export default function VolunteersPage() {
               </div>
             </motion.div>
 
+            {/* Scroll hint */}
             <motion.div
               variants={fadeUp(0.35)} initial="hidden" animate={inView ? "visible" : "hidden"}
               className="flex flex-col items-center gap-3 text-center"
@@ -280,16 +274,24 @@ export default function VolunteersPage() {
             </motion.div>
           </div>
 
-          <motion.div id="form"
+          {/* ── Formulario ── */}
+          <motion.div
+            id="form"
             variants={fadeUp(0.1)} initial="hidden" animate={inView ? "visible" : "hidden"}
             className="flex flex-col gap-4"
           >
-            <div className="flex flex-col items-center text-center gap-3 mb-4" >
-              <span className="text-xs font-bold tracking-[0.25em] uppercase" style={{ color: "#f59e0b" }}>
+            {/* Section header */}
+            <div className="flex flex-col items-center text-center gap-3 mb-4">
+              <span
+                className="text-xs font-bold tracking-[0.25em] uppercase"
+                style={{ color: "#f59e0b" }}
+              >
                 Únete
               </span>
-              <h2 className={`font-black leading-tight ${textPrimary}`}
-                style={{ fontSize: "clamp(1.8rem, 4vw, 3rem)" }}>
+              <h2
+                className={`font-black leading-tight ${textPrimary}`}
+                style={{ fontSize: "clamp(1.8rem, 4vw, 3rem)" }}
+              >
                 Regístrate como Voluntario
               </h2>
               <p className={`max-w-md text-sm leading-relaxed ${textSecondary}`}>
@@ -298,167 +300,8 @@ export default function VolunteersPage() {
               </p>
             </div>
 
-            <div className={`w-full max-w-3xl mx-auto p-8 md:p-12 rounded-3xl border backdrop-blur-md ${cardBg}`}>
-              <div className="flex flex-col gap-8">
-
-                <div className="flex flex-col gap-3">
-                  <SectionLabel icon="solar:user-bold-duotone" label="Información Personal" isDark={isDark} />
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <FormField label="Nombre *"  placeholder="Tu nombre"   isDark={isDark} inputClass={inputClass} textSecondary={textSecondary} />
-                    <FormField label="Apellido *" placeholder="Tu apellido" isDark={isDark} inputClass={inputClass} textSecondary={textSecondary} />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <FormField label="Cédula / Pasaporte *" placeholder="000-0000000-0" isDark={isDark} inputClass={inputClass} textSecondary={textSecondary} />
-                    <FormField label="Fecha de Nacimiento *" placeholder="" type="date" isDark={isDark} inputClass={inputClass} textSecondary={textSecondary} />
-                  </div>
-                  <FormField label="Dirección" placeholder="Calle, sector, ciudad" isDark={isDark} inputClass={inputClass} textSecondary={textSecondary} />
-                </div>
-
-                <Divider isDark={isDark} />
-
-                <div className="flex flex-col gap-3">
-                  <SectionLabel icon="solar:phone-bold-duotone" label="Datos de Contacto" isDark={isDark} />
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <FormField label="Correo Electrónico *" placeholder="correo@ejemplo.com" type="email" isDark={isDark} inputClass={inputClass} textSecondary={textSecondary} />
-                    <FormField label="Teléfono / WhatsApp *" placeholder="+1 (809) 000-0000" type="tel" isDark={isDark} inputClass={inputClass} textSecondary={textSecondary} />
-                  </div>
-                  <FormField label="Redes Sociales" placeholder="@tu_usuario (Instagram, Facebook, etc.)" isDark={isDark} inputClass={inputClass} textSecondary={textSecondary} />
-                </div>
-
-                <Divider isDark={isDark} />
-
-                <div className="flex flex-col gap-3">
-                  <SectionLabel icon="solar:bag-bold-duotone" label="Perfil Profesional" isDark={isDark} />
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <FormField label="Profesión / Ocupación" placeholder="Estudiante, Ingeniero, Médico…" isDark={isDark} inputClass={inputClass} textSecondary={textSecondary} />
-                    <FormField label="Nivel de Educación" placeholder="" isDark={isDark} inputClass={inputClass} textSecondary={textSecondary} isSelect
-                      options={["Bachillerato", "Técnico / Tecnólogo", "Licenciatura", "Maestría / Postgrado", "Doctorado"]} />
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold tracking-wider uppercase"
-                      style={{ color: isDark ? "rgba(255,255,255,0.45)" : "#64748b" }}>
-                      Habilidades y Experiencia
-                    </label>
-                    <textarea placeholder="Describe brevemente tus habilidades, experiencias previas en voluntariado o áreas de interés…"
-                      rows={4}
-                      className={`w-full px-4 py-3 rounded-xl border text-sm font-medium resize-none outline-none
-                        transition-all duration-300 focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/60 ${inputClass}`}
-                    />
-                  </div>
-                </div>
-
-                <Divider isDark={isDark} />
-
-                <div className="flex flex-col gap-3">
-                  <SectionLabel icon="solar:star-bold-duotone" label="Áreas de Interés" isDark={isDark} />
-                  <p className={`text-xs ${textSecondary}`}>Selecciona una o más áreas en las que te gustaría colaborar:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {AREAS.map((area) => {
-                      const active = selectedAreas.includes(area);
-                      return (
-                        <button key={area} type="button" onClick={() => toggleArea(area)}
-                          className="px-3.5 py-2 rounded-full text-xs font-semibold border transition-all duration-200 cursor-pointer"
-                          style={{
-                            background: active ? "linear-gradient(135deg, #f59e0b, #fb923c)" : isDark ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.9)",
-                            borderColor: active ? "transparent" : isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.08)",
-                            color: active ? "#fff" : isDark ? "rgba(255,255,255,0.6)" : "#475569",
-                            boxShadow: active ? "0 4px 12px rgba(245,158,11,0.35)" : "none",
-                          }}>
-                          {area}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <Divider isDark={isDark} />
-
-                <div className="flex flex-col gap-3">
-                  <SectionLabel icon="solar:calendar-bold-duotone" label="Disponibilidad" isDark={isDark} />
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    {AVAILABILITY.map((opt) => {
-                      const active = availability === opt;
-                      return (
-                        <button key={opt} type="button" onClick={() => setAvailability(opt)}
-                          className="py-3 px-2 rounded-xl text-xs font-semibold border transition-all duration-200 text-center cursor-pointer"
-                          style={{
-                            background: active ? "linear-gradient(135deg, #f59e0b20, #fb923c10)" : isDark ? "rgba(255,255,255,0.03)" : "rgba(255,255,255,0.8)",
-                            borderColor: active ? "#f59e0b" : isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.06)",
-                            color: active ? "#f59e0b" : isDark ? "rgba(255,255,255,0.5)" : "#64748b",
-                          }}>
-                          {opt}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  <FormField label="¿Horas semanales disponibles?" placeholder="Ej: 5 horas" isDark={isDark} inputClass={inputClass} textSecondary={textSecondary} />
-                </div>
-
-                <Divider isDark={isDark} />
-
-                <div className="flex flex-col gap-3">
-                  <SectionLabel icon="solar:heart-bold-duotone" label="Motivación" isDark={isDark} />
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold tracking-wider uppercase"
-                      style={{ color: isDark ? "rgba(255,255,255,0.45)" : "#64748b" }}>
-                      ¿Por qué quieres ser voluntario en CXUM?
-                    </label>
-                    <textarea placeholder="Cuéntanos qué te motiva, qué esperas aportar y qué esperas aprender…"
-                      rows={4}
-                      className={`w-full px-4 py-3 rounded-xl border text-sm font-medium resize-none outline-none
-                        transition-all duration-300 focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/60 ${inputClass}`}
-                    />
-                  </div>
-                  <FormField label="¿Cómo te enteraste de CXUM?" placeholder="" isDark={isDark} inputClass={inputClass} textSecondary={textSecondary} isSelect
-                    options={["Redes Sociales", "Un amigo / familiar", "Evento presencial", "Búsqueda en internet", "Otro"]} />
-                </div>
-
-                <Divider isDark={isDark} />
-
-                <div className="flex flex-col gap-3">
-                  <SectionLabel icon="solar:shield-bold-duotone" label="Contacto de Emergencia" isDark={isDark} />
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <FormField label="Nombre Completo" placeholder="Nombre de contacto" isDark={isDark} inputClass={inputClass} textSecondary={textSecondary} />
-                    <FormField label="Relación" placeholder="Madre, Padre, Hermano/a…" isDark={isDark} inputClass={inputClass} textSecondary={textSecondary} />
-                  </div>
-                  <FormField label="Teléfono de Emergencia" placeholder="+1 (809) 000-0000" type="tel" isDark={isDark} inputClass={inputClass} textSecondary={textSecondary} />
-                </div>
-
-                <div className="flex flex-col gap-5 pt-2">
-                  <label className="flex items-start gap-3 cursor-pointer group">
-                    <div className={`mt-0.5 w-5 h-5 rounded-md border flex items-center justify-center shrink-0
-                      transition-all duration-200 group-hover:border-amber-500/60
-                      ${isDark ? "border-white/20 bg-white/4" : "border-black/15 bg-white"}`}
-                    />
-                    <span className={`text-xs leading-relaxed ${textSecondary}`}>
-                      Acepto los{" "}
-                      <span style={{ color: "#f59e0b" }} className="underline cursor-pointer">términos y condiciones</span>
-                      {" "}y autorizo el uso de mis datos para fines relacionados con el voluntariado en CXUM.
-                    </span>
-                  </label>
-
-                  <motion.button
-                    whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                    type="button"
-                    className="w-full py-4 rounded-xl font-black text-sm tracking-wider cursor-pointer
-                      flex items-center justify-center gap-2.5 transition-all duration-300"
-                    style={{
-                      background: "linear-gradient(135deg, #f59e0b, #fb923c)",
-                      color: "#fff",
-                      boxShadow: "0 10px 30px rgba(245,158,11,0.4)",
-                      letterSpacing: "0.08em",
-                    }}
-                  >
-                    <Iconify IconString="solar:heart-send-bold-duotone" Size={20} />
-                    ENVIAR SOLICITUD DE VOLUNTARIADO
-                  </motion.button>
-
-                  <p className={`text-center text-xs ${textSecondary}`}>
-                    Te contactaremos en un plazo de 3–5 días hábiles.
-                  </p>
-                </div>
-              </div>
-            </div>
+            {/* Formulario funcional con validación */}
+            <VolunteerFormSection />
           </motion.div>
 
         </div>
@@ -466,59 +309,4 @@ export default function VolunteersPage() {
       <Footer />
     </>
   );
-}
-
-
-interface FormFieldProps {
-  label: string;
-  placeholder: string;
-  type?: string;
-  isDark: boolean;
-  inputClass: string;
-  textSecondary: string;
-  isSelect?: boolean;
-  options?: string[];
-}
-
-function FormField({ label, placeholder, type = "text", inputClass, textSecondary, isSelect, options }: FormFieldProps) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-xs font-semibold tracking-wider uppercase"
-        style={{ color: textSecondary.includes("white") ? "rgba(255,255,255,0.45)" : "#64748b" }}>
-        {label}
-      </label>
-      {isSelect ? (
-        <select className={`w-full px-4 py-3 rounded-xl border text-sm font-medium outline-none
-          transition-all duration-300 focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/60
-          appearance-none cursor-pointer ${inputClass}`}>
-          <option value="" disabled>Selecciona una opción</option>
-          {options?.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-        </select>
-      ) : (
-        <input type={type} placeholder={placeholder}
-          className={`w-full px-4 py-3 rounded-xl border text-sm font-medium outline-none
-            transition-all duration-300 focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/60
-            ${inputClass}`}
-        />
-      )}
-    </div>
-  );
-}
-
-function SectionLabel({ icon, label, isDark }: { icon: string; label: string; isDark: boolean }) {
-  return (
-    <div className="flex items-center gap-2.5 mb-1">
-      <div className="flex items-center justify-center w-8 h-8 rounded-lg shrink-0"
-        style={{ background: "rgba(245,158,11,0.12)" }}>
-        <Iconify IconString={icon} Size={18} Style={{ color: "#f59e0b" }} />
-      </div>
-      <span className={`text-sm font-black tracking-wide ${isDark ? "text-white/80" : "text-slate-700"}`}>
-        {label}
-      </span>
-    </div>
-  );
-}
-
-function Divider({ isDark }: { isDark: boolean }) {
-  return <div className={`h-px w-full ${isDark ? "bg-white/6" : "bg-black/5"}`} />;
 }

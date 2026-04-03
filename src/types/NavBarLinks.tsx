@@ -171,9 +171,9 @@ export const InfoCards = [
                         cardType: 2,
                         cardTitle: "Noticias",
                         CardSubtitle: "",
-                        IconsString: "solar:database-bold-duotone",
-                        link: "#inicio",
-                        path: "/"
+                        IconsString: "solar:notes-bold-duotone",
+                        link: "#noticias",
+                        path: "/Noticias"
 
                     }
                     

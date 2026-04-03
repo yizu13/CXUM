@@ -1,21 +1,24 @@
-import { FormProvider } from 'react-hook-form';
+import { FormProvider as RHFFormProvider } from "react-hook-form";
+import type { UseFormReturn, FieldValues, SubmitHandler } from "react-hook-form";
 
-type FormManagedProps = {
+interface FormManagedProps<T extends FieldValues> {
   children: React.ReactNode;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onSubmit: (data: any) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  methods: any;
+  onSubmit: SubmitHandler<T>;
+  methods: UseFormReturn<T>;
   className?: string;
 }
 
-export default function FormManaged({ children, onSubmit, methods, className }: FormManagedProps) {
+export default function FormManaged<T extends FieldValues>({
+  children,
+  onSubmit,
+  methods,
+  className,
+}: FormManagedProps<T>) {
   return (
-    <FormProvider {...methods}>
-        <form onSubmit={onSubmit} className={className}>
-            {children}
-            </form>
-        
-    </FormProvider>
+    <RHFFormProvider {...methods}>
+      <form onSubmit={methods.handleSubmit(onSubmit)} className={className} noValidate>
+        {children}
+      </form>
+    </RHFFormProvider>
   );
 }

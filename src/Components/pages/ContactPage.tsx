@@ -4,6 +4,7 @@ import { useSettings } from "../../hooks/context/SettingsContext";
 import NavBar from "../layout/NavBar";
 import Footer from "../layout/Footer";
 import Iconify from "../modularUI/IconsMock";
+import { ContactFormSection } from "../FormComponents";
 
 const CONTACT_METHODS = [
   {
@@ -31,9 +32,9 @@ const CONTACT_METHODS = [
 
 const SOCIAL_LINKS = [
   { icon: "mdi:instagram", label: "Instagram", href: "#" },
-  { icon: "mdi:facebook", label: "Facebook", href: "#" },
-  { icon: "mdi:twitter", label: "Twitter / X", href: "#" },
-  { icon: "mdi:whatsapp", label: "WhatsApp", href: "#" },
+  { icon: "mdi:facebook",  label: "Facebook",  href: "#" },
+  { icon: "mdi:twitter",   label: "Twitter / X", href: "#" },
+  { icon: "mdi:whatsapp",  label: "WhatsApp",  href: "#" },
 ];
 
 export default function ContactPage() {
@@ -54,7 +55,6 @@ export default function ContactPage() {
     return () => obs.disconnect();
   }, []);
 
-  // Trigger inView immediately on mount
   useEffect(() => {
     const timer = setTimeout(() => setInView(true), 100);
     return () => clearTimeout(timer);
@@ -70,12 +70,10 @@ export default function ContactPage() {
     },
   });
 
-  const bg = isDark ? "bg-[#05070b]" : "bg-[#f8fafc]";
-  const cardBg = isDark
-    ? "bg-white/[0.03] border-white/[0.07]"
-    : "bg-white/80 border-black/[0.06]";
-  const textPrimary = isDark ? "text-white" : "text-slate-900";
-  const textSecondary = isDark ? "text-white/45" : "text-slate-500";
+  const bg            = isDark ? "bg-[#05070b]"                        : "bg-[#f8fafc]";
+  const cardBg        = isDark ? "bg-white/[0.03] border-white/[0.07]" : "bg-white/80 border-black/[0.06]";
+  const textPrimary   = isDark ? "text-white"                          : "text-slate-900";
+  const textSecondary = isDark ? "text-white/45"                       : "text-slate-500";
 
   return (
     <>
@@ -192,61 +190,13 @@ export default function ContactPage() {
               </motion.div>
             </div>
 
-            {/* ── Right: form UI (solo diseño) ── */}
+            {/* ── Right: formulario funcional ── */}
             <motion.div
               variants={fadeUp(0.15)}
               initial="hidden"
               animate={inView ? "visible" : "hidden"}
-              className={`flex flex-col gap-6 p-8 rounded-3xl border backdrop-blur-md ${cardBg}`}
             >
-              <h2 className={`text-xl font-black ${textPrimary}`}>
-                Envíanos un mensaje
-              </h2>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <FormField label="Nombre" placeholder="Tu nombre" isDark={isDark} />
-                <FormField label="Apellido" placeholder="Tu apellido" isDark={isDark} />
-              </div>
-
-              <FormField label="Correo electrónico" placeholder="correo@ejemplo.com" type="email" isDark={isDark} />
-
-              <FormField label="Asunto" placeholder="¿En qué podemos ayudarte?" isDark={isDark} />
-
-              <div className="flex flex-col gap-1.5">
-                <label
-                  className="text-xs font-semibold tracking-wider uppercase"
-                  style={{ color: isDark ? "rgba(255,255,255,0.45)" : "#64748b" }}
-                >
-                  Mensaje
-                </label>
-                <textarea
-                  placeholder="Escribe tu mensaje aquí..."
-                  rows={5}
-                  className={`w-full px-4 py-3 rounded-xl border text-sm font-medium
-                    resize-none outline-none transition-all duration-300
-                    focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/60
-                    ${isDark
-                      ? "bg-white/[0.04] border-white/[0.09] text-white placeholder:text-white/25"
-                      : "bg-white border-black/[0.07] text-slate-800 placeholder:text-slate-400"
-                    }`}
-                />
-              </div>
-
-              {/* Submit button */}
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full py-3.5 rounded-xl font-bold text-sm tracking-wide cursor-pointer
-                  flex items-center justify-center gap-2 transition-all duration-300"
-                style={{
-                  background: "linear-gradient(135deg,#f59e0b,#fb923c)",
-                  color: "#fff",
-                  boxShadow: "0 8px 24px rgba(245,158,11,0.35)",
-                }}
-              >
-                <Iconify IconString="solar:plain-3-bold-duotone" Size={18} />
-                Enviar Mensaje
-              </motion.button>
+              <ContactFormSection />
             </motion.div>
           </div>
 
@@ -281,36 +231,5 @@ export default function ContactPage() {
       </section>
       <Footer />
     </>
-  );
-}
-
-// ── Reusable field component ──────────────────────────────────
-interface FormFieldProps {
-  label: string;
-  placeholder: string;
-  type?: string;
-  isDark: boolean;
-}
-
-function FormField({ label, placeholder, type = "text", isDark }: FormFieldProps) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label
-        className="text-xs font-semibold tracking-wider uppercase"
-        style={{ color: isDark ? "rgba(255,255,255,0.45)" : "#64748b" }}
-      >
-        {label}
-      </label>
-      <input
-        type={type}
-        placeholder={placeholder}
-        className={`w-full px-4 py-3 rounded-xl border text-sm font-medium outline-none
-          transition-all duration-300 focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/60
-          ${isDark
-            ? "bg-white/[0.04] border-white/[0.09] text-white placeholder:text-white/25"
-            : "bg-white border-black/[0.07] text-slate-800 placeholder:text-slate-400"
-          }`}
-      />
-    </div>
   );
 }
