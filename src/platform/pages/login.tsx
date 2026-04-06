@@ -84,7 +84,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await signIn(email, password);
-      navigate("/plataforma"); // ajusta la ruta de destino
+      navigate("/plataforma/admin");
     } catch (err: any) {
       const msg: Record<string, string> = {
         NotAuthorizedException:     "Correo o contraseña incorrectos.",
@@ -193,7 +193,6 @@ export default function LoginPage() {
           </motion.button>
         </form>
 
-        {/* Registro */}
         <p className={`text-center text-xs ${textMuted}`}>
           ¿No tienes cuenta?{" "}
           <Link
