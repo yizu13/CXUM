@@ -253,12 +253,6 @@ export default function VolunteersPage() {
             className="flex flex-col gap-4"
           >
             {<div className="flex flex-col items-center text-center gap-3 mb-4">
-              <span
-                className="text-xs font-bold tracking-[0.25em] uppercase"
-                style={{ color: "#f59e0b" }}
-              >
-                Únete
-              </span>
               <h2
                 className={`font-black leading-tight ${textPrimary}`}
                 style={{ fontSize: "clamp(1.8rem, 4vw, 3rem)" }}

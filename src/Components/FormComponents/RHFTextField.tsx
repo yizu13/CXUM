@@ -10,7 +10,7 @@ type MaskMode = "cedula" | "phone" | "phone-intl" | "none";
 function removeMask(input: HTMLInputElement) {
   import("inputmask").then(({ default: Inputmask }) => {
     if (Inputmask.isValid !== undefined) {
-      const im = (input as any).inputmask;
+      const im = (input as HTMLInputElement).inputmask;
       if (im) im.remove();
     }
   });
@@ -19,7 +19,7 @@ function removeMask(input: HTMLInputElement) {
 function applyMask(input: HTMLInputElement, mode: MaskMode) {
   import("inputmask").then(({ default: Inputmask }) => {
     // Remove any existing mask first
-    const existing = (input as any).inputmask;
+    const existing = (input as HTMLInputElement).inputmask;
     if (existing) existing.remove();
 
     if (mode === "cedula") {
@@ -92,6 +92,7 @@ export default function RHFTextField<T extends FieldValues>({
 
     return () => {
       // Cleanup on unmount
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const im = (input as any).inputmask;
       if (im) im.remove();
     };
