@@ -66,7 +66,11 @@ export default function Footer() {
 
           <div className="lg:col-span-2 flex flex-col gap-5">
             <div className="flex items-center gap-3">
-                <img src={CXUMLOGO} width={154} height={154} alt="CXUM Logo" className="-mb-14 -mt-5"  />
+                <img 
+                  src={CXUMLOGO} 
+                  alt="CXUM Logo" 
+                  className="w-82 h-auto -mb-5 -mt-5 -ml-15 object-contain" 
+                />
             </div>
 
             <p className={`text-sm leading-relaxed max-w-xs ${textSecondary}`}>
