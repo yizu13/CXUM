@@ -117,7 +117,7 @@ export default function LoginPage() {
         >
           ¡Bienvenido de vuelta!
         </h2>
-        <p className={`text-sm ${isDark ? "text-white/40" : "text-slate-400"}`}>
+        {/*<p className={`text-sm ${isDark ? "text-white/40" : "text-slate-400"}`}>
           ¿No tienes cuenta?{" "}
           <Link
             to="/plataforma/registro"
@@ -126,8 +126,7 @@ export default function LoginPage() {
           >
             Regístrate aquí
           </Link>
-          , es gratis.
-        </p>
+        </p>*/}
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
@@ -187,7 +186,7 @@ export default function LoginPage() {
         <Link
           to="/plataforma/restaurar"
           className="text-sm font-bold underline underline-offset-2 hover:opacity-75 transition-opacity"
-          style={{ color: "#ea580c" }}
+          style={{ color: "#fa9532" }}
         >
           Haz clic aquí
         </Link>

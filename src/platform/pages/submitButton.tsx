@@ -10,7 +10,7 @@ export default function SubmitBtn({ loading, label, icon }: { loading: boolean; 
       disabled={loading}
       whileHover={{ scale: loading ? 1 : 1.02 }}
       whileTap={{ scale: loading ? 1 : 0.98 }}
-      className="w-full py-3.5 rounded-xl text-sm font-black text-white flex items-center justify-center gap-2"
+      className="w-full py-3.5 rounded-xl text-sm font-black text-white flex items-center justify-center gap-2 cursor-pointer"
       style={{
         background: "linear-gradient(135deg, #f59e0b, #fb923c)",
         opacity: loading ? 0.7 : 1,

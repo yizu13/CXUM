@@ -280,8 +280,7 @@ export default function VolunteersPage() {
             variants={fadeUp(0.1)} initial="hidden" animate={inView ? "visible" : "hidden"}
             className="flex flex-col gap-4"
           >
-            {/* Section header */}
-            <div className="flex flex-col items-center text-center gap-3 mb-4">
+            {<div className="flex flex-col items-center text-center gap-3 mb-4">
               <span
                 className="text-xs font-bold tracking-[0.25em] uppercase"
                 style={{ color: "#f59e0b" }}
@@ -298,9 +297,7 @@ export default function VolunteersPage() {
                 Completa el formulario y un miembro del equipo se pondrá en contacto
                 contigo para coordinar tu incorporación.
               </p>
-            </div>
-
-            {/* Formulario funcional con validación */}
+            </div>}
             <VolunteerFormSection />
           </motion.div>
 
