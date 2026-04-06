@@ -159,7 +159,7 @@ export default function MisionVisionValores() {
                 Visión
               </h3>
               <p className="text-sm leading-relaxed text-white z-10">
-                Ser la organización líder en impacto social y ambiental en República Dominicana, reconocida por transformar vidas y crear oportunidades sostenibles que permitan a cada persona alcanzar su máximo potencial.
+                Llevar el voluntariado y el mensaje de reutilización de cuadernos a todas las instituciones educativas, tanto públicas como privadas a nivel nacional, transformando la concientización ambiental en una cultura viva, sostenible y compartida a través del compromiso voluntario.
               </p>
             </div>
             <img src={visionImage} className=" absolute inset-0 w-full h-full object-cover z-0 opacity-20"/>
@@ -205,7 +205,7 @@ export default function MisionVisionValores() {
               Expansión <span className="text-orange-500">Nacional</span>
             </h3>
             <p className={`relative text-xs leading-relaxed max-w-xs z-10 ${textBody}`}>
-              Implementamos el modelo de Cuadernos X Un Mañana (CXUM) a nivel nacional en la República Dominicana para combatir el desperdicio escolar urbano y mejorar el acceso a la educación. A través de la recolección y reutilización de cuadernos usados, transformamos residuos en recursos educativos para estudiantes de bajos ingresos, promoviendo la sostenibilidad, la economía circular y una cultura de solidaridad en todo el país.
+              Impulsar el proyecto 100 X Un Mañana con la meta de alcanzar 100 centros educativos a través de un modelo integral que incluya capacitación, recolección y clasificación de cuadernos usados, promoviendo la educación ambiental, la reutilización de materiales escolares y el apoyo directo a estudiantes mediante la transformación de hojas aprovechables en nuevos cuadernos. Con esta iniciativa se busca generar un impacto educativo, social y ecológico sostenible en las comunidades beneficiadas.
             </p>
           </div>
 

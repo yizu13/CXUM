@@ -170,7 +170,7 @@ export default function NavBar() {
                       <Iconify IconString="duo-icons:moon-stars" Size={20} />
                     )}
                   </motion.button>
-                  <DefaultButton textString="Donar Ahora" onClick={() => navigate("/Contacto")} />
+                  <DefaultButton textString="Donar Ahora" onClick={() => navigate("/Contacto")} color="#fc3d3d"/>
                 </>
               )}
             </div>

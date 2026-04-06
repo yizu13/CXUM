@@ -34,4 +34,25 @@ export const STATS = [
     description:
       "Menos uso del vertedero implica una ciudad más limpia y libre de contaminación, de igual manera protegiendo todos los ecosistemas afectados.",
   },
+  {
+  label: "Cuadernos nuevos producidos y entregados",
+  value: 12000,
+  suffix: "+",
+  description:
+    "Cuadernos elaborados y distribuidos a estudiantes para apoyar su proceso educativo.",
+  },
+  {
+    label: "Cuadernos usados recolectados",
+    value: 60000,
+    suffix: "+",
+    description:
+      "Materiales recuperados mediante jornadas de recolección para su reutilización y transformación.",
+  },
+  {
+    label: "Estudiantes beneficiados",
+    value: 2500,
+    suffix: "+",
+    description:
+      "Niños y jóvenes impactados directamente con la entrega de útiles escolares y apoyo educativo.",
+  },
 ];

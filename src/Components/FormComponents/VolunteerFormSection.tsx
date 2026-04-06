@@ -120,7 +120,6 @@ export default function VolunteerFormSection() {
       <div className={`w-full max-w-3xl mx-auto p-8 md:p-12 rounded-3xl border backdrop-blur-md ${cardBg}`}>
         <div className="flex flex-col gap-8">
 
-          {/* ── 1. Información Personal ── */}
           <div className="flex flex-col gap-3">
             <SectionLabel icon="solar:user-bold-duotone" label="Información Personal" isDark={isDark} />
 
@@ -144,9 +143,9 @@ export default function VolunteerFormSection() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <RHFTextField<VolunteerFormValues>
                 name="idDocument"
-                label="Cédula / Pasaporte"
-                placeholder="000-0000000-0"
+                label="Documento de Identidad"
                 required
+                documentMode
               />
               <RHFTextField<VolunteerFormValues>
                 name="birthDate"
@@ -167,7 +166,6 @@ export default function VolunteerFormSection() {
 
           <Divider isDark={isDark} />
 
-          {/* ── 2. Datos de Contacto ── */}
           <div className="flex flex-col gap-3">
             <SectionLabel icon="solar:phone-bold-duotone" label="Datos de Contacto" isDark={isDark} />
 
@@ -183,10 +181,10 @@ export default function VolunteerFormSection() {
               <RHFTextField<VolunteerFormValues>
                 name="phone"
                 label="Teléfono / WhatsApp"
-                placeholder="+1 (809) 000-0000"
                 type="tel"
                 required
                 autoComplete="tel"
+                phoneMode
               />
             </div>
 
@@ -199,7 +197,6 @@ export default function VolunteerFormSection() {
 
           <Divider isDark={isDark} />
 
-          {/* ── 3. Perfil Profesional ── */}
           <div className="flex flex-col gap-3">
             <SectionLabel icon="solar:bag-bold-duotone" label="Perfil Profesional" isDark={isDark} />
 
@@ -308,9 +305,9 @@ export default function VolunteerFormSection() {
             <RHFTextField<VolunteerFormValues>
               name="emergencyPhone"
               label="Teléfono de Emergencia"
-              placeholder="+1 (809) 000-0000"
               type="tel"
               required
+              phoneMode
             />
           </div>
 

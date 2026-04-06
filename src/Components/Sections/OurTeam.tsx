@@ -11,32 +11,32 @@ import pendiente from "../../assets/pendiente.png";
 const TEAM_MEMBERS = [
   {
     name: "Karla Faxas",
-    role: "Presidenta de la Fundación",
+    role: "Fundadora y Generente de Marketing",
     src: KarlaFaxas,
   },
   {
     name: "Pedro Olavarrieta",
-    role: "Encargado de Marketing",
+    role: "Director de Marketing y Estrategia Operativa",
     src: PedroOlavarrieta,
   },
   {
     name: "Angélica Roa",
-    role: "Coordinadora de Voluntariado / pendiente*",
+    role: "Coordinadora de Voluntariado",
     src: AngelicaRoa,
   },
   {
-    name: "Jomi ",
-    role: "Director de Logística / pendiente*",
+    name: "Josmeiry Torres",
+    role: "Geerente de Posts y Comunicaciones",
     src: jomi,
   },
   {
     name: "Darlyn Contreras",
-    role: "Relaciones Públicas / pendiente*",
+    role: "Operaciones TI",
     src: DarlynContreras,
   },
   {
-    name: "Pendiente",
-    role: "Tesorero pendiente*",
+    name: "Sury Rodríguez",
+    role: "Subdirectora de Marketing",
     src: pendiente,
   },
 ];

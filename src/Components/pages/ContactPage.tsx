@@ -10,31 +10,31 @@ const CONTACT_METHODS = [
   {
     icon: "solar:phone-bold-duotone",
     label: "Teléfono",
-    value: "+1 (809) 000-0000",
-    sub: "Lun – Vie, 8am – 5pm",
+    value: "+1 809-601-6362 ",
+    sub: "",
     color: "#f59e0b",
   },
   {
     icon: "solar:letter-bold-duotone",
     label: "Correo",
-    value: "contacto@cxum.org",
+    value: "cuadernosxm@gmail.com",
     sub: "Te respondemos en 24h",
     color: "#f59e0b",
   },
   {
     icon: "solar:map-point-bold-duotone",
     label: "Ubicación",
-    value: "Santo Domingo, RD",
+    value: "Las Villas, Arroyo Hondo, Distrito Nacional",
     sub: "República Dominicana",
     color: "#f59e0b",
   },
 ];
 
 const SOCIAL_LINKS = [
-  { icon: "mdi:instagram", label: "Instagram", href: "#" },
-  { icon: "mdi:facebook",  label: "Facebook",  href: "#" },
-  { icon: "mdi:twitter",   label: "Twitter / X", href: "#" },
-  { icon: "mdi:whatsapp",  label: "WhatsApp",  href: "#" },
+  { icon: "mdi:instagram", href: "https://www.instagram.com/cuadernosxmanana/", label: "Instagram" },
+//  { icon: "mdi:facebook", href: "#", label: "Facebook" },
+  { icon: "mdi:linkedin", href: "https://www.linkedin.com/company/cuadernos-x-un-ma%C3%B1ana/?originalSubdomain=do", label: "LinkedIn" },
+//  { icon: "mdi:whatsapp", href: "#", label: "WhatsApp" },
 ];
 
 export default function ContactPage() {
@@ -85,17 +85,7 @@ export default function ContactPage() {
       >
         <div className="max-w-6xl mx-auto flex flex-col gap-20">
 
-          {/* ── Header ── */}
           <div className="flex flex-col items-center text-center gap-4">
-            <motion.span
-              variants={fadeUp(0)}
-              initial="hidden"
-              animate={inView ? "visible" : "hidden"}
-              className="text-xs font-bold tracking-[0.25em] uppercase"
-              style={{ color: "#f59e0b" }}
-            >
-              Hablemos
-            </motion.span>
 
             <motion.h1
               variants={fadeUp(0.08)}
@@ -126,10 +116,8 @@ export default function ContactPage() {
             />
           </div>
 
-          {/* ── Two-column layout ── */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
 
-            {/* ── Left: contact info ── */}
             <div className="flex flex-col gap-8">
               <motion.div
                 variants={fadeUp(0.1)}
@@ -163,7 +151,6 @@ export default function ContactPage() {
                 ))}
               </motion.div>
 
-              {/* Social links */}
               <motion.div
                 variants={fadeUp(0.38)}
                 initial="hidden"
@@ -179,6 +166,7 @@ export default function ContactPage() {
                       key={s.label}
                       href={s.href}
                       aria-label={s.label}
+                      target="_black"
                       className={`flex items-center gap-2 px-4 py-2.5 rounded-full border text-sm font-semibold
                         transition-all duration-300 hover:scale-105 ${cardBg} ${textPrimary}`}
                     >
@@ -190,7 +178,6 @@ export default function ContactPage() {
               </motion.div>
             </div>
 
-            {/* ── Right: formulario funcional ── */}
             <motion.div
               variants={fadeUp(0.15)}
               initial="hidden"
@@ -200,8 +187,7 @@ export default function ContactPage() {
             </motion.div>
           </div>
 
-          {/* ── Map placeholder ── */}
-          <motion.div
+          {/*<motion.div
             variants={fadeUp(0.25)}
             initial="hidden"
             animate={inView ? "visible" : "hidden"}
@@ -225,7 +211,7 @@ export default function ContactPage() {
                 Santo Domingo, República Dominicana
               </span>
             </div>
-          </motion.div>
+          </motion.div> */}
 
         </div>
       </section>

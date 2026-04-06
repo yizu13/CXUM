@@ -7,12 +7,14 @@ interface DefaultButtonType {
   textString: string
   inverted?: boolean
   onClick?: () => void
+  color?: string
 }
 
 export default function DefaultButton({
   textString,
   inverted = false,
   onClick,
+  color,
 }: DefaultButtonType) {
   const [buttonAnimation, setAnimation] = useState(false)
   const { theme } = useSettings()
@@ -20,7 +22,7 @@ export default function DefaultButton({
   const isDark = theme === "dark"
 
   const filledStyles = {
-    backgroundColor: isDark ? "rgba(255,255,255,1)" : "rgba(2,6,23,1)",
+    backgroundColor: isDark ?  color? color : "rgba(255,255,255,1)" : color? color :"rgba(2,6,23,1)",
     color: isDark ? "rgba(0,0,0,1)" : "rgba(255,255,255,1)",
     borderColor: "rgba(255,255,255,0)",
   }
@@ -56,7 +58,7 @@ export default function DefaultButton({
       onClick={onClick}
       className="relative overflow-hidden inline-flex items-center justify-center gap-2 rounded-full border px-7 py-2.5 text-[0.85rem] font-bold cursor-pointer transition-all shadow-md"
     >
-      <span>{textString}</span>
+      <span className={color && isDark?"text-white" : ""}>{textString}</span>
 
       <motion.span
         animate={{
