@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { motion, AnimatePresence } from "framer-motion";
 import { enqueueSnackbar } from "notistack";
+import emailjs from "@emailjs/browser";
 import { useSettings } from "../../hooks/context/SettingsContext";
 import Iconify from "../modularUI/IconsMock";
 import {
@@ -15,17 +16,23 @@ import {
   type ContactFormValues,
 } from "./schemas";
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Service — swap to your actual API / emailjs call
-// ─────────────────────────────────────────────────────────────────────────────
-async function submitContactForm(data: ContactFormValues): Promise<void> {
-  // TODO: replace with your actual API call, e.g.:
-  // await emailjs.send(SERVICE_ID, TEMPLATE_ID, { ...data }, PUBLIC_KEY);
-  console.log("[ContactForm] submitted →", data);
-  await new Promise((r) => setTimeout(r, 1200));
-}
+emailjs.init({
+      publicKey: import.meta.env.VITE_PUBLIC_KEY_EMAILJS,
+});
 
-// ─────────────────────────────────────────────────────────────────────────────
+async function submitContactForm(data: ContactFormValues): Promise<void> {
+  await emailjs.send(
+    import.meta.env.VITE_SERVICE_ID_EMAILJS,
+    import.meta.env.VITE_TEMPLATE_ID_EMAILJS,
+    {
+      first_name: data.firstName,
+      last_name: data.lastName,
+      from_email: data.email,
+      subject: data.subject,
+      message: data.message,
+    },
+  );
+}
 
 export default function ContactFormSection() {
   const { theme } = useSettings();
@@ -44,8 +51,9 @@ export default function ContactFormSection() {
       await submitContactForm(data);
       enqueueSnackbar("¡Mensaje enviado! Te respondemos en 24 horas.", { variant: "success" });
       reset();
-    } catch {
+    } catch /*(error) */ {
       enqueueSnackbar("Ocurrió un error al enviar. Por favor intenta nuevamente.", { variant: "error" });
+     // console.error("Error enviando el formulario de contacto", error);
     }
   };
 
@@ -58,7 +66,6 @@ export default function ContactFormSection() {
       <div className={`flex flex-col gap-6 p-8 rounded-3xl border backdrop-blur-md ${cardBg}`}>
         <h2 className={`text-xl font-black ${textPrimary}`}>Envíanos un mensaje</h2>
 
-        {/* Name row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <RHFTextField<ContactFormValues>
             name="firstName"
@@ -100,7 +107,6 @@ export default function ContactFormSection() {
           required
         />
 
-        {/* Submit button */}
         <div className="flex flex-col gap-3">
           <motion.button
             type="submit"

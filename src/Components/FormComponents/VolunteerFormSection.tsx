@@ -11,6 +11,7 @@ import {
   RHFSelect,
   RHFCheckbox,
   RHFChipGroup,
+  RHFDatePicker,
 } from "./index";
 import {
   volunteerSchema,
@@ -18,18 +19,14 @@ import {
   type VolunteerFormValues,
 } from "./schemas";
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Service — swap to your actual API / emailjs call
-// ─────────────────────────────────────────────────────────────────────────────
+
 async function submitVolunteerForm(data: VolunteerFormValues): Promise<void> {
   // TODO: replace with your actual API call
   console.log("[VolunteerForm] submitted →", data);
   await new Promise((r) => setTimeout(r, 1400));
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Static option lists
-// ─────────────────────────────────────────────────────────────────────────────
+
 const AREA_OPTIONS = [
   { value: "educacion",      label: "Educación y Capacitación" },
   { value: "salud",          label: "Salud Comunitaria" },
@@ -64,9 +61,6 @@ const REFERRAL_OPTIONS = [
   { value: "otro",           label: "Otro" },
 ];
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Section header helper
-// ─────────────────────────────────────────────────────────────────────────────
 function SectionLabel({ icon, label, isDark }: { icon: string; label: string; isDark: boolean }) {
   return (
     <div className="flex items-center gap-2.5 mb-1">
@@ -84,17 +78,16 @@ function SectionLabel({ icon, label, isDark }: { icon: string; label: string; is
 }
 
 function Divider({ isDark }: { isDark: boolean }) {
-  return <div className={`h-px w-full ${isDark ? "bg-white/[0.06]" : "bg-black/5"}`} />;
+  return <div className={`h-px w-full ${isDark ? "bg-white/6" : "bg-black/5"}`} />;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Main component
-// ─────────────────────────────────────────────────────────────────────────────
+
 export default function VolunteerFormSection() {
   const { theme } = useSettings();
   const isDark = theme === "dark";
 
   const methods = useForm<VolunteerFormValues>({
+
     resolver: yupResolver(volunteerSchema),
     defaultValues: volunteerDefaultValues,
     mode: "onTouched",
@@ -105,7 +98,7 @@ export default function VolunteerFormSection() {
   const onSubmit = async (data: VolunteerFormValues) => {
     try {
       await submitVolunteerForm(data);
-      enqueueSnackbar("¡Solicitud enviada! Nos pondremos en contacto en 3–5 días hábiles.", { variant: "success" });
+      enqueueSnackbar("¡Solicitud enviada! Nos pondremos en contacto contigo.", { variant: "success" });
       reset();
     } catch {
       enqueueSnackbar("Ocurrió un error al enviar la solicitud. Por favor intenta nuevamente.", { variant: "error" });
@@ -120,7 +113,6 @@ export default function VolunteerFormSection() {
       <div className={`w-full max-w-3xl mx-auto p-8 md:p-12 rounded-3xl border backdrop-blur-md ${cardBg}`}>
         <div className="flex flex-col gap-8">
 
-          {/* ── 1. Información Personal ── */}
           <div className="flex flex-col gap-3">
             <SectionLabel icon="solar:user-bold-duotone" label="Información Personal" isDark={isDark} />
 
@@ -144,16 +136,15 @@ export default function VolunteerFormSection() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <RHFTextField<VolunteerFormValues>
                 name="idDocument"
-                label="Cédula / Pasaporte"
-                placeholder="000-0000000-0"
+                label="Documento de Identidad"
                 required
+                documentMode
               />
-              <RHFTextField<VolunteerFormValues>
+              <RHFDatePicker<VolunteerFormValues>
                 name="birthDate"
                 label="Fecha de Nacimiento"
-                placeholder=""
-                type="date"
                 required
+                maxDate={new Date()}
               />
             </div>
 
@@ -167,7 +158,6 @@ export default function VolunteerFormSection() {
 
           <Divider isDark={isDark} />
 
-          {/* ── 2. Datos de Contacto ── */}
           <div className="flex flex-col gap-3">
             <SectionLabel icon="solar:phone-bold-duotone" label="Datos de Contacto" isDark={isDark} />
 
@@ -183,10 +173,10 @@ export default function VolunteerFormSection() {
               <RHFTextField<VolunteerFormValues>
                 name="phone"
                 label="Teléfono / WhatsApp"
-                placeholder="+1 (809) 000-0000"
                 type="tel"
                 required
                 autoComplete="tel"
+                phoneMode
               />
             </div>
 
@@ -199,7 +189,6 @@ export default function VolunteerFormSection() {
 
           <Divider isDark={isDark} />
 
-          {/* ── 3. Perfil Profesional ── */}
           <div className="flex flex-col gap-3">
             <SectionLabel icon="solar:bag-bold-duotone" label="Perfil Profesional" isDark={isDark} />
 
@@ -308,26 +297,18 @@ export default function VolunteerFormSection() {
             <RHFTextField<VolunteerFormValues>
               name="emergencyPhone"
               label="Teléfono de Emergencia"
-              placeholder="+1 (809) 000-0000"
               type="tel"
               required
+              phoneMode
             />
           </div>
 
-          {/* ── 8. Términos + Submit ── */}
           <div className="flex flex-col gap-5 pt-2">
             <RHFCheckbox<VolunteerFormValues>
               name="acceptTerms"
               label={
                 <>
-                  Acepto los{" "}
-                  <span
-                    style={{ color: "#f59e0b" }}
-                    className="underline cursor-pointer"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    términos y condiciones
-                  </span>{" "}
+                  Acepto{" "}
                   y autorizo el uso de mis datos para fines relacionados con el
                   voluntariado en CXUM.
                 </>
@@ -373,8 +354,8 @@ export default function VolunteerFormSection() {
                     exit={{ opacity: 0 }}
                     className="flex items-center gap-2"
                   >
-                    <Iconify IconString="solar:heart-send-bold-duotone" Size={20} />
-                    ENVIAR SOLICITUD DE VOLUNTARIADO
+                    <Iconify IconString="solar:file-send-bold-duotone" Size={20} />
+                    Enviar Solicitud
                   </motion.span>
                 )}
               </AnimatePresence>
@@ -382,7 +363,7 @@ export default function VolunteerFormSection() {
 
             {!isSubmitting && (
               <p className={`text-center text-xs ${textSecondary}`}>
-                Te contactaremos en un plazo de 3–5 días hábiles.
+                ¡Gracias por tu interés en ser parte de CXUM!
               </p>
             )}
           </div>

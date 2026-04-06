@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useSettings } from "../../hooks/context/SettingsContext";
-import imageWithOutBackground from "../../assets/ImagenSinFondo.png"
+import imageWithOutBackground from "../../assets/QuiénesSomos.png"
 
 const textVariants = {
   hidden: { 
@@ -43,10 +43,10 @@ export default function WhoWeAre() {
           <img
             src={imageWithOutBackground}
             alt=""
-            className="absolute bottom-1 left-1/2 rounded-b-full -translate-x-1/2 w-[110%] max-w-none"
+            className="absolute bottom-1 left-1/2 rounded-full -translate-x-7/12 w-[220%] max-w-none"
             style={{ 
-                maskImage: 'linear-gradient(to bottom, black 90%, transparent 100%)',
-                WebkitMaskImage: 'linear-gradient(to bottom, black 95%, transparent 100%)' 
+                maskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)',
+                WebkitMaskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)' 
             }}
           />
         </div>

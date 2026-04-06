@@ -2,24 +2,27 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useSettings } from "../../hooks/context/SettingsContext";
 import { useAnimation } from "../../hooks/context/AnimationContext";
+import ourWork1 from "../../assets/ourWork1.jpg";
+import ourWork2 from "../../assets/ourWork2.jpg";
+import ourWork3 from "../../assets/ourWork3.jpeg";
 
 const SLIDES = [
   {
-    label: "Reciclamos",
+    label: "Revalorizamos",
     sub: "Recolectamos papel y cuadernos usados para darles una segunda vida.",
-    src: "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=1800&q=85&fit=crop",
+    src: ourWork1,
     accent: "#4ade80",
   },
   {
     label: "Donamos",
-    sub: "Convertimos ese material en cuadernos nuevos para niños que más lo necesitan.",
-    src: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1800&q=85&fit=crop",
+    sub: "Promovemos el acceso equitativo de la Educación.",
+    src: ourWork2,
     accent: "#60a5fa",
   },
   {
-    label: "Educamos",
-    sub: "Promovemos la conciencia ambiental y el acceso igualitario a la educación.",
-    src: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1800&q=85&fit=crop",
+    label: "Reciclamos",
+    sub: "Mediante alianzas estratégicas convertimos un desperdicio en oportunidades.",
+    src: ourWork3,
     accent: "#f59e0b",
   },
 ];

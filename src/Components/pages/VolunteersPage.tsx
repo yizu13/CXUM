@@ -7,9 +7,6 @@ import Iconify from "../modularUI/IconsMock";
 import { VOLUNTEER_MEMBERS, type VolunteerMember } from "../../types/EnumsVolunteers";
 import { VolunteerFormSection } from "../FormComponents";
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  AvatarCard
-// ─────────────────────────────────────────────────────────────────────────────
 interface AvatarCardProps {
   member: VolunteerMember;
   isDark: boolean;
@@ -99,9 +96,6 @@ function AvatarCard({ member, isDark, textPrimary }: AvatarCardProps) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Page
-// ─────────────────────────────────────────────────────────────────────────────
 export default function VolunteersPage() {
   const { theme } = useSettings();
   const isDark = theme === "dark";
@@ -130,7 +124,6 @@ export default function VolunteersPage() {
   };
 
   const bg            = isDark ? "bg-[#05070b]"                        : "bg-[#f8fafc]";
-  const cardBg        = isDark ? "bg-white/[0.03] border-white/[0.07]" : "bg-white/80 border-black/[0.06]";
   const textPrimary   = isDark ? "text-white"                          : "text-slate-900";
   const textSecondary = isDark ? "text-white/45"                       : "text-slate-500";
 
@@ -144,17 +137,14 @@ export default function VolunteersPage() {
       >
         <div className="max-w-6xl mx-auto flex flex-col gap-24">
 
-          {/* ── Hero: grid de voluntarios ── */}
           <div className="flex flex-col items-center gap-12">
 
-            {/* Header */}
             <div className="flex flex-col items-center text-center gap-4">
               <motion.span
                 variants={fadeUp(0)} initial="hidden" animate={inView ? "visible" : "hidden"}
                 className="text-xs font-bold tracking-[0.25em] uppercase"
                 style={{ color: "#f59e0b" }}
               >
-                Nuestra Comunidad
               </motion.span>
 
               <motion.h1
@@ -191,7 +181,6 @@ export default function VolunteersPage() {
               />
             </div>
 
-            {/* CTA button */}
             <motion.button
               onClick={scrollToForm}
               className="gap-2 font-bold z-50 flex items-center justify-center rounded-full shadow-lg cursor-pointer border-none outline-none px-6 py-2.5"
@@ -210,7 +199,6 @@ export default function VolunteersPage() {
               Quiero unirme ya
             </motion.button>
 
-            {/* Avatar grid */}
             <motion.div
               variants={fadeUp(0.2)} initial="hidden" animate={inView ? "visible" : "hidden"}
               className="w-full"
@@ -235,32 +223,17 @@ export default function VolunteersPage() {
                   );
                 })}
 
-                {/* +185 tile */}
                 <motion.div
                   className="col-span-2 row-span-2"
                   initial={{ opacity: 0, scale: 0.85 }}
                   animate={inView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.85 }}
                   transition={{ duration: 0.5, delay: 0.25 + VOLUNTEER_MEMBERS.length * 0.04 }}
                 >
-                  <div
-                    className={`w-full aspect-square rounded-2xl flex flex-col items-center justify-center border gap-2 ${cardBg}`}
-                    style={{
-                      background: isDark
-                        ? "linear-gradient(135deg, rgba(245,158,11,0.12), rgba(251,146,60,0.06))"
-                        : "linear-gradient(135deg, rgba(245,158,11,0.15), rgba(251,146,60,0.05))",
-                      borderColor: isDark ? "rgba(245,158,11,0.2)" : "rgba(245,158,11,0.25)",
-                    }}
-                  >
-                    <span className="text-3xl font-black" style={{ color: "#f59e0b" }}>+185</span>
-                    <span className={`text-xs font-semibold text-center leading-tight px-2 ${textSecondary}`}>
-                      más voluntarios
-                    </span>
-                  </div>
+                  
                 </motion.div>
               </div>
             </motion.div>
 
-            {/* Scroll hint */}
             <motion.div
               variants={fadeUp(0.35)} initial="hidden" animate={inView ? "visible" : "hidden"}
               className="flex flex-col items-center gap-3 text-center"
@@ -274,19 +247,12 @@ export default function VolunteersPage() {
             </motion.div>
           </div>
 
-          {/* ── Formulario ── */}
           <motion.div
             id="form"
             variants={fadeUp(0.1)} initial="hidden" animate={inView ? "visible" : "hidden"}
             className="flex flex-col gap-4"
           >
             {<div className="flex flex-col items-center text-center gap-3 mb-4">
-              <span
-                className="text-xs font-bold tracking-[0.25em] uppercase"
-                style={{ color: "#f59e0b" }}
-              >
-                Únete
-              </span>
               <h2
                 className={`font-black leading-tight ${textPrimary}`}
                 style={{ fontSize: "clamp(1.8rem, 4vw, 3rem)" }}
