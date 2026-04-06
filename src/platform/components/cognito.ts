@@ -16,17 +16,11 @@ const poolData = {
 
 export const userPool = new CognitoUserPool(poolData);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-/** Devuelve el usuario Cognito actualmente autenticado, o null */
 export function getCurrentUser(): CognitoUser | null {
   return userPool.getCurrentUser();
 }
 
-/**
- * Registro: crea el usuario en Cognito.
- * Cognito enviará automáticamente el OTP de confirmación al correo.
- */
 export function signUp(name: string, email: string, password: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const attrs = [
@@ -40,7 +34,6 @@ export function signUp(name: string, email: string, password: string): Promise<v
   });
 }
 
-/** Confirma el OTP enviado al correo tras el sign-up */
 export function confirmSignUp(email: string, code: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const user = new CognitoUser({ Username: email, Pool: userPool });
@@ -51,7 +44,6 @@ export function confirmSignUp(email: string, code: string): Promise<void> {
   });
 }
 
-/** Reenvía el código OTP de confirmación */
 export function resendConfirmationCode(email: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const user = new CognitoUser({ Username: email, Pool: userPool });
@@ -62,24 +54,22 @@ export function resendConfirmationCode(email: string): Promise<void> {
   });
 }
 
-/** Login con email + contraseña */
 export function signIn(email: string, password: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const user = new CognitoUser({ Username: email, Pool: userPool });
     const authDetails = new AuthenticationDetails({ Username: email, Password: password });
     user.authenticateUser(authDetails, {
-      onSuccess: () => resolve(),
+      onSuccess: () => resolve() ,
       onFailure: (err) => reject(err),
     });
   });
 }
 
-/** Cierra sesión local */
 export function signOut(): void {
   userPool.getCurrentUser()?.signOut();
+  localStorage.removeItem("cognitoUser");
 }
 
-/** Inicia recuperación de contraseña — envía código al correo */
 export function forgotPassword(email: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const user = new CognitoUser({ Username: email, Pool: userPool });
@@ -90,7 +80,6 @@ export function forgotPassword(email: string): Promise<void> {
   });
 }
 
-/** Confirma la nueva contraseña con el código recibido */
 export function confirmForgotPassword(
   email: string,
   code: string,

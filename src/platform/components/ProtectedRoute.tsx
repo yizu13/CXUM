@@ -1,9 +1,12 @@
 import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "../components/AuthContext";
 import { useSettings } from "../../hooks/context/SettingsContext";
 import type { UserRole } from "../components/auth";
 import { ROLE_PERMISSIONS } from "../components/auth";
 import { type ReactNode } from "react";
+import Iconify from "../../components/modularUI/IconsMock";
+import { useAuth } from "./AuthContextComps";
+import LogoCXUM from "../../assets/LogoCXUM.png";
+import { motion } from "framer-motion";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -29,19 +32,18 @@ export default function ProtectedRoute({
   const textPrimary = isDark ? "#ffffff" : "#0f172a";
   const textMuted   = isDark ? "rgba(255,255,255,0.4)" : "#64748b";
 
-  // ── Loading ──────────────────────────────────────────────────────────────────
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: bg }}>
         <div className="flex flex-col items-center gap-4">
-          <div
+          <motion.div
             className="w-12 h-12 rounded-2xl flex items-center justify-center"
-            style={{ background: "linear-gradient(135deg, #f59e0b, #fb923c)" }}
+            initial={{ scale: 2 }}
+            animate={{ scale: 3 }}
+            transition={{ duration: 2, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
           >
-            <span
-              className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin block"
-            />
-          </div>
+            <img src={LogoCXUM} alt="CXUM Logo" className="w-full h-full p-2" />
+          </motion.div>
           <p className="text-sm font-semibold" style={{ color: textMuted }}>
             Verificando sesión…
           </p>
@@ -50,12 +52,10 @@ export default function ProtectedRoute({
     );
   }
 
-  // ── Sin sesión ───────────────────────────────────────────────────────────────
   if (!user) {
     return <Navigate to={redirectTo} state={{ from: location }} replace />;
   }
 
-  // ── Cuenta suspendida ────────────────────────────────────────────────────────
   if (user.status === "suspendido") {
     return (
       <div className="min-h-screen flex items-center justify-center p-4" style={{ background: bg }}>
@@ -67,7 +67,7 @@ export default function ProtectedRoute({
             className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5"
             style={{ background: "rgba(239,68,68,0.12)", border: "1px solid rgba(239,68,68,0.25)" }}
           >
-            <span className="text-3xl">🚫</span>
+            <span className="text-3xl"><Iconify IconString="solar:lock-bold-duotone"/></span>
           </div>
           <h2 className="text-xl font-black mb-2" style={{ color: textPrimary }}>
             Cuenta suspendida
@@ -80,7 +80,6 @@ export default function ProtectedRoute({
     );
   }
 
-  // ── Sin permiso ──────────────────────────────────────────────────────────────
   if (requiredPermission && !ROLE_PERMISSIONS[user.role][requiredPermission]) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4" style={{ background: bg }}>
@@ -92,7 +91,7 @@ export default function ProtectedRoute({
             className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5"
             style={{ background: "rgba(245,158,11,0.12)", border: "1px solid rgba(245,158,11,0.25)" }}
           >
-            <span className="text-3xl">🔒</span>
+            <span className="text-3xl"><Iconify IconString="solar:lock-bold-duotone"/></span>
           </div>
           <h2 className="text-xl font-black mb-2" style={{ color: textPrimary }}>
             Acceso restringido

@@ -77,9 +77,9 @@ export default function AppRouter() {
             <Route
               path="voluntarios"
               element={
-              //  <ProtectedRoute requiredPermission="canManageUsers">
+               <ProtectedRoute requiredPermission="canManageUsers">
                   <AdminVoluntariosPage />
-             //   </ProtectedRoute>
+               </ProtectedRoute>
               }
             />
           </Route>

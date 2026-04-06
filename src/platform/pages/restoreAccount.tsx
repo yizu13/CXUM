@@ -9,21 +9,22 @@ import Iconify from "../../components/modularUI/IconsMock";
 import { forgotPassword, confirmForgotPassword } from "../components/cognito";
 import AuthMock from "./AuthMock";
 import SubmitBtn from "./submitButton";
+import {
+  AuthField,
+  AuthErrorAlert,
+  AuthOtpInput,
+  PasswordStrength,
+} from "../../components/FormComponents";
 
-// ─── Tipos de paso ─────────────────────────────────────────────────────────────
 type Step = "email" | "reset";
 
-// ─── Schemas ──────────────────────────────────────────────────────────────────
 const emailSchema = yup.object({
   email: yup.string().email("Correo inválido").required("El correo es requerido"),
 });
 
 const resetSchema = yup.object({
   code:     yup.string().min(4, "Ingresa el código").required("El código es requerido"),
-  newPass:  yup
-    .string()
-    .min(8, "Mínimo 8 caracteres")
-    .required("La contraseña es requerida"),
+  newPass:  yup.string().min(8, "Mínimo 8 caracteres").required("La contraseña es requerida"),
   newPass2: yup
     .string()
     .oneOf([yup.ref("newPass")], "Las contraseñas no coinciden")
@@ -33,89 +34,13 @@ const resetSchema = yup.object({
 type EmailValues = yup.InferType<typeof emailSchema>;
 type ResetValues = yup.InferType<typeof resetSchema>;
 
-// ─── Campo genérico ───────────────────────────────────────────────────────────
-function Field({
-  label, type, placeholder, icon, isDark, error,
-  registration,
-}: {
-  label: string; type: string; placeholder: string;
-  icon: string; isDark: boolean; error?: string;
-  registration: React.InputHTMLAttributes<HTMLInputElement>;
-}) {
-  const [show, setShow] = useState(false);
-  const isPassword = type === "password";
-
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label className={`text-xs font-bold tracking-wide ${isDark ? "text-white/60" : "text-slate-500"}`}>
-        {label}
-      </label>
-      <div className="relative">
-        <span className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
-          <Iconify Size={16} IconString={icon}
-            Style={{ color: isDark ? "rgba(255,255,255,0.3)" : "#94a3b8" }} />
-        </span>
-        <input
-          {...registration}
-          type={isPassword && show ? "text" : type}
-          placeholder={placeholder}
-          className={`w-full pl-10 ${isPassword ? "pr-10" : "pr-4"} py-3 rounded-xl border text-sm font-medium outline-none
-            transition-all duration-200 focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/60
-            ${isDark
-              ? "bg-white/5 border-white/8 text-white placeholder:text-white/20"
-              : "bg-white border-black/8 text-slate-800 placeholder:text-slate-400"
-            }
-            ${error ? "border-red-500/60" : ""}
-          `}
-        />
-        {isPassword && (
-          <button type="button" onClick={() => setShow((s) => !s)}
-            className="absolute right-3 top-1/2 -translate-y-1/2">
-            <Iconify Size={16}
-              IconString={show ? "solar:eye-closed-bold-duotone" : "solar:eye-bold-duotone"}
-              Style={{ color: isDark ? "rgba(255,255,255,0.3)" : "#94a3b8" }}
-            />
-          </button>
-        )}
-      </div>
-      {error && <p className="text-xs text-red-400 font-medium">{error}</p>}
-    </div>
-  );
-}
-
-// ─── Indicador fortaleza ──────────────────────────────────────────────────────
-function PasswordStrength({ password, isDark }: { password: string; isDark: boolean }) {
-  const checks = [
-    password.length >= 8,
-    /[A-Z]/.test(password),
-    /[0-9]/.test(password),
-    /[^A-Za-z0-9]/.test(password),
-  ];
-  const score  = checks.filter(Boolean).length;
-  const labels = ["", "Débil", "Regular", "Buena", "Fuerte"];
-  const colors = ["", "#ef4444", "#f59e0b", "#3b82f6", "#22c55e"];
-  if (!password) return null;
-  return (
-    <div className="flex flex-col gap-1.5 mt-1">
-      <div className="flex gap-1">
-        {[0, 1, 2, 3].map((i) => (
-          <div key={i} className="h-1 flex-1 rounded-full transition-all duration-300"
-            style={{ background: i < score ? colors[score] : isDark ? "rgba(255,255,255,0.1)" : "#e2e8f0" }}
-          />
-        ))}
-      </div>
-      <span className="text-[10px] font-bold" style={{ color: colors[score] }}>{labels[score]}</span>
-    </div>
-  );
-}
-
 export default function RestoreAccountPage() {
   const { theme } = useSettings();
   const isDark    = theme === "dark";
   const navigate  = useNavigate();
 
   const [step,     setStep]     = useState<Step>("email");
-  const [email,    setEmail]    = useState("");  // persiste entre pasos
+  const [email,    setEmail]    = useState("");
   const [loading,  setLoading]  = useState(false);
   const [apiError, setApiError] = useState("");
   const [success,  setSuccess]  = useState(false);
@@ -209,9 +134,7 @@ export default function RestoreAccountPage() {
 
   return (
     <AuthMock>
-      <div
-        className={`w-full rounded-3xl p-8 flex flex-col gap-8`}
-      >
+      <div className="w-full rounded-3xl p-8 flex flex-col gap-8">
         <div className="flex flex-col items-center gap-2">
           <h1 className={`text-2xl font-black tracking-tight ${textPrimary}`}>
             {step === "email" ? "Recuperar contraseña" : "Nueva contraseña"}
@@ -223,6 +146,7 @@ export default function RestoreAccountPage() {
           </p>
         </div>
 
+        {/* Stepper simple */}
         <div className="flex items-center gap-2 justify-center">
           {["Correo", "Restablecer"].map((label, i) => {
             const done   = (step === "reset" && i === 0);
@@ -258,6 +182,7 @@ export default function RestoreAccountPage() {
         </div>
 
         <AnimatePresence mode="wait">
+          {/* ── PASO 1: Email ── */}
           {step === "email" && (
             <motion.form
               key="email"
@@ -266,32 +191,27 @@ export default function RestoreAccountPage() {
               onSubmit={emailForm.handleSubmit(handleEmailSubmit)}
               className="flex flex-col gap-5"
             >
-              <Field
+              <AuthField
                 label="Correo electrónico" type="email"
-                placeholder="tu@correo.com" icon="solar:letter-bold-duotone" isDark={isDark}
+                placeholder="tu@correo.com" icon="solar:letter-bold-duotone"
                 error={emailForm.formState.errors.email?.message}
                 registration={emailForm.register("email")}
               />
 
-              {apiError && (
-                <motion.div
-                  initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium"
-                  style={{ background: "rgba(239,68,68,0.1)", color: "#f87171" }}
-                >
-                  <Iconify Size={15} IconString="solar:danger-circle-bold-duotone" />
-                  {apiError}
-                </motion.div>
-              )}
-              <SubmitBtn loading={loading} label="Enviar código" icon="solar:letter-bold-duotone"/>
+              {apiError && <AuthErrorAlert msg={apiError} />}
 
-              <Link to="/plataforma/login"
-                className={`text-xs font-semibold text-center hover:underline ${textMuted}`}>
+              <SubmitBtn loading={loading} label="Enviar código" icon="solar:letter-bold-duotone" />
+
+              <Link
+                to="/plataforma/login"
+                className={`text-xs font-semibold text-center hover:underline ${textMuted}`}
+              >
                 ← Volver al login
               </Link>
             </motion.form>
           )}
 
+          {/* ── PASO 2: Código + nueva contraseña ── */}
           {step === "reset" && (
             <motion.form
               key="reset"
@@ -300,72 +220,38 @@ export default function RestoreAccountPage() {
               onSubmit={resetForm.handleSubmit(handleResetSubmit)}
               className="flex flex-col gap-5"
             >
-              <div className="flex flex-col gap-1.5">
-                <label className={`text-xs font-bold tracking-wide ${isDark ? "text-white/60" : "text-slate-500"}`}>
-                  Código de verificación
-                </label>
-                <input
-                  {...resetForm.register("code")}
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={6}
-                  placeholder="000000"
-                  onChange={(e) => {
-                    e.target.value = e.target.value.replace(/\D/g, "");
-                    resetForm.register("code").onChange(e);
-                  }}
-                  className={`w-full text-center text-2xl font-black tracking-[0.5em] py-3.5 rounded-xl border outline-none
-                    transition-all duration-200 focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/60
-                    ${isDark
-                      ? "bg-white/5 border-white/8 text-white placeholder:text-white/15"
-                      : "bg-white border-black/8 text-slate-900 placeholder:text-slate-300"
-                    }
-                    ${resetForm.formState.errors.code ? "border-red-500/60" : ""}
-                  `}
-                />
-                {resetForm.formState.errors.code && (
-                  <p className="text-xs text-red-400 font-medium">
-                    {resetForm.formState.errors.code.message}
-                  </p>
-                )}
-              </div>
+              <AuthOtpInput
+                registration={resetForm.register("code")}
+                error={resetForm.formState.errors.code?.message}
+                size="md"
+              />
 
               <div className="flex flex-col gap-1">
-                <Field
+                <AuthField
                   label="Nueva contraseña" type="password"
-                  placeholder="••••••••" icon="solar:lock-password-bold-duotone" isDark={isDark}
+                  placeholder="••••••••" icon="solar:lock-password-bold-duotone"
                   error={resetForm.formState.errors.newPass?.message}
                   registration={resetForm.register("newPass")}
                 />
-                <PasswordStrength
-                  password={resetForm.watch("newPass") ?? ""}
-                  isDark={isDark}
-                />
+                <PasswordStrength password={resetForm.watch("newPass") ?? ""} />
               </div>
 
-              <Field
+              <AuthField
                 label="Confirmar contraseña" type="password"
-                placeholder="••••••••" icon="solar:lock-password-bold-duotone" isDark={isDark}
+                placeholder="••••••••" icon="solar:lock-password-bold-duotone"
                 error={resetForm.formState.errors.newPass2?.message}
                 registration={resetForm.register("newPass2")}
               />
 
-              {apiError && (
-                <motion.div
-                  initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium"
-                  style={{ background: "rgba(239,68,68,0.1)", color: "#f87171" }}
-                >
-                  <Iconify Size={15} IconString="solar:danger-circle-bold-duotone" />
-                  {apiError}
-                </motion.div>
-              )}
+              {apiError && <AuthErrorAlert msg={apiError} />}
 
-              <SubmitBtn loading={loading} label="Restablecer contraseña" icon="solar:lock-keyhole-unlocked-bold-duotone"/>
+              <SubmitBtn loading={loading} label="Restablecer contraseña" icon="solar:lock-keyhole-unlocked-bold-duotone" />
 
-              <button type="button"
+              <button
+                type="button"
                 onClick={() => { setStep("email"); setApiError(""); resetForm.clearErrors(); }}
-                className={`text-xs font-semibold text-center hover:underline ${textMuted}`}>
+                className={`text-xs font-semibold text-center hover:underline ${textMuted}`}
+              >
                 ← Volver
               </button>
             </motion.form>

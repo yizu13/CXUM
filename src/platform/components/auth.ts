@@ -1,5 +1,5 @@
 import { CognitoUser } from "amazon-cognito-identity-js";
-import { userPool, getCurrentUser } from "./cognito";
+import { getCurrentUser } from "./cognito";
 
 export type UserRole = "voluntario" | "escritor" | "colaborador" | "administradores";
 
@@ -21,6 +21,7 @@ export function getAuthUser(): Promise<AuthUser | null> {
     const cognitoUser: CognitoUser | null = getCurrentUser();
     if (!cognitoUser) { resolve(null); return; }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     cognitoUser.getSession((err: Error | null, session: any) => {
     if (err || !session?.isValid()) { resolve(null); return; }
 
@@ -54,6 +55,7 @@ export function checkSession(): Promise<boolean> {
   return new Promise((resolve) => {
     const cognitoUser = getCurrentUser();
     if (!cognitoUser) { resolve(false); return; }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     cognitoUser.getSession((err: Error | null, session: any) => {
       resolve(!err && session?.isValid());
     });

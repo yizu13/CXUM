@@ -2,7 +2,6 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useAuth } from "../../platform/components/AuthContext";
 import { useSettings } from "../../hooks/context/SettingsContext";
 import { FormManaged, RHFTextField, RHFTextArea, RHFSelect } from "../../components/FormComponents";
 import {
@@ -11,6 +10,7 @@ import {
   type NoticiaFormValues,
 } from "../../components/FormComponents/schemas";
 import Iconify from "../../components/modularUI/IconsMock";
+import { useAuth } from "../components/AuthContextComps";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Noticia {

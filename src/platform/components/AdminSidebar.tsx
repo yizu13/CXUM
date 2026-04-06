@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAuth } from "./AuthContext";
 import { useSettings } from "../../hooks/context/SettingsContext";
 import { signOut } from "./cognito";
 import { ROLE_LABELS, ROLE_COLORS } from "./auth";
 import Iconify from "../../components/modularUI/IconsMock";
+import { useAuth } from "./AuthContextComps";
+import LogoCXUM from "../../assets/LogoCXUM.png";
 
 // ── Nav items ─────────────────────────────────────────────────────────────────
 interface NavItem {
@@ -50,12 +51,7 @@ const NAV_ITEMS: NavItem[] = [
 function SidebarLogo({ collapsed, isDark }: { collapsed: boolean; isDark: boolean }) {
   return (
     <div className="flex items-center gap-3 px-1 py-1">
-      <div
-        className="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center font-black text-white text-base"
-        style={{ background: "linear-gradient(135deg, #f59e0b 0%, #fb923c 100%)" }}
-      >
-        CX
-      </div>
+      <img src={LogoCXUM} alt="CXUM Logo" className="w-8 h-8" />
       <AnimatePresence>
         {!collapsed && (
           <motion.div
@@ -63,7 +59,7 @@ function SidebarLogo({ collapsed, isDark }: { collapsed: boolean; isDark: boolea
             animate={{ opacity: 1, width: "auto" }}
             exit={{ opacity: 0, width: 0 }}
             transition={{ duration: 0.2 }}
-            className="overflow-hidden"
+            className="overflow-hidden cursor-default"
           >
             <p
               className="font-black text-sm tracking-tight leading-none whitespace-nowrap"
@@ -115,7 +111,7 @@ function SidebarNavItem({
     >
       {({ isActive }) => (
         <>
-          <div className="flex-shrink-0 w-5 h-5 flex items-center justify-center">
+          <div className="shrink-0 w-5 h-5 flex items-center justify-center">
             <Iconify
               Size={20}
               IconString={isActive ? item.iconActive : item.icon}
@@ -208,15 +204,14 @@ export default function AdminSidebar() {
     <motion.aside
       animate={{ width: collapsed ? 72 : 240 }}
       transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-      className="relative flex-shrink-0 h-screen flex flex-col border-r overflow-hidden"
+      className="relative shrink-0 h-screen flex flex-col border-r overflow-hidden"
       style={{ background: bg, borderColor: border }}
     >
-      {/* Header */}
       <div className="flex items-center justify-between px-4 pt-5 pb-4">
         <SidebarLogo collapsed={collapsed} isDark={isDark} />
         <button
           onClick={() => setCollapsed((c) => !c)}
-          className="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
+          className="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
           style={{ color: toggleColor }}
           onMouseEnter={(e) => (e.currentTarget.style.background = toggleHoverBg)}
           onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
@@ -260,7 +255,7 @@ export default function AdminSidebar() {
           style={{ background: isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)" }}
         >
           <div
-            className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-white font-black text-xs"
+            className="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-white font-black text-xs"
             style={{
               background: `${roleColor}30`,
               border: `1px solid ${roleColor}50`,
@@ -294,11 +289,10 @@ export default function AdminSidebar() {
         </div>
       </div>
 
-      {/* Logout */}
       <div className="px-3 pb-5">
         <button
           onClick={handleLogout}
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${collapsed ? "justify-center" : ""}`}
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${collapsed ? "justify-center" : ""} cursor-pointer`}
           style={{ color: "rgba(239,68,68,0.6)" }}
           onMouseEnter={(e) => {
             e.currentTarget.style.color = "#ef4444";
@@ -310,7 +304,7 @@ export default function AdminSidebar() {
           }}
           title="Cerrar sesión"
         >
-          <div className="flex-shrink-0 w-5 h-5 flex items-center justify-center">
+          <div className="shrink-0 w-5 h-5 flex items-center justify-center">
             <Iconify
               Size={18}
               IconString="solar:logout-2-bold-duotone"

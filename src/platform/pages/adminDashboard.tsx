@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { useAuth } from "../../platform/components/AuthContext";
 import { useSettings } from "../../hooks/context/SettingsContext";
-import { ROLE_LABELS, ROLE_COLORS } from "../../platform/components/auth";
 import Iconify from "../../components/modularUI/IconsMock";
+import { ROLE_COLORS, ROLE_LABELS } from "../components/auth";
+import { useAuth } from "../components/AuthContextComps";
 
 const QUICK_LINKS = [
   {
@@ -61,7 +61,7 @@ export default function AdminDashboardPage() {
 
   const textPrimary   = isDark ? "#ffffff" : "#0f172a";
   const textSecondary = isDark ? "rgba(255,255,255,0.4)" : "#64748b";
-  const dividerColor  = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)";
+//  const dividerColor  = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)";
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -111,7 +111,6 @@ export default function AdminDashboardPage() {
         </p>
       </motion.div>
 
-      {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
           { label: "Centros Activos",      value: "3", sub: "+1 este mes",  icon: "solar:map-point-bold-duotone",                  color: "#f59e0b" },

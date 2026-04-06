@@ -1,8 +1,8 @@
 import { Outlet } from "react-router-dom";
 import AdminSidebar from "./AdminSidebar";
 import { useSettings } from "../../hooks/context/SettingsContext";
-import { useAuth } from "./AuthContext";
 import Iconify from "../../components/modularUI/IconsMock";
+import { useAuth } from "./AuthContextComps";
 
 export default function AdminLayout() {
   const { theme, setTheme } = useSettings();
@@ -19,9 +19,8 @@ export default function AdminLayout() {
       <AdminSidebar />
 
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top bar */}
         <header
-          className="flex-shrink-0 h-14 flex items-center justify-between px-6 border-b"
+          className="shrink-0 h-14 flex items-center justify-between px-6 border-b"
           style={{
             background: isDark
               ? "rgba(10,12,17,0.92)"
@@ -32,25 +31,11 @@ export default function AdminLayout() {
             backdropFilter: "blur(16px)",
           }}
         >
-          {/* Left: status */}
           <div className="flex items-center gap-2">
-            <span
-              className="w-1.5 h-1.5 rounded-full animate-pulse"
-              style={{ background: "#22c55e", display: "inline-block" }}
-            />
-            <span
-              className="text-xs font-semibold"
-              style={{
-                color: isDark ? "rgba(255,255,255,0.38)" : "rgba(0,0,0,0.38)",
-              }}
-            >
-              Sistema activo
-            </span>
+           
           </div>
 
-          {/* Right: controls */}
           <div className="flex items-center gap-2">
-            {/* User badge */}
             <div
               className="hidden sm:flex text-xs font-bold px-2.5 py-1 rounded-lg"
               style={{
@@ -64,7 +49,6 @@ export default function AdminLayout() {
               {user?.email}
             </div>
 
-            {/* Theme toggle */}
             <button
               onClick={toggleTheme}
               title={isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
@@ -85,7 +69,6 @@ export default function AdminLayout() {
               />
             </button>
 
-            {/* Open site */}
             <button
               onClick={() => window.open("/", "_blank")}
               title="Ver sitio público"
@@ -104,7 +87,6 @@ export default function AdminLayout() {
           </div>
         </header>
 
-        {/* Page content */}
         <main className="flex-1 overflow-y-auto">
           <Outlet />
         </main>

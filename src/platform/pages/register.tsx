@@ -10,6 +10,12 @@ import { signUp, confirmSignUp, resendConfirmationCode } from "../components/cog
 import { validateInviteCode } from "../components/inviteCodes";
 import AuthMock from "./AuthMock";
 import SubmitBtn from "./submitButton";
+import {
+  AuthField,
+  AuthErrorAlert,
+  AuthOtpInput,
+  PasswordStrength,
+} from "../../components/FormComponents";
 
 type Step = "invite" | "form" | "otp";
 
@@ -20,10 +26,7 @@ const inviteSchema = yup.object({
 const formSchema = yup.object({
   name:      yup.string().required("El nombre es requerido"),
   email:     yup.string().email("Correo inválido").required("El correo es requerido"),
-  password:  yup
-    .string()
-    .min(8, "Mínimo 8 caracteres")
-    .required("La contraseña es requerida"),
+  password:  yup.string().min(8, "Mínimo 8 caracteres").required("La contraseña es requerida"),
   password2: yup
     .string()
     .oneOf([yup.ref("password")], "Las contraseñas no coinciden")
@@ -31,90 +34,12 @@ const formSchema = yup.object({
 });
 
 const otpSchema = yup.object({
-  otp: yup
-    .string()
-    .min(4, "Ingresa el código de verificación")
-    .required("El código es requerido"),
+  otp: yup.string().min(4, "Ingresa el código de verificación").required("El código es requerido"),
 });
 
 type InviteValues = yup.InferType<typeof inviteSchema>;
 type FormValues   = yup.InferType<typeof formSchema>;
 type OtpValues    = yup.InferType<typeof otpSchema>;
-
-function Field({
-  label, type, placeholder, icon, isDark, error, hint,
-  registration,
-}: {
-  label: string; type: string; placeholder: string;
-  icon: string; isDark: boolean; error?: string; hint?: string;
-  registration: React.InputHTMLAttributes<HTMLInputElement>;
-}) {
-  const [show, setShow] = useState(false);
-  const isPassword = type === "password";
-
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label className={`text-xs font-bold tracking-wide ${isDark ? "text-white/60" : "text-slate-500"}`}>
-        {label}
-      </label>
-      <div className="relative">
-        <span className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
-          <Iconify Size={16} IconString={icon} Style={{ color: isDark ? "rgba(255,255,255,0.3)" : "#94a3b8" }} />
-        </span>
-        <input
-          {...registration}
-          type={isPassword && show ? "text" : type}
-          placeholder={placeholder}
-          className={`w-full pl-10 ${isPassword ? "pr-10" : "pr-4"} py-3 rounded-xl border text-sm font-medium outline-none
-            transition-all duration-200 focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/60
-            ${isDark
-              ? "bg-white/5 border-white/8 text-white placeholder:text-white/20"
-              : "bg-white border-black/8 text-slate-800 placeholder:text-slate-400"
-            }
-            ${error ? "border-red-500/60" : ""}
-          `}
-        />
-        {isPassword && (
-          <button type="button" onClick={() => setShow((s) => !s)}
-            className="absolute right-3 top-1/2 -translate-y-1/2">
-            <Iconify Size={16}
-              IconString={show ? "solar:eye-closed-bold-duotone" : "solar:eye-bold-duotone"}
-              Style={{ color: isDark ? "rgba(255,255,255,0.3)" : "#94a3b8" }}
-            />
-          </button>
-        )}
-      </div>
-      {error && <p className="text-xs text-red-400 font-medium">{error}</p>}
-      {hint && !error && <p className={`text-xs ${isDark ? "text-white/30" : "text-slate-400"}`}>{hint}</p>}
-    </div>
-  );
-}
-
-// ─── Indicador de fortaleza ───────────────────────────────────────────────────
-function PasswordStrength({ password, isDark }: { password: string; isDark: boolean }) {
-  const checks = [
-    password.length >= 8,
-    /[A-Z]/.test(password),
-    /[0-9]/.test(password),
-    /[^A-Za-z0-9]/.test(password),
-  ];
-  const score  = checks.filter(Boolean).length;
-  const labels = ["", "Débil", "Regular", "Buena", "Fuerte"];
-  const colors = ["", "#ef4444", "#f59e0b", "#3b82f6", "#22c55e"];
-  if (!password) return null;
-  return (
-    <div className="flex flex-col gap-1.5 mt-1">
-      <div className="flex gap-1">
-        {[0, 1, 2, 3].map((i) => (
-          <div key={i} className="h-1 flex-1 rounded-full transition-all duration-300"
-            style={{ background: i < score ? colors[score] : isDark ? "rgba(255,255,255,0.1)" : "#e2e8f0" }}
-          />
-        ))}
-      </div>
-      <span className="text-[10px] font-bold" style={{ color: colors[score] }}>{labels[score]}</span>
-    </div>
-  );
-}
 
 // ─── Stepper visual ───────────────────────────────────────────────────────────
 function Stepper({ current, isDark }: { current: number; isDark: boolean }) {
@@ -162,28 +87,13 @@ function Stepper({ current, isDark }: { current: number; isDark: boolean }) {
   );
 }
 
-// ─── Alerta de error de API ───────────────────────────────────────────────────
-function ErrorAlert({ msg }: { msg: string }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}
-      className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium"
-      style={{ background: "rgba(239,68,68,0.1)", color: "#f87171" }}
-    >
-      <Iconify Size={15} IconString="solar:danger-circle-bold-duotone" />
-      {msg}
-    </motion.div>
-  );
-}
-
-// ─── Page principal ───────────────────────────────────────────────────────────
 export default function RegisterPage() {
   const { theme } = useSettings();
   const isDark    = theme === "dark";
   const navigate  = useNavigate();
 
   const [step,     setStep]     = useState<Step>("invite");
-  const [email,    setEmail]    = useState("");   // persiste entre pasos
+  const [email,    setEmail]    = useState("");
   const [loading,  setLoading]  = useState(false);
   const [apiError, setApiError] = useState("");
   const [otpSent,  setOtpSent]  = useState(false);
@@ -193,12 +103,10 @@ export default function RegisterPage() {
   const textPrimary = isDark ? "text-white" : "text-slate-900";
   const textMuted   = isDark ? "text-white/40" : "text-slate-400";
 
-  // ── Forms ─────────────────────────────────────────────────────────────────
   const inviteForm = useForm<InviteValues>({ resolver: yupResolver(inviteSchema) });
   const mainForm   = useForm<FormValues>  ({ resolver: yupResolver(formSchema)   });
   const otpForm    = useForm<OtpValues>   ({ resolver: yupResolver(otpSchema)    });
 
-  // ── Handlers ──────────────────────────────────────────────────────────────
   async function handleInviteSubmit({ inviteCode }: InviteValues) {
     setApiError("");
     setLoading(true);
@@ -266,13 +174,9 @@ export default function RegisterPage() {
     }
   }
 
-
-
   return (
     <AuthMock>
-      <div
-        className={`w-full rounded-3xl p-8 flex flex-col gap-8 `}
-      >
+      <div className="w-full rounded-3xl p-8 flex flex-col gap-8">
         <div className="flex flex-col items-center gap-2">
           <h1 className={`text-2xl font-black tracking-tight ${textPrimary}`}>Crear cuenta</h1>
           <p className={`text-sm text-center ${textMuted}`}>
@@ -283,6 +187,7 @@ export default function RegisterPage() {
         <Stepper current={stepIndex[step]} isDark={isDark} />
 
         <AnimatePresence mode="wait">
+          {/* ── PASO 1: Código de invitación ── */}
           {step === "invite" && (
             <motion.form
               key="invite"
@@ -304,10 +209,11 @@ export default function RegisterPage() {
                 </p>
               </div>
 
-              <Field
-                label="Código de invitación" type="text"
+              <AuthField
+                label="Código de invitación"
+                type="text"
                 placeholder="CXUM-XXXX-XXXX"
-                icon="solar:ticket-bold-duotone" isDark={isDark}
+                icon="solar:ticket-bold-duotone"
                 hint="El código es sensible a mayúsculas"
                 error={inviteForm.formState.errors.inviteCode?.message}
                 registration={{
@@ -319,7 +225,7 @@ export default function RegisterPage() {
                 }}
               />
 
-              {apiError && <ErrorAlert msg={apiError} />}
+              {apiError && <AuthErrorAlert msg={apiError} />}
 
               <SubmitBtn loading={loading} label="Validar código" icon="solar:arrow-right-bold" />
 
@@ -332,6 +238,7 @@ export default function RegisterPage() {
             </motion.form>
           )}
 
+          {/* ── PASO 2: Datos del usuario ── */}
           {step === "form" && (
             <motion.form
               key="form"
@@ -340,39 +247,43 @@ export default function RegisterPage() {
               onSubmit={mainForm.handleSubmit(handleFormSubmit)}
               className="flex flex-col gap-5"
             >
-              <Field label="Nombre completo" type="text"
-                placeholder="María Pérez" icon="solar:user-bold-duotone" isDark={isDark}
+              <AuthField
+                label="Nombre completo" type="text"
+                placeholder="María Pérez" icon="solar:user-bold-duotone"
                 error={mainForm.formState.errors.name?.message}
-                registration={mainForm.register("name")} />
-
-              <Field label="Correo electrónico" type="email"
-                placeholder="tu@correo.com" icon="solar:letter-bold-duotone" isDark={isDark}
+                registration={mainForm.register("name")}
+              />
+              <AuthField
+                label="Correo electrónico" type="email"
+                placeholder="tu@correo.com" icon="solar:letter-bold-duotone"
                 error={mainForm.formState.errors.email?.message}
-                registration={mainForm.register("email")} />
-
+                registration={mainForm.register("email")}
+              />
               <div className="flex flex-col gap-1">
-                <Field label="Contraseña" type="password"
-                  placeholder="••••••••" icon="solar:lock-password-bold-duotone" isDark={isDark}
+                <AuthField
+                  label="Contraseña" type="password"
+                  placeholder="••••••••" icon="solar:lock-password-bold-duotone"
                   error={mainForm.formState.errors.password?.message}
-                  registration={mainForm.register("password")} />
-                <PasswordStrength
-                  password={mainForm.watch("password") ?? ""}
-                  isDark={isDark}
+                  registration={mainForm.register("password")}
                 />
+                <PasswordStrength password={mainForm.watch("password") ?? ""} />
               </div>
-
-              <Field label="Confirmar contraseña" type="password"
-                placeholder="••••••••" icon="solar:lock-password-bold-duotone" isDark={isDark}
+              <AuthField
+                label="Confirmar contraseña" type="password"
+                placeholder="••••••••" icon="solar:lock-password-bold-duotone"
                 error={mainForm.formState.errors.password2?.message}
-                registration={mainForm.register("password2")} />
+                registration={mainForm.register("password2")}
+              />
 
-              {apiError && <ErrorAlert msg={apiError} />}
+              {apiError && <AuthErrorAlert msg={apiError} />}
 
               <SubmitBtn loading={loading} label="Crear cuenta" icon="solar:user-plus-bold" />
 
-              <button type="button"
+              <button
+                type="button"
                 onClick={() => { setStep("invite"); setApiError(""); mainForm.clearErrors(); }}
-                className={`text-xs font-semibold text-center hover:underline ${textMuted}`}>
+                className={`text-xs font-semibold text-center hover:underline ${textMuted}`}
+              >
                 ← Volver
               </button>
             </motion.form>
@@ -399,37 +310,13 @@ export default function RegisterPage() {
                 </p>
               </div>
 
-              <div className="flex flex-col gap-1.5">
-                <label className={`text-xs font-bold tracking-wide ${isDark ? "text-white/60" : "text-slate-500"}`}>
-                  Código de verificación
-                </label>
-                <input
-                  {...otpForm.register("otp")}
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={6}
-                  placeholder="000000"
-                  onChange={(e) => {
-                    e.target.value = e.target.value.replace(/\D/g, "");
-                    otpForm.register("otp").onChange(e);
-                  }}
-                  className={`w-full text-center text-3xl font-black tracking-[0.4em] py-4 rounded-xl border outline-none
-                    transition-all duration-200 focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/60
-                    ${isDark
-                      ? "bg-white/5 border-white/8 text-white placeholder:text-white/15"
-                      : "bg-white border-black/8 text-slate-900 placeholder:text-slate-300"
-                    }
-                    ${otpForm.formState.errors.otp ? "border-red-500/60" : ""}
-                  `}
-                />
-                {otpForm.formState.errors.otp && (
-                  <p className="text-xs text-red-400 font-medium">
-                    {otpForm.formState.errors.otp.message}
-                  </p>
-                )}
-              </div>
+              <AuthOtpInput
+                registration={otpForm.register("otp")}
+                error={otpForm.formState.errors.otp?.message}
+                size="lg"
+              />
 
-              {apiError && <ErrorAlert msg={apiError} />}
+              {apiError && <AuthErrorAlert msg={apiError} />}
 
               {otpSent && !apiError && (
                 <p className="text-xs text-center" style={{ color: "#22c55e" }}>

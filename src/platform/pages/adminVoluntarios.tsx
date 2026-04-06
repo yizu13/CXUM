@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { get, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useAuth } from "../../platform/components/AuthContext";
+
 import { useSettings } from "../../hooks/context/SettingsContext";
 import { FormManaged, RHFTextField, RHFSelect } from "../../components/FormComponents";
 import {
@@ -12,8 +12,8 @@ import {
 import { ROLE_LABELS, ROLE_COLORS } from "../../platform/components/auth";
 import type { UserRole } from "../../platform/components/auth";
 import Iconify from "../../components/modularUI/IconsMock";
-import { CognitoIdentityProviderClient, ListUsersCommand } from "@aws-sdk/client-cognito-identity-provider";
 import { getAllUsers } from "../APIs/modifyRole";
+import { useAuth } from "../components/AuthContextComps";
 
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -72,7 +72,7 @@ const ROLE_OPTIONS: { value: string; label: string }[] = [
   { value: "voluntario",    label: "Voluntario"    },
   { value: "escritor",      label: "Escritor"      },
   { value: "colaborador",   label: "Colaborador"   },
-  { value: "administrador", label: "Administrador" },
+  { value: "administradores", label: "Administradores" },
 ];
 
 const STATUS_OPTIONS: { value: string; label: string }[] = [
@@ -122,6 +122,7 @@ function VoluntarioModal({
   onSave: (updated: Voluntario) => void;
   isDark: boolean;
 }) {
+  const { user } = useAuth();
   const roleColor = ROLE_COLORS[v.role];
 
   const methods = useForm<VoluntarioEditFormValues>({
@@ -154,10 +155,9 @@ function VoluntarioModal({
         className="w-full max-w-md rounded-3xl p-6 border"
         style={{ background: modalBg, borderColor: modalBorder, boxShadow: "0 24px 80px rgba(0,0,0,0.35)" }}
       >
-        {/* Header */}
         <div className="flex items-center gap-3 mb-6">
           <div
-            className="w-11 h-11 rounded-2xl flex items-center justify-center font-black text-white text-lg flex-shrink-0"
+            className="w-11 h-11 rounded-2xl flex items-center justify-center font-black text-white text-lg shrink-0"
             style={{ background: `${roleColor}25`, border: `1px solid ${roleColor}40` }}
           >
             {v.name.charAt(0)}
@@ -172,7 +172,7 @@ function VoluntarioModal({
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-xl flex items-center justify-center transition-colors flex-shrink-0"
+            className="w-8 h-8 rounded-xl flex items-center justify-center transition-colors shrink-0"
             style={{ color: isDark ? "rgba(255,255,255,0.4)" : "#94a3b8" }}
           >
             <Iconify Size={18} IconString="solar:close-circle-bold-duotone" Style={{ color: "currentColor" }} />
@@ -185,6 +185,7 @@ function VoluntarioModal({
             label="Rol"
             required
             options={ROLE_OPTIONS}
+            disabled={v.email ===  user?.email}
           />
           <RHFSelect<VoluntarioEditFormValues>
             name="status"
@@ -234,9 +235,8 @@ function VoluntarioModal({
   );
 }
 
-// ── Page ──────────────────────────────────────────────────────────────────────
 export default function AdminVoluntariosPage() {
-  const { hasPermission } = useAuth();
+  const { hasPermission, user } = useAuth();
   const { theme } = useSettings();
   const isDark = theme === "dark";
   const canManage = hasPermission("canManageUsers");
@@ -259,7 +259,18 @@ export default function AdminVoluntariosPage() {
   useEffect(()=>{
     const listUsers = async () => {
       const users = await getAllUsers();
-      console.log(users);
+      const mapped = users.users.map((u) => ({
+        id: u.username,
+        name: u.name,
+        email: u.email,
+        role: u.groups[0],
+        status: u.status === "CONFIRMED"? "activo" : "pendiente",
+        municipio: u?.attributes?.municipio || "SDN",
+        telefono: u?.attributes?.telefono || "809-555-0000",
+        joinedAt: u?.attributes?.joinedAt || "2024-01-01",
+      } as Voluntario));
+
+      setVoluntarios(mapped);
 
     };
 
@@ -299,7 +310,6 @@ export default function AdminVoluntariosPage() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      {/* Header */}
       <div className="mb-8">
         <h1 className="font-black text-2xl tracking-tight" style={{ color: isDark ? "#fff" : "#0f172a" }}>
           Voluntarios
@@ -309,7 +319,6 @@ export default function AdminVoluntariosPage() {
         </p>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
           { label: "Total Voluntarios",  value: voluntarios.length,                                    icon: "solar:users-group-two-rounded-bold-duotone", color: "#f59e0b" },
@@ -495,13 +504,13 @@ export default function AdminVoluntariosPage() {
                             <td className="px-4 py-3.5">
                               <div className="flex items-center gap-3">
                                 <div
-                                  className="w-8 h-8 rounded-xl flex items-center justify-center text-white font-black text-xs flex-shrink-0"
+                                  className="w-8 h-8 rounded-xl flex items-center justify-center text-white font-black text-xs shrink-0"
                                   style={{ background: `${roleColor}20`, border: `1px solid ${roleColor}30` }}
                                 >
                                   {v.name.charAt(0)}
                                 </div>
                                 <div>
-                                  <p className="font-semibold text-sm" style={{ color: isDark ? "#fff" : "#0f172a" }}>{v.name}</p>
+                                  <p className="font-semibold text-sm" style={{ color: isDark ? "#fff" : "#0f172a" }}>{v.name} {v.email == user?.email && "(Tú)"}</p>
                                   <p className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.3)" : "#94a3b8" }}>{v.email}</p>
                                 </div>
                               </div>
@@ -554,7 +563,6 @@ export default function AdminVoluntariosPage() {
         )}
       </AnimatePresence>
 
-      {/* Edit Modal */}
       <AnimatePresence>
         {editModal && (
           <VoluntarioModal
