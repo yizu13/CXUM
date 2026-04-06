@@ -3,9 +3,9 @@ import { useRef, useEffect, useState, useCallback } from "react";
 import { motion } from "motion/react";
 import { useSettings } from "../../hooks/context/SettingsContext";
 import { useAnimation } from "../../hooks/context/AnimationContext";
-import DefaultButton from "../ModularUI/GeneralButton";
+import DefaultButton from "../modularUI/GeneralButton";
 import { AVATARS, palabrasRelacionadas, ROWS } from "../../types/EnumHero";
-import FloatingAvatar from "../ModularUI/FloatingAvatar";
+import FloatingAvatar from "../modularUI/FloatingAvatar";
 
 export default function Hero() {
   const { theme } = useSettings();
@@ -163,7 +163,7 @@ export default function Hero() {
             initial="hidden"
             animate={navReady ? "visible" : "hidden"}
           >
-            <DefaultButton textString="Donar Ahora" />
+            <DefaultButton textString="Ser Centro de Acopio" />
             <DefaultButton textString="Quiero Ser Voluntario" inverted />
           </motion.div>
         </div>

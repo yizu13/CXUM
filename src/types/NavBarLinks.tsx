@@ -1,5 +1,39 @@
-export const NAV_LINKS = ["Inicio", "Plataforma", "Recursos", "Precios"];
 
+export const NAV_LINKS = ["Inicio", "Plataforma", "Recursos" /*, "Precios"*/] as const;
+export interface GlassStyles {
+    container: string
+    container2: string
+    text: string
+    themeBtn: string
+}
+
+export interface DropDownProps {
+    show: boolean
+    cardWidth: number
+    setFlag: (h: boolean) => void
+    activeIndex: number | null
+    contentRef: (instance: HTMLDivElement | null) => void
+    glassStyles: GlassStyles
+}
+
+export interface VariantCard1 {
+    glassStyles: GlassStyles
+    title: string
+    subTitle?: string
+    IconString?: string
+    link: string
+    currentPath: string
+}
+
+export interface VariantCard2 {
+    glassStyles: GlassStyles
+    title: string
+    link: string
+    IconString: string
+    currentPath: string
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
 export const InfoCards = [
     {
         sections: [
@@ -11,6 +45,7 @@ export const InfoCards = [
                         CardSubtitle: "No los botes dónalos",
                         IconsString: "solar:home-2-bold-duotone",
                         link: "#inicio",
+                        path: "/"
                     },
                     {
                         cardType: 1,
@@ -18,6 +53,7 @@ export const InfoCards = [
                         CardSubtitle: "Qué hacemos como CXUM",
                         IconsString: "solar:sledgehammer-bold-duotone",
                         link: "#NuestroTrabajo",
+                        path: "/"
                     },
                     {
                         cardType: 1,
@@ -25,6 +61,7 @@ export const InfoCards = [
                         CardSubtitle: "Ve nuestras estadísticas",
                         IconsString: "solar:users-group-two-rounded-bold-duotone",
                         link: "#NuestroImpacto",
+                        path: "/"
                     },
                 ],
             },
@@ -36,31 +73,46 @@ export const InfoCards = [
                         CardSubtitle: "Conócenos",
                         IconsString: "solar:users-group-two-rounded-bold-duotone",
                         link: "#Quiénessomos",
+                        path: "/"
                     },
                      {
                         cardType: 1,
-                        cardTitle: "Sobre Nosotros",
+                        cardTitle: "Nuestra Visión",
                         CardSubtitle: "Conoce nuestra historia",
-                        IconsString: "duo-icons:info",
-                        link: "#inicio",
+                        IconsString: "solar:eye-bold-duotone",
+                        link: "#MisionVision",
+                        path: "/"
+                    },
+                    {
+                        cardType: 1,
+                        cardTitle: "Centros de Acopio",
+                        CardSubtitle: "Centros donde puedes poner tu granito de arena",
+                        IconsString: "solar:leaf-bold-duotone",
+                        link: "#PuntosDeEntrega",
+                        path: "/"
                     },
                 ],
             },
             {
                 cards: [
-                    {
-                        cardType: 1,
-                        cardTitle: "Noticias Recientes",
-                        CardSubtitle: "Conoce nuestras últimas públicaciones",
-                        IconsString: "solar:paperclip-rounded-bold-duotone",
-                        link: "#inicio",
-                    },
+                    
                     {
                         cardType: 1,
                         cardTitle: "Nuestro Equipo",
                         CardSubtitle: "Los que hicieron esto posible",
                         IconsString: "solar:branching-paths-up-bold-duotone",
-                        link: "#inicio",
+                        link: "#equipo",
+                        path: "/"
+
+                    },
+                    {
+                        cardType: 1,
+                        cardTitle: "Noticias Recientes",
+                        CardSubtitle: "Conoce nuestras últimas públicaciones",
+                        IconsString: "solar:paperclip-rounded-bold-duotone",
+                        link: "#NoticiasRecientes",
+                        path: "/"
+
                     },
                 ],
             },
@@ -76,6 +128,8 @@ export const InfoCards = [
                         CardSubtitle: "",
                         IconsString: "ph:cube-duotone",
                         link: "#inicio",
+                        path: "/plataforma/login"
+
                     },
                     {
                         cardType: 1,
@@ -83,6 +137,8 @@ export const InfoCards = [
                         CardSubtitle: "",
                         IconsString: "solar:heart-pulse-bold-duotone",
                         link: "#inicio",
+                        path: "/Voluntarios"
+
                     },
                 ],
             },
@@ -98,7 +154,9 @@ export const InfoCards = [
                         cardTitle: "Contáctanos",
                         CardSubtitle: "",
                         IconsString: "solar:phone-bold-duotone",
-                        link: "#inicio",
+                        link: "#contacto",
+                        path: "/Contacto"
+
                     },
                     {
                         cardType: 2,
@@ -106,13 +164,17 @@ export const InfoCards = [
                         CardSubtitle: "",
                         IconsString: "lets-icons:time-duotone",
                         link: "#inicio",
+                        path: "/"
+
                     },
                     {
                         cardType: 2,
                         cardTitle: "Noticias",
                         CardSubtitle: "",
-                        IconsString: "solar:database-bold-duotone",
-                        link: "#inicio",
+                        IconsString: "solar:notes-bold-duotone",
+                        link: "#noticias",
+                        path: "/Noticias"
+
                     }
                     
 

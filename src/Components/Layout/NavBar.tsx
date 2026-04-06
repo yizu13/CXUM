@@ -3,15 +3,18 @@ import { motion } from "framer-motion";
 import CXUMLOGO from "../../assets/LogoCXUM.png";
 import { useSettings } from "../../hooks/context/SettingsContext";
 import { useAnimation } from "../../hooks/context/AnimationContext";
-import Iconify from "../ModularUI/IconsMock";
-import DefaultButton from "../ModularUI/GeneralButton";
+import Iconify from "../modularUI/IconsMock";
+import DefaultButton from "../modularUI/GeneralButton";
 import { NAV_LINKS } from "../../types/NavBarLinks";
-import NavBarDropDown from "../ModularUI/NavBarDropDown";
+import NavBarDropDown from "../modularUI/NavBarDropDown";
+import { useNavigate } from "react-router-dom";
+import x from "../../assets/xStilizada.png";
 
 export default function NavBar() {
   const [phase, setPhase] = useState(0);
   const { theme, setTheme } = useSettings();
   const { setNavReady } = useAnimation();
+  const navigate = useNavigate();
   const [iconHover, setIconHover] = useState([false, false, false, false]);
   const [flag, setFlag] = useState(false);
   const [show, setShow] = useState(false);
@@ -93,7 +96,9 @@ export default function NavBar() {
                   <span className={`text-[1.05rem] font-bold ${isDark ? "text-white" : "text-slate-900"}`}>
                     Cuadernos
                   </span>
-                  <span className="mx-1.5 text-amber-500 font-black mt-0.5">X</span>
+                  <span className="ml-1.5 mr-1 font-black mt-0.5">
+                    <img src={x} width={20} height={20} alt="X" />
+                  </span>
                   <span className={`text-[1.05rem] font-medium ${isDark ? "text-slate-400" : "text-slate-500"}`}>
                     Un Mañana
                   </span>
@@ -165,7 +170,7 @@ export default function NavBar() {
                       <Iconify IconString="duo-icons:moon-stars" Size={20} />
                     )}
                   </motion.button>
-                  <DefaultButton textString="Donar Ahora" />
+                  <DefaultButton textString="Donar Ahora" onClick={() => navigate("/Contacto")} />
                 </>
               )}
             </div>
@@ -179,11 +184,9 @@ export default function NavBar() {
           onAnimationComplete={() => setTimeout(() => setPhase(1), 150)}
           className={`relative z-10 shrink-0 pointer-events-auto
                      w-12 h-12 rounded-full flex items-center justify-center
-                     bg-linear-to-tr from-[#f97316] via-[#fb923c] to-[#fdba74]
-                     shadow-[0_8px_25px_rgba(249,115,22,0.4)]
-                     ${isDark ? "ring-2 ring-white/10" : "ring-2 ring-white"}`}
+                     ${isDark ? "ring-2 ring-white/5" : "ring-2 ring-white"}`}
         >
-          <img src={CXUMLOGO} width={28} height={28} alt="Logo" className="rounded-full object-contain" />
+          <img src={CXUMLOGO} width={40} height={40} alt="Logo" className="rounded-full object-contain" />
         </motion.div>
       </div>
             <NavBarDropDown show={show} cardWidth={cardWidth} 

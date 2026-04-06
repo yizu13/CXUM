@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { useSettings } from "../../hooks/context/SettingsContext";
 import { STATS } from "../../types/EnumsOurImpact";
-import StatCard from "../ModularUI/StatsCards";
+import StatCard from "../modularUI/StatsCards";
 
 export default function OurImpact() {
   const { theme } = useSettings();
