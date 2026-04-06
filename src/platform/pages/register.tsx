@@ -1,21 +1,53 @@
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
 import { useSettings } from "../../hooks/context/SettingsContext";
 import Iconify from "../../components/modularUI/IconsMock";
 import { signUp, confirmSignUp, resendConfirmationCode } from "../components/cognito";
 import { validateInviteCode } from "../components/inviteCodes";
+import AuthMock from "./AuthMock";
+import SubmitBtn from "./submitButton";
 
-// ─── Tipos de paso ─────────────────────────────────────────────────────────────
 type Step = "invite" | "form" | "otp";
 
-// ─── Campo genérico reutilizable ──────────────────────────────────────────────
+const inviteSchema = yup.object({
+  inviteCode: yup.string().required("Ingresa el código de invitación"),
+});
+
+const formSchema = yup.object({
+  name:      yup.string().required("El nombre es requerido"),
+  email:     yup.string().email("Correo inválido").required("El correo es requerido"),
+  password:  yup
+    .string()
+    .min(8, "Mínimo 8 caracteres")
+    .required("La contraseña es requerida"),
+  password2: yup
+    .string()
+    .oneOf([yup.ref("password")], "Las contraseñas no coinciden")
+    .required("Confirma tu contraseña"),
+});
+
+const otpSchema = yup.object({
+  otp: yup
+    .string()
+    .min(4, "Ingresa el código de verificación")
+    .required("El código es requerido"),
+});
+
+type InviteValues = yup.InferType<typeof inviteSchema>;
+type FormValues   = yup.InferType<typeof formSchema>;
+type OtpValues    = yup.InferType<typeof otpSchema>;
+
 function Field({
-  label, type, value, onChange, placeholder, icon, isDark, error, hint,
+  label, type, placeholder, icon, isDark, error, hint,
+  registration,
 }: {
-  label: string; type: string; value: string;
-  onChange: (v: string) => void; placeholder: string;
+  label: string; type: string; placeholder: string;
   icon: string; isDark: boolean; error?: string; hint?: string;
+  registration: React.InputHTMLAttributes<HTMLInputElement>;
 }) {
   const [show, setShow] = useState(false);
   const isPassword = type === "password";
@@ -30,15 +62,14 @@ function Field({
           <Iconify Size={16} IconString={icon} Style={{ color: isDark ? "rgba(255,255,255,0.3)" : "#94a3b8" }} />
         </span>
         <input
+          {...registration}
           type={isPassword && show ? "text" : type}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           className={`w-full pl-10 ${isPassword ? "pr-10" : "pr-4"} py-3 rounded-xl border text-sm font-medium outline-none
             transition-all duration-200 focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/60
             ${isDark
-              ? "bg-white/[0.05] border-white/[0.08] text-white placeholder:text-white/20"
-              : "bg-white border-black/[0.08] text-slate-800 placeholder:text-slate-400"
+              ? "bg-white/5 border-white/8 text-white placeholder:text-white/20"
+              : "bg-white border-black/8 text-slate-800 placeholder:text-slate-400"
             }
             ${error ? "border-red-500/60" : ""}
           `}
@@ -59,7 +90,7 @@ function Field({
   );
 }
 
-// ─── Indicador de fortaleza de contraseña ─────────────────────────────────────
+// ─── Indicador de fortaleza ───────────────────────────────────────────────────
 function PasswordStrength({ password, isDark }: { password: string; isDark: boolean }) {
   const checks = [
     password.length >= 8,
@@ -67,25 +98,20 @@ function PasswordStrength({ password, isDark }: { password: string; isDark: bool
     /[0-9]/.test(password),
     /[^A-Za-z0-9]/.test(password),
   ];
-  const score = checks.filter(Boolean).length;
+  const score  = checks.filter(Boolean).length;
   const labels = ["", "Débil", "Regular", "Buena", "Fuerte"];
   const colors = ["", "#ef4444", "#f59e0b", "#3b82f6", "#22c55e"];
-
   if (!password) return null;
   return (
     <div className="flex flex-col gap-1.5 mt-1">
       <div className="flex gap-1">
         {[0, 1, 2, 3].map((i) => (
-          <div
-            key={i}
-            className="h-1 flex-1 rounded-full transition-all duration-300"
+          <div key={i} className="h-1 flex-1 rounded-full transition-all duration-300"
             style={{ background: i < score ? colors[score] : isDark ? "rgba(255,255,255,0.1)" : "#e2e8f0" }}
           />
         ))}
       </div>
-      <span className="text-[10px] font-bold" style={{ color: colors[score] }}>
-        {labels[score]}
-      </span>
+      <span className="text-[10px] font-bold" style={{ color: colors[score] }}>{labels[score]}</span>
     </div>
   );
 }
@@ -96,8 +122,8 @@ function Stepper({ current, isDark }: { current: number; isDark: boolean }) {
   return (
     <div className="flex items-center gap-0 w-full">
       {steps.map((label, i) => {
-        const done    = i < current;
-        const active  = i === current;
+        const done   = i < current;
+        const active = i === current;
         return (
           <div key={label} className="flex items-center flex-1 last:flex-none">
             <div className="flex flex-col items-center gap-1">
@@ -136,7 +162,7 @@ function Stepper({ current, isDark }: { current: number; isDark: boolean }) {
   );
 }
 
-// ─── Alerta de error ──────────────────────────────────────────────────────────
+// ─── Alerta de error de API ───────────────────────────────────────────────────
 function ErrorAlert({ msg }: { msg: string }) {
   return (
     <motion.div
@@ -156,166 +182,121 @@ export default function RegisterPage() {
   const isDark    = theme === "dark";
   const navigate  = useNavigate();
 
-  // ── Pasos
-  const [step, setStep] = useState<Step>("invite");
-
-  // ── Paso 1: código de invitación
-  const [inviteCode, setInviteCode] = useState("");
-
-  // ── Paso 2: datos del usuario
-  const [name,      setName]      = useState("");
-  const [email,     setEmail]     = useState("");
-  const [password,  setPassword]  = useState("");
-  const [password2, setPassword2] = useState("");
-
-  // ── Paso 3: OTP
-  const [otp,     setOtp]     = useState("");
-  const [otpSent, setOtpSent] = useState(false); // para mostrar el reenvío
-
-  // ── Estado general
-  const [loading, setLoading] = useState(false);
-  const [error,   setError]   = useState("");
+  const [step,     setStep]     = useState<Step>("invite");
+  const [email,    setEmail]    = useState("");   // persiste entre pasos
+  const [loading,  setLoading]  = useState(false);
+  const [apiError, setApiError] = useState("");
+  const [otpSent,  setOtpSent]  = useState(false);
 
   const stepIndex: Record<Step, number> = { invite: 0, form: 1, otp: 2 };
 
-  const cardBg     = isDark ? "bg-white/[0.03]" : "bg-white";
-  const cardShadow = isDark
-    ? "0 0 0 1px rgba(255,255,255,0.07)"
-    : "0 8px 48px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.05)";
   const textPrimary = isDark ? "text-white" : "text-slate-900";
   const textMuted   = isDark ? "text-white/40" : "text-slate-400";
 
-  // ── Handlers ──────────────────────────────────────────────────────────────
+  // ── Forms ─────────────────────────────────────────────────────────────────
+  const inviteForm = useForm<InviteValues>({ resolver: yupResolver(inviteSchema) });
+  const mainForm   = useForm<FormValues>  ({ resolver: yupResolver(formSchema)   });
+  const otpForm    = useForm<OtpValues>   ({ resolver: yupResolver(otpSchema)    });
 
-  async function handleInviteSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-    if (!inviteCode.trim()) { setError("Ingresa el código de invitación."); return; }
+  // ── Handlers ──────────────────────────────────────────────────────────────
+  async function handleInviteSubmit({ inviteCode }: InviteValues) {
+    setApiError("");
     setLoading(true);
     try {
       const valid = await validateInviteCode(inviteCode);
-      if (!valid) { setError("Código de invitación inválido o ya utilizado."); return; }
+      if (!valid) { setApiError("Código de invitación inválido o ya utilizado."); return; }
       setStep("form");
     } catch {
-      setError("No se pudo validar el código. Intenta de nuevo.");
+      setApiError("No se pudo validar el código. Intenta de nuevo.");
     } finally {
       setLoading(false);
     }
   }
 
-  async function handleFormSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-    if (!name || !email || !password || !password2) {
-      setError("Completa todos los campos."); return;
-    }
-    if (password !== password2) {
-      setError("Las contraseñas no coinciden."); return;
-    }
-    if (password.length < 8) {
-      setError("La contraseña debe tener al menos 8 caracteres."); return;
-    }
+  async function handleFormSubmit({ name, email: formEmail, password }: FormValues) {
+    setApiError("");
     setLoading(true);
     try {
-      await signUp(name, email, password);
-      // Cognito envía el OTP automáticamente al correo
+      await signUp(name, formEmail, password);
+      setEmail(formEmail);
       setOtpSent(true);
       setStep("otp");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       const msg: Record<string, string> = {
-        UsernameExistsException: "Ya existe una cuenta con ese correo.",
+        UsernameExistsException:  "Ya existe una cuenta con ese correo.",
         InvalidPasswordException: "La contraseña no cumple los requisitos de seguridad.",
       };
-      setError(msg[err.code] ?? err.message ?? "Error al registrar. Intenta de nuevo.");
+      setApiError(msg[err.code] ?? err.message ?? "Error al registrar. Intenta de nuevo.");
     } finally {
       setLoading(false);
     }
   }
 
-  async function handleOtpSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-    if (otp.length < 4) { setError("Ingresa el código de verificación."); return; }
+  async function handleOtpSubmit({ otp }: OtpValues) {
+    setApiError("");
     setLoading(true);
     try {
       await confirmSignUp(email, otp);
       navigate("/plataforma/login?verified=1");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       const msg: Record<string, string> = {
-        CodeMismatchException:   "El código es incorrecto.",
-        ExpiredCodeException:    "El código ha expirado. Solicita uno nuevo.",
-        NotAuthorizedException:  "Esta cuenta ya fue confirmada.",
+        CodeMismatchException:  "El código es incorrecto.",
+        ExpiredCodeException:   "El código ha expirado. Solicita uno nuevo.",
+        NotAuthorizedException: "Esta cuenta ya fue confirmada.",
       };
-      setError(msg[err.code] ?? err.message ?? "Error al verificar.");
+      setApiError(msg[err.code] ?? err.message ?? "Error al verificar.");
     } finally {
       setLoading(false);
     }
   }
 
   async function handleResend() {
-    setError("");
+    setApiError("");
     setLoading(true);
     try {
       await resendConfirmationCode(email);
       setOtpSent(true);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      setError(err.message ?? "No se pudo reenviar el código.");
+      setApiError(err.message ?? "No se pudo reenviar el código.");
     } finally {
       setLoading(false);
     }
   }
 
-  // ── Render ────────────────────────────────────────────────────────────────
-  return (
-    <div
-      className={`min-h-screen flex items-center justify-center px-4 py-12 ${isDark ? "bg-[#05070b]" : "bg-[#f8fafc]"}`}
-    >
-      {/* Glow */}
-      <div className="absolute inset-0 pointer-events-none" style={{
-        background: isDark
-          ? "radial-gradient(ellipse 60% 40% at 50% 0%, rgba(245,158,11,0.08) 0%, transparent 70%)"
-          : "radial-gradient(ellipse 60% 40% at 50% 0%, rgba(245,158,11,0.06) 0%, transparent 70%)",
-      }} />
 
-      <motion.div
-        initial={{ opacity: 0, y: 28, filter: "blur(12px)" }}
-        animate={{ opacity: 1, y: 0,  filter: "blur(0px)"  }}
-        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        className={`relative w-full max-w-md rounded-3xl p-8 md:p-10 flex flex-col gap-8 ${cardBg}`}
-        style={{ boxShadow: cardShadow }}
+
+  return (
+    <AuthMock>
+      <div
+        className={`w-full rounded-3xl p-8 flex flex-col gap-8 `}
       >
-        {/* Header */}
         <div className="flex flex-col items-center gap-2">
-          <div
-            className="w-12 h-12 rounded-2xl flex items-center justify-center mb-1"
-            style={{ background: "linear-gradient(135deg, #f59e0b, #fb923c)" }}
-          >
-            <Iconify Size={26} IconString="solar:user-plus-bold-duotone" Style={{ color: "#fff" }} />
-          </div>
           <h1 className={`text-2xl font-black tracking-tight ${textPrimary}`}>Crear cuenta</h1>
           <p className={`text-sm text-center ${textMuted}`}>
             Solo miembros con código de invitación pueden registrarse
           </p>
         </div>
 
-        {/* Stepper */}
         <Stepper current={stepIndex[step]} isDark={isDark} />
 
-        {/* ── PASO 1: Código de invitación ───────────────────────── */}
         <AnimatePresence mode="wait">
           {step === "invite" && (
             <motion.form
               key="invite"
               initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }}
               transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              onSubmit={handleInviteSubmit}
+              onSubmit={inviteForm.handleSubmit(handleInviteSubmit)}
               className="flex flex-col gap-5"
             >
               <div
                 className="flex items-start gap-3 p-4 rounded-2xl"
                 style={{ background: isDark ? "rgba(245,158,11,0.08)" : "rgba(245,158,11,0.06)" }}
               >
-                <Iconify Size={18} IconString="solar:key-bold-duotone" Style={{ color: "#f59e0b", flexShrink: 0, marginTop: 1 }} />
+                <Iconify Size={18} IconString="solar:key-bold-duotone"
+                  Style={{ color: "#f59e0b", flexShrink: 0, marginTop: 1 }} />
                 <p className={`text-xs leading-relaxed ${isDark ? "text-white/55" : "text-slate-500"}`}>
                   Para registrarte en la plataforma CXUM necesitas un{" "}
                   <strong className={textPrimary}>código de invitación</strong> proporcionado
@@ -325,14 +306,20 @@ export default function RegisterPage() {
 
               <Field
                 label="Código de invitación" type="text"
-                value={inviteCode} onChange={(v) => setInviteCode(v.toUpperCase())}
                 placeholder="CXUM-XXXX-XXXX"
                 icon="solar:ticket-bold-duotone" isDark={isDark}
-                error={undefined}
                 hint="El código es sensible a mayúsculas"
+                error={inviteForm.formState.errors.inviteCode?.message}
+                registration={{
+                  ...inviteForm.register("inviteCode"),
+                  onChange: (e) => {
+                    e.target.value = e.target.value.toUpperCase();
+                    inviteForm.register("inviteCode").onChange(e);
+                  },
+                }}
               />
 
-              {error && <ErrorAlert msg={error} />}
+              {apiError && <ErrorAlert msg={apiError} />}
 
               <SubmitBtn loading={loading} label="Validar código" icon="solar:arrow-right-bold" />
 
@@ -345,49 +332,58 @@ export default function RegisterPage() {
             </motion.form>
           )}
 
-          {/* ── PASO 2: Datos del usuario ──────────────────────────── */}
           {step === "form" && (
             <motion.form
               key="form"
               initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }}
               transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              onSubmit={handleFormSubmit}
+              onSubmit={mainForm.handleSubmit(handleFormSubmit)}
               className="flex flex-col gap-5"
             >
-              <Field label="Nombre completo" type="text" value={name} onChange={setName}
-                placeholder="María Pérez" icon="solar:user-bold-duotone" isDark={isDark} />
+              <Field label="Nombre completo" type="text"
+                placeholder="María Pérez" icon="solar:user-bold-duotone" isDark={isDark}
+                error={mainForm.formState.errors.name?.message}
+                registration={mainForm.register("name")} />
 
-              <Field label="Correo electrónico" type="email" value={email} onChange={setEmail}
-                placeholder="tu@correo.com" icon="solar:letter-bold-duotone" isDark={isDark} />
+              <Field label="Correo electrónico" type="email"
+                placeholder="tu@correo.com" icon="solar:letter-bold-duotone" isDark={isDark}
+                error={mainForm.formState.errors.email?.message}
+                registration={mainForm.register("email")} />
 
               <div className="flex flex-col gap-1">
-                <Field label="Contraseña" type="password" value={password} onChange={setPassword}
-                  placeholder="••••••••" icon="solar:lock-password-bold-duotone" isDark={isDark} />
-                <PasswordStrength password={password} isDark={isDark} />
+                <Field label="Contraseña" type="password"
+                  placeholder="••••••••" icon="solar:lock-password-bold-duotone" isDark={isDark}
+                  error={mainForm.formState.errors.password?.message}
+                  registration={mainForm.register("password")} />
+                <PasswordStrength
+                  password={mainForm.watch("password") ?? ""}
+                  isDark={isDark}
+                />
               </div>
 
-              <Field label="Confirmar contraseña" type="password" value={password2} onChange={setPassword2}
+              <Field label="Confirmar contraseña" type="password"
                 placeholder="••••••••" icon="solar:lock-password-bold-duotone" isDark={isDark}
-                error={password2 && password !== password2 ? "Las contraseñas no coinciden" : undefined} />
+                error={mainForm.formState.errors.password2?.message}
+                registration={mainForm.register("password2")} />
 
-              {error && <ErrorAlert msg={error} />}
+              {apiError && <ErrorAlert msg={apiError} />}
 
               <SubmitBtn loading={loading} label="Crear cuenta" icon="solar:user-plus-bold" />
 
-              <button type="button" onClick={() => { setStep("invite"); setError(""); }}
+              <button type="button"
+                onClick={() => { setStep("invite"); setApiError(""); mainForm.clearErrors(); }}
                 className={`text-xs font-semibold text-center hover:underline ${textMuted}`}>
                 ← Volver
               </button>
             </motion.form>
           )}
 
-          {/* ── PASO 3: OTP ────────────────────────────────────────── */}
           {step === "otp" && (
             <motion.form
               key="otp"
               initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }}
               transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              onSubmit={handleOtpSubmit}
+              onSubmit={otpForm.handleSubmit(handleOtpSubmit)}
               className="flex flex-col gap-5"
             >
               <div
@@ -403,30 +399,39 @@ export default function RegisterPage() {
                 </p>
               </div>
 
-              {/* Input OTP grande */}
               <div className="flex flex-col gap-1.5">
                 <label className={`text-xs font-bold tracking-wide ${isDark ? "text-white/60" : "text-slate-500"}`}>
                   Código de verificación
                 </label>
                 <input
+                  {...otpForm.register("otp")}
                   type="text"
                   inputMode="numeric"
                   maxLength={6}
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
                   placeholder="000000"
+                  onChange={(e) => {
+                    e.target.value = e.target.value.replace(/\D/g, "");
+                    otpForm.register("otp").onChange(e);
+                  }}
                   className={`w-full text-center text-3xl font-black tracking-[0.4em] py-4 rounded-xl border outline-none
                     transition-all duration-200 focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/60
                     ${isDark
-                      ? "bg-white/[0.05] border-white/[0.08] text-white placeholder:text-white/15"
-                      : "bg-white border-black/[0.08] text-slate-900 placeholder:text-slate-300"
-                    }`}
+                      ? "bg-white/5 border-white/8 text-white placeholder:text-white/15"
+                      : "bg-white border-black/8 text-slate-900 placeholder:text-slate-300"
+                    }
+                    ${otpForm.formState.errors.otp ? "border-red-500/60" : ""}
+                  `}
                 />
+                {otpForm.formState.errors.otp && (
+                  <p className="text-xs text-red-400 font-medium">
+                    {otpForm.formState.errors.otp.message}
+                  </p>
+                )}
               </div>
 
-              {error && <ErrorAlert msg={error} />}
+              {apiError && <ErrorAlert msg={apiError} />}
 
-              {otpSent && !error && (
+              {otpSent && !apiError && (
                 <p className="text-xs text-center" style={{ color: "#22c55e" }}>
                   ✓ Código reenviado exitosamente
                 </p>
@@ -445,37 +450,7 @@ export default function RegisterPage() {
             </motion.form>
           )}
         </AnimatePresence>
-      </motion.div>
-    </div>
-  );
-}
-
-// ─── Botón de submit compartido ───────────────────────────────────────────────
-function SubmitBtn({ loading, label, icon }: { loading: boolean; label: string; icon: string }) {
-  return (
-    <motion.button
-      type="submit"
-      disabled={loading}
-      whileHover={{ scale: loading ? 1 : 1.02 }}
-      whileTap={{ scale: loading ? 1 : 0.98 }}
-      className="w-full py-3.5 rounded-xl text-sm font-black text-white flex items-center justify-center gap-2"
-      style={{
-        background: "linear-gradient(135deg, #f59e0b, #fb923c)",
-        opacity: loading ? 0.7 : 1,
-        boxShadow: "0 4px 20px rgba(245,158,11,0.35)",
-      }}
-    >
-      {loading ? (
-        <>
-          <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-          Procesando…
-        </>
-      ) : (
-        <>
-          <Iconify Size={16} IconString={icon} />
-          {label}
-        </>
-      )}
-    </motion.button>
+      </div>
+    </AuthMock>
   );
 }
