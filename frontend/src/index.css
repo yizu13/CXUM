@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color: rgba(255, 255, 255, 0.87);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── SimpleBar custom scrollbar ─────────────────────────────────────────── */
+.simplebar-scrollbar::before {
+  background: rgba(245, 158, 11, 0.6) !important;
+  border-radius: 999px !important;
+}
+.simplebar-scrollbar.simplebar-visible::before {
+  opacity: 1 !important;
+}
+.simplebar-track.simplebar-vertical {
+  width: 6px !important;
+  right: 2px !important;
+  background: transparent !important;
+}
+.simplebar-track.simplebar-horizontal {
+  height: 6px !important;
+  background: transparent !important;
+}
