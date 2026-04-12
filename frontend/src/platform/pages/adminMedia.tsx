@@ -27,7 +27,8 @@ export default function AdminMediaPage() {
       setImages(res.images);
     } catch (err) {
       console.error("Error al cargar imágenes:", err);
-      alert(`Error al cargar imágenes: ${err.message || "Error desconocido"}`);
+      const errorMessage = err instanceof Error ? err.message : "Error desconocido";
+      alert(`Error al cargar imágenes: ${errorMessage}`);
     } finally {
       setLoading(false);
     }

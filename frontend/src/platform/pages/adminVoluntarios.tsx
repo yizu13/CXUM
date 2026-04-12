@@ -519,7 +519,7 @@ export default function AdminVoluntariosPage() {
   const [voluntarios, setVoluntarios] = useState<Voluntario[]>([]);
   const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
   const [externos, setExternos] = useState<Solicitud[]>([]);
-  const [loadingVols, setLoadingVols] = useState(true);
+  const [_loadingVols, setLoadingVols] = useState(true);
   const [loadingSols, setLoadingSols] = useState(true);
   const [search, setSearch] = useState("");
   const [filterRole, setFilterRole] = useState<string>("todos");
@@ -592,13 +592,12 @@ export default function AdminVoluntariosPage() {
     }
   };
 
-  async function handleInviteUser(solicitud: Solicitud) {
-    const res = await inviteUserToSystem(solicitud.email, solicitud.nombre);
+  async function handleInviteUser(solicitud: Solicitud): Promise<void> {
+    await inviteUserToSystem(solicitud.email, solicitud.nombre);
     // Marcar localmente como incluida (no hay campo en DynamoDB para esto aún)
     setExternos((prev) => prev.map((s) =>
       s.id === solicitud.id ? { ...s, sistemaIncluido: true } as Solicitud & { sistemaIncluido: boolean } : s
     ));
-    return res;
   }
 
   const cardStyle = {

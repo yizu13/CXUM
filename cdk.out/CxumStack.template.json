@@ -251,6 +251,146 @@
     "aws:cdk:path": "CxumStack/ImagesBucket/Policy/Resource"
    }
   },
+  "FrontendBucketEFE2E19C": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketName": "cxum-frontend-640168450436",
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/FrontendBucket/Resource"
+   }
+  },
+  "FrontendBucketPolicy1DFF75D9": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "FrontendBucketEFE2E19C"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:GetObject",
+       "Effect": "Allow",
+       "Principal": {
+        "CanonicalUser": {
+         "Fn::GetAtt": [
+          "FrontendDistributionOrigin1S3OriginC94250A2",
+          "S3CanonicalUserId"
+         ]
+        }
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "FrontendBucketEFE2E19C",
+            "Arn"
+           ]
+          },
+          "/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/FrontendBucket/Policy/Resource"
+   }
+  },
+  "FrontendDistributionOrigin1S3OriginC94250A2": {
+   "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
+   "Properties": {
+    "CloudFrontOriginAccessIdentityConfig": {
+     "Comment": "Identity for CxumStackFrontendDistributionOrigin127C4F68C"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/FrontendDistribution/Origin1/S3Origin/Resource"
+   }
+  },
+  "FrontendDistributionE6EAF405": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "Comment": "CXUM Frontend Distribution",
+     "CustomErrorResponses": [
+      {
+       "ErrorCachingMinTTL": 300,
+       "ErrorCode": 404,
+       "ResponseCode": 200,
+       "ResponsePagePath": "/index.html"
+      },
+      {
+       "ErrorCachingMinTTL": 300,
+       "ErrorCode": 403,
+       "ResponseCode": 200,
+       "ResponsePagePath": "/index.html"
+      }
+     ],
+     "DefaultCacheBehavior": {
+      "AllowedMethods": [
+       "GET",
+       "HEAD",
+       "OPTIONS"
+      ],
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+      "CachedMethods": [
+       "GET",
+       "HEAD",
+       "OPTIONS"
+      ],
+      "Compress": true,
+      "TargetOriginId": "CxumStackFrontendDistributionOrigin127C4F68C",
+      "ViewerProtocolPolicy": "redirect-to-https"
+     },
+     "DefaultRootObject": "index.html",
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "DomainName": {
+        "Fn::GetAtt": [
+         "FrontendBucketEFE2E19C",
+         "RegionalDomainName"
+        ]
+       },
+       "Id": "CxumStackFrontendDistributionOrigin127C4F68C",
+       "S3OriginConfig": {
+        "OriginAccessIdentity": {
+         "Fn::Join": [
+          "",
+          [
+           "origin-access-identity/cloudfront/",
+           {
+            "Ref": "FrontendDistributionOrigin1S3OriginC94250A2"
+           }
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "PriceClass": "PriceClass_100"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/FrontendDistribution/Resource"
+   }
+  },
   "AuthorizerMultiRoleServiceRole9F338D61": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -4884,7 +5024,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/12OzU7DMBCEn6V3Z6lCkbimSKicqFLu1cYxYZvEjux1o2Dl3ZHjliBOM99ofyaHfPcM2w2OLpN1m3VUQTgxylbg6M6hnjT2pq4gfGDVKfHyqRczC/cIYe9lqziGN5fkaDqS0xrfOMEenZpFh31VI4RXryWT0TEVd4ibf/1R2Z6cI6NnQdhDKE2qsuj6LblY7YzOKXZQRBE4UIOsRpyuOYQD81AMFBeiRDwxNsvBZGJUGs/JvWlWjcV7mX+4zhWev4ylb2WX0780z6JUzngrlVj6xCekmzj17nnwPAttagUX93DNd/AE283FEWXWa6ZeQZn0B+0EqqSrAQAA"
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/3VPy27CMBD8lt6Ni1Iq9RqoUDmBQu9oY5t0IbEj7xpErfx7ZQcKqtTTPDSzj0IWszc5fYIzTZQ+TlqsZdwyqKOAM+2ivljonK5l/IS6NWKxt5kMgl5knAd1NJzMKxth41pUl7t91aOYA5lBqNYFvffOsozvSOyxDozOirXHBm2plCFaaWMZOU9apMIyFf5LPI4ZRAtdrUHGZbAqOWmtuIkUf+Qb4zskykWETsbKjb9mvL8zsvT7DogMkywTCOixATZnuJwKGT+Y+7LHVEiQ5JahyQNHkqzKBR7ZyrJpPNyO+SPvuTLwl/P4bXwe/auGQVSGXPDKiHxPWoK2Sal14D7wIKzTRh7o+VTM5KucPh0IceKDZeyMrEb8AZ50p+8MAgAA"
    },
    "Metadata": {
     "aws:cdk:path": "CxumStack/CDKMetadata/Default"
@@ -4920,6 +5060,35 @@
       ".s3.amazonaws.com"
      ]
     ]
+   }
+  },
+  "FrontendBucketName": {
+   "Description": "Nombre del bucket S3 para el frontend",
+   "Value": {
+    "Ref": "FrontendBucketEFE2E19C"
+   }
+  },
+  "CloudFrontUrl": {
+   "Description": "URL de CloudFront para acceder al frontend",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Fn::GetAtt": [
+        "FrontendDistributionE6EAF405",
+        "DomainName"
+       ]
+      }
+     ]
+    ]
+   }
+  },
+  "CloudFrontDistributionId": {
+   "Description": "ID de la distribución de CloudFront",
+   "Value": {
+    "Ref": "FrontendDistributionE6EAF405"
    }
   }
  },

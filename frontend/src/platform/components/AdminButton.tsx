@@ -17,7 +17,7 @@ export type AdminButtonVariant = "primary" | "ghost" | "danger" | "success" | "i
 export type AdminButtonSize    = "sm" | "md";
 
 export interface AdminButtonProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   onClick?: () => void;
   type?: "button" | "submit" | "reset";
   variant?: AdminButtonVariant;
@@ -28,6 +28,7 @@ export interface AdminButtonProps {
   loading?: boolean;
   loadingText?: string;
   className?: string;
+  style?: React.CSSProperties;
   fullWidth?: boolean;
   /** Forzar dark si el componente padre no tiene provider */
   forceDark?: boolean;
@@ -68,6 +69,7 @@ export default function AdminButton({
   loading = false,
   loadingText,
   className = "",
+  style,
   fullWidth = false,
   forceDark,
 }: AdminButtonProps) {
@@ -142,7 +144,7 @@ export default function AdminButton({
       ]
         .filter(Boolean)
         .join(" ")}
-      style={variantStyle}
+      style={{ ...variantStyle, ...style }}
     >
       {loading ? (
         <>

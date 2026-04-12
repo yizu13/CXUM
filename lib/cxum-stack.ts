@@ -5,6 +5,9 @@ import * as integrations from "aws-cdk-lib/aws-apigatewayv2-integrations";
 import * as authorizers from "aws-cdk-lib/aws-apigatewayv2-authorizers";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 import * as s3 from "aws-cdk-lib/aws-s3";
+import * as s3deploy from "aws-cdk-lib/aws-s3-deployment";
+import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
+import * as origins from "aws-cdk-lib/aws-cloudfront-origins";
 import * as iam from "aws-cdk-lib/aws-iam";
 import { Construct } from "constructs";
 import * as path from "path";
@@ -89,6 +92,53 @@ export class CxumStack extends cdk.Stack {
       ],
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
+
+    // ─── S3 Bucket para el frontend ──────────────────────────────────────────
+    const frontendBucket = new s3.Bucket(this, "FrontendBucket", {
+      bucketName: `cxum-frontend-${this.account}`,
+      publicReadAccess: false,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+      autoDeleteObjects: false,
+    });
+
+    // ─── CloudFront Distribution ─────────────────────────────────────────────
+    const distribution = new cloudfront.Distribution(this, "FrontendDistribution", {
+      defaultBehavior: {
+        origin: new origins.S3Origin(frontendBucket),
+        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
+        cachedMethods: cloudfront.CachedMethods.CACHE_GET_HEAD_OPTIONS,
+        compress: true,
+        cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+      },
+      defaultRootObject: "index.html",
+      errorResponses: [
+        {
+          httpStatus: 404,
+          responseHttpStatus: 200,
+          responsePagePath: "/index.html",
+          ttl: cdk.Duration.minutes(5),
+        },
+        {
+          httpStatus: 403,
+          responseHttpStatus: 200,
+          responsePagePath: "/index.html",
+          ttl: cdk.Duration.minutes(5),
+        },
+      ],
+      priceClass: cloudfront.PriceClass.PRICE_CLASS_100,
+      comment: "CXUM Frontend Distribution",
+    });
+
+    // ─── Deploy del frontend (comentado por defecto) ─────────────────────────
+    // Descomentar después de hacer build del frontend
+    // new s3deploy.BucketDeployment(this, "DeployFrontend", {
+    //   sources: [s3deploy.Source.asset(path.join(__dirname, "../frontend/dist"))],
+    //   destinationBucket: frontendBucket,
+    //   distribution,
+    //   distributionPaths: ["/*"],
+    // });
 
     // ─── Lambdas existentes (importadas) ──────────────────────────────────────
     const authorizerAdminFn = lambda.Function.fromFunctionName(this, "CxumAuthorizerAdmin", "AuthorizerAdminCXUM");
@@ -403,6 +453,21 @@ export class CxumStack extends cdk.Stack {
     new cdk.CfnOutput(this, "ImagesBucketUrl", {
       value: `https://${imagesBucket.bucketName}.s3.amazonaws.com`,
       description: "URL base del bucket S3 para imágenes",
+    });
+
+    new cdk.CfnOutput(this, "FrontendBucketName", {
+      value: frontendBucket.bucketName,
+      description: "Nombre del bucket S3 para el frontend",
+    });
+
+    new cdk.CfnOutput(this, "CloudFrontUrl", {
+      value: `https://${distribution.distributionDomainName}`,
+      description: "URL de CloudFront para acceder al frontend",
+    });
+
+    new cdk.CfnOutput(this, "CloudFrontDistributionId", {
+      value: distribution.distributionId,
+      description: "ID de la distribución de CloudFront",
     });
   }
 }

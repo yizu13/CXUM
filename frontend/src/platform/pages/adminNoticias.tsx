@@ -181,7 +181,7 @@ function NoticiaEditor({
   });
 
   // eslint-disable-next-line react-hooks/incompatible-library
-  const portadaValue = methods.watch("portada");
+  // const portadaValue = methods.watch("portada");
 
   const handleSubmit = async (data: NoticiaFormValues) => {
     if (saving) return;

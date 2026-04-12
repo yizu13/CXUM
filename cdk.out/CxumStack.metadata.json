@@ -73,6 +73,24 @@
       "data": "ImagesBucketUrl"
     }
   ],
+  "/CxumStack/FrontendBucketName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FrontendBucketName"
+    }
+  ],
+  "/CxumStack/CloudFrontUrl": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CloudFrontUrl"
+    }
+  ],
+  "/CxumStack/CloudFrontDistributionId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CloudFrontDistributionId"
+    }
+  ],
   "/CxumStack/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
@@ -131,6 +149,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ImagesBucket1E86AFB2"
+    }
+  ],
+  "/CxumStack/FrontendBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FrontendBucketEFE2E19C"
+    }
+  ],
+  "/CxumStack/FrontendDistribution/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FrontendDistributionE6EAF405"
     }
   ],
   "/CxumStack/AuthorizerMultiRole/Resource": [
@@ -263,6 +293,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ImagesBucketPolicy5ED12B6C"
+    }
+  ],
+  "/CxumStack/FrontendBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FrontendBucketPolicy1DFF75D9"
     }
   ],
   "/CxumStack/AuthorizerMultiRole/ServiceRole/Resource": [
@@ -683,6 +719,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CxumBackendDELETEadminmediaF9AAF81D"
+    }
+  ],
+  "/CxumStack/FrontendDistribution/Origin1/S3Origin/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FrontendDistributionOrigin1S3OriginC94250A2"
     }
   ],
   "/CxumStack/GetCentros/ServiceRole/DefaultPolicy/Resource": [
