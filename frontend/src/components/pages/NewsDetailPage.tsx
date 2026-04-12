@@ -29,7 +29,7 @@ function RelatedCard({
       onHoverEnd={() => setHovered(false)}
       whileHover={{ y: -4 }}
       className={`flex flex-col rounded-2xl overflow-hidden cursor-pointer ${
-        isDark ? "bg-white/[0.03]" : "bg-white"
+        isDark ? "bg-white/3" : "bg-white"
       }`}
       style={{
         boxShadow: isDark
