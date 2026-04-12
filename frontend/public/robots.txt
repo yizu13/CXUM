@@ -1,0 +1,15 @@
+# robots.txt para Cuadernos X un Mañana
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /platform
+
+# Sitemap
+Sitemap: https://d1ykljkzezf4zd.cloudfront.net/sitemap.xml
+
+# Crawl-delay para bots específicos
+User-agent: Googlebot
+Crawl-delay: 0
+
+User-agent: Bingbot
+Crawl-delay: 1

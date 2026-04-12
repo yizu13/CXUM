@@ -6,10 +6,12 @@ import { useAnimation } from "../../hooks/context/AnimationContext";
 import DefaultButton from "../modularUI/GeneralButton";
 import { AVATARS, palabrasRelacionadas, ROWS } from "../../types/EnumHero";
 import FloatingAvatar from "../modularUI/FloatingAvatar";
+import { useNavigate } from "react-router-dom";
 
 export default function Hero() {
   const { theme } = useSettings();
   const { navReady } = useAnimation();
+  const navigate = useNavigate();
   const isDark = theme === "dark";
   const sectionRef = useRef<HTMLElement>(null);
   const [mouse, setMouse] = useState({ x: 0.5, y: 0.5 });
@@ -126,15 +128,16 @@ export default function Hero() {
           />
 
           <motion.h1
-            className={`relative z-10 max-w-7xl text-5xl font-black leading-tight tracking-tight sm:text-6xl lg:text-7xl cursor-default ${
+            className={`relative z-10 max-w-7xl font-black leading-tight tracking-tight cursor-default ${
               isDark ? "text-white" : "text-slate-950"
             }`}
+            style={{ fontSize: "clamp(2rem, 6vw, 5.5rem)" }}
             custom={1}
             variants={textVariants}
             initial="hidden"
             animate={navReady ? "visible" : "hidden"}
           >
-            Construyendo oportunidades
+            Construyendo oportunidades,
             <br />
             <span
               className={`cursor-default ${isDark ? "text-white/70" : "text-slate-950/70"}`}
@@ -144,7 +147,7 @@ export default function Hero() {
           </motion.h1>
 
           <motion.p
-            className={`relative z-10 max-w-md text-base leading-relaxed cursor-default ${
+            className={`relative z-10 max-w-md text-sm sm:text-base leading-relaxed cursor-default px-2 sm:px-0 ${
               isDark ? "text-white/40" : "text-slate-700/70"
             }`}
             custom={2}
@@ -157,14 +160,21 @@ export default function Hero() {
           </motion.p>
 
           <motion.div
-            className="relative z-10 mt-2 flex gap-3"
+            className="relative z-10 mt-2 flex flex-col sm:flex-row gap-3 w-full sm:w-auto px-4 sm:px-0"
             custom={3}
             variants={textVariants}
             initial="hidden"
             animate={navReady ? "visible" : "hidden"}
           >
-            <DefaultButton textString="Ser Centro de Acopio" />
-            <DefaultButton textString="Quiero Ser Voluntario" inverted />
+            <DefaultButton 
+              textString="Ser Centro de Acopio" 
+              onClick={() => navigate("/Contacto")}
+            />
+            <DefaultButton 
+              textString="Quiero Ser Voluntario" 
+              inverted 
+              onClick={() => navigate("/Voluntarios")}
+            />
           </motion.div>
         </div>
       </div>

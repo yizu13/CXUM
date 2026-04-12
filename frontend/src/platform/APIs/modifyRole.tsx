@@ -12,6 +12,7 @@ export interface UserFromApi {
   group: UserRole | null;
   groups: string[];
   attributes: Record<string, string>;
+  userStatus?: string; // Estado de Cognito: FORCE_CHANGE_PASSWORD, CONFIRMED, etc.
 }
 
 export interface ListUsersResponse {

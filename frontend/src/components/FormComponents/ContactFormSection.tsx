@@ -63,7 +63,7 @@ export default function ContactFormSection() {
 
   return (
     <FormManaged methods={methods} onSubmit={onSubmit}>
-      <div className={`flex flex-col gap-6 p-8 rounded-3xl border backdrop-blur-md ${cardBg}`}>
+      <div className={`flex flex-col gap-5 sm:gap-6 p-5 sm:p-8 rounded-3xl border backdrop-blur-md ${cardBg}`}>
         <h2 className={`text-xl font-black ${textPrimary}`}>Envíanos un mensaje</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

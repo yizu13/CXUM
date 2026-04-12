@@ -60,16 +60,16 @@ export default function Footer() {
 
   return (
     <footer className={`w-full border-t ${bg} ${border}`}>
-      <div className="max-w-6xl mx-auto px-6 md:px-16 lg:px-24 py-16">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-16 lg:px-24 py-12 sm:py-16">
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-14">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-8 sm:gap-10 mb-10 sm:mb-14">
 
-          <div className="lg:col-span-2 flex flex-col gap-5">
+          <div className="col-span-2 lg:col-span-2 flex flex-col gap-4 sm:gap-5">
             <div className="flex items-center gap-3">
                 <img 
                   src={CXUMLOGO} 
                   alt="CXUM Logo" 
-                  className="w-82 h-auto -mb-5 -mt-5 -ml-15 object-contain" 
+                  className="w-56 sm:w-82 h-auto -mb-3 sm:-mb-5 -mt-3 sm:-mt-5 -ml-5 sm:-ml-15 object-contain" 
                 />
             </div>
 

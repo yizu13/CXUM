@@ -63,7 +63,7 @@ export default function OurTeam() {
   return (
     <section
       id="equipo"
-      className={`relative w-full min-h-screen px-6 py-28 overflow-hidden transition-colors duration-500 ${
+      className={`relative w-full min-h-screen px-4 sm:px-6 py-20 sm:py-28 overflow-hidden transition-colors duration-500 ${
         isDark ? "bg-[#05070b]" : "bg-[#f4f4ef]"
       }`}
     >
@@ -76,12 +76,12 @@ export default function OurTeam() {
         }}
       />
 
-      <div className="relative z-10 mb-20 flex flex-col items-center text-center">
-
+      <div className="relative z-10 mb-12 sm:mb-20 flex flex-col items-center text-center">
         <motion.h2
-          className={`text-5xl font-black leading-tight sm:text-6xl lg:text-7xl tracking-tighter ${
+          className={`font-black leading-tight tracking-tighter ${
             isDark ? "text-white" : "text-slate-900"
           }`}
+          style={{ fontSize: "clamp(2.2rem, 8vw, 7rem)" }}
           custom={1}
           variants={titleVariants}
           initial="hidden"
@@ -93,7 +93,8 @@ export default function OurTeam() {
         </motion.h2>
       </div>
 
-      <div className="relative z-10 mx-auto flex items-center justify-center">
+      {/* Desktop: panel de hover */}
+      <div className="hidden md:flex relative z-10 mx-auto items-center justify-center">
         <motion.div
           className="flex items-stretch justify-center gap-4 w-full"
           style={{ maxWidth: "1250px", height: "650px" }}
@@ -151,8 +152,8 @@ export default function OurTeam() {
                     className="absolute inset-0 h-full w-full object-cover"
                     style={{
                       objectPosition: "center 20%",
-                      filter: someoneHovered && !isHovered 
-                        ? "grayscale(0.4) brightness(0.4) blur(2px)" 
+                      filter: someoneHovered && !isHovered
+                        ? "grayscale(0.4) brightness(0.4) blur(2px)"
                         : "grayscale(0) brightness(1) blur(0px)",
                       scale: isHovered ? 1.05 : 1.1,
                       transition: "all 0.8s cubic-bezier(0.2, 1, 0.2, 1)",
@@ -170,7 +171,7 @@ export default function OurTeam() {
                     }}
                   />
 
-                  <div 
+                  <div
                     className={`absolute bottom-0 left-0 right-0 h-32 bg-linear-to-t from-orange-500/20 to-transparent transition-opacity duration-500 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
                   />
 
@@ -207,7 +208,39 @@ export default function OurTeam() {
         </motion.div>
       </div>
 
-      <div className="relative z-10 mx-auto mt-24 flex max-w-xs items-center gap-6 opacity-30">
+      {/* Mobile: grid de tarjetas */}
+      <div className="md:hidden relative z-10 grid grid-cols-2 gap-4 max-w-lg mx-auto">
+        {TEAM_MEMBERS.map((member, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
+            whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
+            className="relative rounded-2xl overflow-hidden shadow-lg"
+            style={{ aspectRatio: "3/4" }}
+          >
+            <img
+              src={member.src}
+              alt={member.name}
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{ objectPosition: "center 20%" }}
+            />
+            <div
+              className="absolute inset-0"
+              style={{ background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 55%, transparent 100%)" }}
+            />
+            <div className="absolute bottom-0 left-0 right-0 p-3">
+              <p className="text-orange-400 text-[9px] font-black uppercase tracking-widest leading-tight mb-0.5">
+                {member.role}
+              </p>
+              <p className="text-white text-sm font-black leading-tight">{member.name}</p>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      <div className="relative z-10 mx-auto mt-16 sm:mt-24 flex max-w-xs items-center gap-6 opacity-30">
         <div className={`h-px flex-1 ${isDark ? "bg-white" : "bg-black"}`} />
         <div className="h-2 w-2 rounded-full bg-orange-500" />
         <div className={`h-px flex-1 ${isDark ? "bg-white" : "bg-black"}`} />

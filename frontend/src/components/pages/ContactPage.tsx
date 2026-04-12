@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useSettings } from "../../hooks/context/SettingsContext";
+import { useSEO } from "../../hooks/useSEO";
 import NavBar from "../layout/NavBar";
 import Footer from "../layout/Footer";
 import Iconify from "../modularUI/IconsMock";
@@ -40,6 +41,7 @@ const SOCIAL_LINKS = [
 export default function ContactPage() {
   const { theme } = useSettings();
   const isDark = theme === "dark";
+  useSEO();
 
   const sectionRef = useRef<HTMLElement>(null);
   const [inView, setInView] = useState(false);
@@ -81,9 +83,9 @@ export default function ContactPage() {
       <section
         id="contacto"
         ref={sectionRef}
-        className={`min-h-screen w-full ${bg} pt-36 pb-24 px-6 md:px-16 lg:px-24`}
+        className={`min-h-screen w-full ${bg} pt-28 sm:pt-36 pb-20 sm:pb-24 px-4 sm:px-6 md:px-16 lg:px-24`}
       >
-        <div className="max-w-6xl mx-auto flex flex-col gap-20">
+        <div className="max-w-6xl mx-auto flex flex-col gap-12 sm:gap-20">
 
           <div className="flex flex-col items-center text-center gap-4">
 
@@ -116,7 +118,7 @@ export default function ContactPage() {
             />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-start">
 
             <div className="flex flex-col gap-8">
               <motion.div

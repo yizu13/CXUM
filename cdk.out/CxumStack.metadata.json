@@ -265,6 +265,12 @@
       "data": "ListImages72A1738D"
     }
   ],
+  "/CxumStack/GetTempPassword/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GetTempPassword2B216C17"
+    }
+  ],
   "/CxumStack/CxumBackend/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -401,6 +407,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ListImagesServiceRole66A5B4CE"
+    }
+  ],
+  "/CxumStack/GetTempPassword/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GetTempPasswordServiceRoleD6A76386"
     }
   ],
   "/CxumStack/CxumBackend/DefaultStage/Resource": [
@@ -649,6 +661,18 @@
       "data": "CxumBackendPOSTadmininviteuserE1C14D1C"
     }
   ],
+  "/CxumStack/CxumBackend/GET--admin--users--{username}--temp-password/GetTempPasswordInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadminusersusernametemppasswordGetTempPasswordIntPermissionCC48715A"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--users--{username}--temp-password/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadminusersusernametemppasswordAF8CED96"
+    }
+  ],
   "/CxumStack/CxumBackend/GET--admin--invite-token/GenerateInviteTokenInt-Permission": [
     {
       "type": "aws:cdk:logicalId",
@@ -823,6 +847,12 @@
       "data": "ListImagesServiceRoleDefaultPolicy467C90F1"
     }
   ],
+  "/CxumStack/GetTempPassword/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GetTempPasswordServiceRoleDefaultPolicyBB4A5B2C"
+    }
+  ],
   "/CxumStack/CxumBackend/GET--admin--usersget/ListUsersInt/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -923,6 +953,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CxumBackendPOSTadmininviteuserInviteUserIntC7358331"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--users--{username}--temp-password/GetTempPasswordInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadminusersusernametemppasswordGetTempPasswordInt1E3970CF"
     }
   ],
   "/CxumStack/CxumBackend/GET--admin--invite-token/GenerateInviteTokenInt/Resource": [

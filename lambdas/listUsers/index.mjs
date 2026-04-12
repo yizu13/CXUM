@@ -60,6 +60,7 @@ async function getAllUsersFromUserPool(userPoolId) {
         name: attributes.name ?? "",
         sub: attributes.sub ?? "",
         status: user.UserStatus ?? "",
+        userStatus: user.UserStatus ?? "", // Agregar explícitamente para el frontend
         enabled: Boolean(user.Enabled),
         group: getPrimaryRoleGroup(groups),
         groups,

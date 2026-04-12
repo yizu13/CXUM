@@ -148,7 +148,7 @@ export default function AuthMock({ children }: { children: React.ReactNode }) {
       >
         {/* Barra superior */}
         <div
-          className="flex items-center justify-between px-8 pt-7 pb-4 border-b"
+          className="flex items-center justify-between px-4 sm:px-8 pt-5 sm:pt-7 pb-4 border-b"
           style={{ borderColor: isDark ? "rgba(255,255,255,0.06)" : "#f1f5f9" }}
         >
           <Link to="/" className="flex items-center gap-2 group">
@@ -189,7 +189,7 @@ export default function AuthMock({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Contenido del formulario */}
-        <div className="flex-1 flex items-center justify-center px-8 md:px-16 py-10">
+        <div className="flex-1 flex items-center justify-center px-4 sm:px-8 md:px-16 py-8 sm:py-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

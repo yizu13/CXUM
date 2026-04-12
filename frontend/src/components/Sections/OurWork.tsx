@@ -159,7 +159,7 @@ export default function OurWork() {
         }}
       />
 
-      <div className="relative z-10 h-full flex items-end pb-14 px-10 md:px-20">
+      <div className="relative z-10 h-full flex items-end pb-10 sm:pb-14 px-5 sm:px-10 md:px-20">
         <div className="w-full flex flex-col gap-4 max-w-3xl">
 
           <div className="flex flex-col gap-0">
@@ -175,8 +175,8 @@ export default function OurWork() {
                   transition={{ duration: 0.35 }}
                   style={{
                     fontSize: isActive
-                      ? "clamp(3.5rem, 9vw, 10rem)"
-                      : "clamp(2.8rem, 7vw, 7.8rem)",
+                      ? "clamp(2.2rem, 9vw, 10rem)"
+                      : "clamp(1.8rem, 7vw, 7.8rem)",
                     transition: "font-size 0.55s cubic-bezier(0.16,1,0.3,1), opacity 0.35s ease",
                   }}
                 >
@@ -222,7 +222,7 @@ export default function OurWork() {
             })}
           </div>
 
-          <div className="overflow-hidden" style={{ height: "1.8rem" }}>
+          <div className="overflow-hidden" style={{ height: "2.4rem" }}>
             <AnimatePresence mode="wait">
               <motion.p
                 key={active}

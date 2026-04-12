@@ -106,7 +106,7 @@ function NoticiaPreview({ n, onClose }: { n: Noticia; onClose: () => void }) {
             icon="solar:close-circle-bold-duotone"
             onClick={onClose}
             forceDark={true}
-            className="absolute top-4 right-4 !rounded-xl"
+            className="absolute top-4 right-4 rounded-xl!"
             style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(8px)" }}
           />
           <div className="absolute bottom-4 left-4 right-4">
@@ -180,7 +180,6 @@ function NoticiaEditor({
       : noticiaDefaultValues,
   });
 
-  // eslint-disable-next-line react-hooks/incompatible-library
   // const portadaValue = methods.watch("portada");
 
   const handleSubmit = async (data: NoticiaFormValues) => {
@@ -236,7 +235,7 @@ function NoticiaEditor({
             required
           />
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <RHFSelect<NoticiaFormValues>
               name="categoria"
               label="Categoría"
@@ -479,11 +478,11 @@ export default function AdminNoticiasPage() {
   } as React.CSSProperties;
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex items-start justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-0 sm:justify-between mb-6 sm:mb-8">
         <div>
-          <h1 className="font-black text-2xl tracking-tight" style={{ color: isDark ? "#fff" : "#0f172a" }}>
+          <h1 className="font-black text-xl sm:text-2xl tracking-tight" style={{ color: isDark ? "#fff" : "#0f172a" }}>
             Noticias
           </h1>
           <p className="text-sm mt-1" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "#64748b" }}>
@@ -657,7 +656,7 @@ export default function AdminNoticiasPage() {
                                 variant="ghost"
                                 icon="solar:pen-2-bold-duotone"
                                 onClick={() => setEditor({ open: true, n })}
-                                className="!text-amber-500 !border-amber-500/25"
+                                className="text-amber-500! border-amber-500/25!"
                               >
                                 Editar
                               </AdminButton>

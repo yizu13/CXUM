@@ -60,7 +60,7 @@ export default function ChangePasswordPage() {
 
   return (
     <AuthMock>
-      <div className="w-full rounded-3xl p-8 flex flex-col gap-6">
+      <div className="w-full rounded-3xl p-4 sm:p-8 flex flex-col gap-5 sm:gap-6">
         <div className="flex flex-col items-center gap-2 text-center">
           <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-1"
             style={{ background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.3)" }}>

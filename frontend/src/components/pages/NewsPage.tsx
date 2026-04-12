@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useSettings } from "../../hooks/context/SettingsContext";
+import { useSEO } from "../../hooks/useSEO";
 import NavBar from "../layout/NavBar";
 import Footer from "../layout/Footer";
 import Iconify from "../modularUI/IconsMock";
@@ -23,7 +24,7 @@ function HeroCard({ news }: { news: NewsItem; isDark: boolean }) {
       onHoverEnd={() => setHovered(false)}
       whileHover={{ y: -4 }}
       className="relative rounded-3xl overflow-hidden cursor-pointer"
-      style={{ height: 480 }}
+      style={{ height: "clamp(280px, 55vw, 480px)" }}
       initial={{ opacity: 0, y: 32 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
@@ -277,6 +278,7 @@ export default function NewsPage() {
   const { theme } = useSettings();
   const isDark = theme === "dark";
   const { items: NEWS_BY_DATE, loading } = useNoticias();
+  useSEO();
 
   const sectionRef = useRef<HTMLElement>(null);
   const [inView, setInView] = useState(false);
@@ -324,7 +326,7 @@ export default function NewsPage() {
       <section
         id="noticias"
         ref={sectionRef}
-        className={`min-h-screen w-full ${bg} pt-36 pb-28 px-6 md:px-16 lg:px-24`}
+        className={`min-h-screen w-full ${bg} pt-28 sm:pt-36 pb-20 sm:pb-28 px-4 sm:px-6 md:px-16 lg:px-24`}
       >
         <div className="max-w-6xl mx-auto flex flex-col gap-14">
 
@@ -467,7 +469,7 @@ export default function NewsPage() {
                     </div>
                     <div className="flex flex-col gap-1">
                       <p
-                        className="text-[10px] font-black tracking-[0.2em] uppercase mb-3 px-2"
+                        className="text-[10px] font-black tracking-[0.2em] uppercase mb-3 px-2 mt-2 lg:mt-0"
                         style={{ color: isDark ? "rgba(255,255,255,0.3)" : "#94a3b8" }}
                       >
                         Más noticias recientes
