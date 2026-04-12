@@ -3,13 +3,15 @@ import { motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import { useSettings } from "../../hooks/context/SettingsContext";
 import Iconify from "../modularUI/IconsMock";
-import { NEWS_RECENT } from "../../types/newsSection";
 import NewsCard from "../modularUI/NewsCard";
+import { useNoticias } from "../../hooks/useNoticias";
 
 export default function RecentNews() {
   const { theme } = useSettings();
   const isDark = theme === "dark";
   const navigate = useNavigate();
+  const { items, loading } = useNoticias();
+  const recent = items.slice(0, 3);
 
   const sectionRef = useRef<HTMLElement>(null);
   const [inView, setInView] = useState(false);
@@ -93,14 +95,10 @@ export default function RecentNews() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {NEWS_RECENT.map((news, i) => (
-            <NewsCard
-              key={news.id}
-              news={news}
-              index={i}
-              inView={inView}
-              isDark={isDark}
-            />
+          {loading ? (
+            <p className="col-span-3 text-center text-sm py-8" style={{ color: isDark ? "rgba(255,255,255,0.3)" : "#94a3b8" }}>Cargando noticias...</p>
+          ) : recent.map((news, i) => (
+            <NewsCard key={news.id} news={news} index={i} inView={inView} isDark={isDark} />
           ))}
         </div>
 

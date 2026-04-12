@@ -8,6 +8,7 @@ import { useSettings } from "../../hooks/context/SettingsContext";
 import Iconify from "../../components/modularUI/IconsMock";
 import { signUp, confirmSignUp, resendConfirmationCode } from "../components/cognito";
 import { validateInviteCode } from "../components/inviteCodes";
+import { consumeInviteToken } from "../APIs/inviteTokens";
 import AuthMock from "./AuthMock";
 import SubmitBtn from "./submitButton";
 import {
@@ -94,6 +95,7 @@ export default function RegisterPage() {
 
   const [step,     setStep]     = useState<Step>("invite");
   const [email,    setEmail]    = useState("");
+  const [inviteToken, setInviteToken] = useState("");
   const [loading,  setLoading]  = useState(false);
   const [apiError, setApiError] = useState("");
   const [otpSent,  setOtpSent]  = useState(false);
@@ -111,8 +113,12 @@ export default function RegisterPage() {
     setApiError("");
     setLoading(true);
     try {
-      const valid = await validateInviteCode(inviteCode);
-      if (!valid) { setApiError("Código de invitación inválido o ya utilizado."); return; }
+      const result = await validateInviteCode(inviteCode);
+      if (!result.valid) {
+        setApiError(result.reason ?? "Código de invitación inválido o expirado.");
+        return;
+      }
+      setInviteToken(inviteCode.trim().toUpperCase());
       setStep("form");
     } catch {
       setApiError("No se pudo validar el código. Intenta de nuevo.");
@@ -146,6 +152,10 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       await confirmSignUp(email, otp);
+      // Marcar el token como usado al confirmar exitosamente
+      if (inviteToken) {
+        await consumeInviteToken(inviteToken, email).catch(() => {/* no bloquear el flujo */});
+      }
       navigate("/plataforma/login?verified=1");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {

@@ -5,10 +5,11 @@ import { useSettings } from "../../hooks/context/SettingsContext";
 import NavBar from "../layout/NavBar";
 import Footer from "../layout/Footer";
 import Iconify from "../modularUI/IconsMock";
-import { NEWS_BY_DATE, type NewsItem } from "../../types/newsSection";
+import type { NewsItem } from "../../types/newsSection";
+import { useNoticias } from "../../hooks/useNoticias";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-const ALL_CATEGORIES = ["Todas", ...Array.from(new Set(NEWS_BY_DATE.map((n) => n.category)))];
+// ALL_CATEGORIES se calcula dinámicamente desde los datos de la API
 
 // ─── Featured Hero Card ───────────────────────────────────────────────────────
 function HeroCard({ news }: { news: NewsItem; isDark: boolean }) {
@@ -275,11 +276,14 @@ function GridCard({ news, index, isDark }: { news: NewsItem; index: number; isDa
 export default function NewsPage() {
   const { theme } = useSettings();
   const isDark = theme === "dark";
+  const { items: NEWS_BY_DATE, loading } = useNoticias();
 
   const sectionRef = useRef<HTMLElement>(null);
   const [inView, setInView] = useState(false);
   const [activeCategory, setActiveCategory] = useState("Todas");
   const [searchQuery, setSearchQuery] = useState("");
+
+  const ALL_CATEGORIES = ["Todas", ...Array.from(new Set(NEWS_BY_DATE.map((n) => n.category)))];
 
   useEffect(() => {
     const timer = setTimeout(() => setInView(true), 80);
@@ -425,7 +429,11 @@ export default function NewsPage() {
           </motion.div>
 
           <AnimatePresence mode="wait">
-            {filtered.length === 0 ? (
+            {loading ? (
+              <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-center py-24">
+                <p className={`text-sm font-medium ${isDark ? "text-white/30" : "text-slate-400"}`}>Cargando noticias...</p>
+              </motion.div>
+            ) : filtered.length === 0 ? (
               <motion.div
                 key="empty"
                 initial={{ opacity: 0, y: 20 }}

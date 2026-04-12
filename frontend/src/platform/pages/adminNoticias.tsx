@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -10,25 +10,13 @@ import {
   type NoticiaFormValues,
 } from "../../components/FormComponents/schemas";
 import Iconify from "../../components/modularUI/IconsMock";
+import { getNoticiasAdmin, createNoticia, updateNoticia, deleteNoticia } from "../APIs/noticias";
+import type { Noticia } from "../APIs/noticias";
 import { useAuth } from "../components/AuthContextComps";
+import SimpleBar from "simplebar-react";
+import "simplebar-react/dist/simplebar.min.css";
 
-// ── Types ─────────────────────────────────────────────────────────────────────
-interface Noticia {
-  id: string;
-  titulo: string;
-  slug: string;
-  resumen: string;
-  contenido: string;
-  categoria: "emergencia" | "voluntariado" | "donaciones" | "evento" | "general";
-  autor: string;
-  estado: "borrador" | "publicado" | "archivado";
-  portada: string;
-  fechaPublicacion: string;
-  vistas: number;
-  compartidos: number;
-  likes: number;
-  tags: string[];
-}
+// ── Types re-exported from API ────────────────────────────────────────────────
 
 const CATEGORIA_CONFIG = {
   emergencia:   { label: "Emergencia",   color: "#ef4444", bg: "rgba(239,68,68,0.12)"   },
@@ -43,20 +31,6 @@ const ESTADO_CONFIG = {
   publicado: { label: "Publicado", color: "#22c55e", bg: "rgba(34,197,94,0.12)"   },
   archivado: { label: "Archivado", color: "#94a3b8", bg: "rgba(148,163,184,0.12)" },
 };
-
-const PORTADAS = [
-  "https://images.unsplash.com/photo-1593113598332-cd288d649433?w=600&q=80",
-  "https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=600&q=80",
-  "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?w=600&q=80",
-  "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=600&q=80",
-];
-
-const MOCK_NOTICIAS: Noticia[] = [
-  { id: "1", titulo: "Nueva jornada de recolección en Santo Domingo Norte", slug: "jornada-recoleccion-sdn", resumen: "Este sábado realizamos una exitosa jornada de recolección en los sectores más afectados.", contenido: "El pasado sábado, un equipo de más de 50 voluntarios se movilizó hacia los sectores más vulnerables de Santo Domingo Norte para llevar a cabo una jornada integral de recolección y distribución de víveres...", categoria: "voluntariado", autor: "María González", estado: "publicado", portada: PORTADAS[0], fechaPublicacion: "2024-06-10", vistas: 1240, compartidos: 87, likes: 203, tags: ["voluntariado", "sdn", "acopio"] },
-  { id: "2", titulo: "Apertura del nuevo centro en Santo Domingo Este", slug: "nuevo-centro-sde", resumen: "Inauguramos un nuevo punto de acopio capaz de atender a más de 300 familias.", contenido: "Con gran orgullo anunciamos la apertura de nuestro nuevo centro de acopio en el sector Los Jardines, Santo Domingo Este...", categoria: "evento", autor: "Carlos Peña", estado: "publicado", portada: PORTADAS[1], fechaPublicacion: "2024-05-28", vistas: 856, compartidos: 45, likes: 134, tags: ["apertura", "sde"] },
-  { id: "3", titulo: "Campaña urgente de medicamentos", slug: "campana-medicamentos", resumen: "Se necesitan medicamentos con urgencia para las comunidades afectadas por las inundaciones.", contenido: "Tras las recientes lluvias que afectaron varias comunidades, CXUM activa su protocolo de emergencia...", categoria: "emergencia", autor: "Ana Reyes", estado: "borrador", portada: PORTADAS[2], fechaPublicacion: "2024-06-15", vistas: 0, compartidos: 0, likes: 0, tags: ["emergencia", "salud"] },
-  { id: "4", titulo: "Gracias a todos nuestros donantes", slug: "agradecimiento-donantes", resumen: "Queremos reconocer públicamente a quienes hacen posible nuestra misión.", contenido: "Este mes hemos recibido más de 500 donaciones de familias dominicanas comprometidas con el bienestar de su comunidad...", categoria: "donaciones", autor: "Sofía Herrera", estado: "archivado", portada: PORTADAS[3], fechaPublicacion: "2024-04-20", vistas: 2103, compartidos: 156, likes: 410, tags: ["donaciones", "agradecimiento"] },
-];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function TabButton({
@@ -100,10 +74,11 @@ function NoticiaPreview({ n, onClose }: { n: Noticia; onClose: () => void }) {
         initial={{ opacity: 0, scale: 0.96, y: 16 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: 16 }}
-        className="w-full max-w-2xl rounded-3xl border overflow-hidden max-h-[90vh] overflow-y-auto"
-        style={{ background: "#0f1117", borderColor: "rgba(255,255,255,0.1)", boxShadow: "0 32px 100px rgba(0,0,0,0.5)" }}
+        className="w-full max-w-2xl rounded-3xl border overflow-hidden"
+        style={{ background: "#0f1117", borderColor: "rgba(255,255,255,0.1)", boxShadow: "0 32px 100px rgba(0,0,0,0.5)", maxHeight: "90vh" }}
       >
-        <div className="relative h-52 overflow-hidden">
+        <SimpleBar style={{ maxHeight: "90vh" }}>
+          <div className="relative h-52 overflow-hidden">
           <img src={n.portada} alt={n.titulo} className="w-full h-full object-cover" />
           <div
             className="absolute inset-0"
@@ -164,6 +139,7 @@ function NoticiaPreview({ n, onClose }: { n: Noticia; onClose: () => void }) {
         <div className="px-6 pb-8">
           <p className="text-white/70 text-sm leading-relaxed mt-3">{n.contenido}</p>
         </div>
+        </SimpleBar>
       </motion.div>
     </div>
   );
@@ -181,7 +157,6 @@ function NoticiaEditor({
   onSave: (data: NoticiaFormValues & { id?: string }) => void;
   isDark: boolean;
 }) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const methods = useForm<NoticiaFormValues>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: yupResolver(noticiaSchema) as any,
@@ -199,6 +174,7 @@ function NoticiaEditor({
       : noticiaDefaultValues,
   });
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const portadaValue = methods.watch("portada");
 
   const handleSubmit = (data: NoticiaFormValues) => {
@@ -217,9 +193,11 @@ function NoticiaEditor({
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        className="w-full max-w-2xl rounded-3xl p-6 border max-h-[90vh] overflow-y-auto"
-        style={{ background: modalBg, borderColor: modalBorder, boxShadow: "0 24px 80px rgba(0,0,0,0.4)" }}
+        className="w-full max-w-2xl rounded-3xl border overflow-hidden"
+        style={{ background: modalBg, borderColor: modalBorder, boxShadow: "0 24px 80px rgba(0,0,0,0.4)", maxHeight: "90vh" }}
       >
+        <SimpleBar style={{ maxHeight: "90vh" }}>
+          <div className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="font-black text-lg" style={{ color: isDark ? "#fff" : "#0f172a" }}>
@@ -330,6 +308,8 @@ function NoticiaEditor({
             </button>
           </div>
         </FormManaged>
+          </div>
+        </SimpleBar>
       </motion.div>
     </div>
   );
@@ -362,7 +342,7 @@ function EstadisticasTab({ noticias, isDark }: { noticias: Noticia[]; isDark: bo
           { label: "Compartidos",         value: totalComp,  icon: "solar:share-bold-duotone", color: "#8b5cf6" },
         ].map((s) => (
           <div key={s.label} className="rounded-2xl p-5 border flex items-center gap-4" style={cardStyle}>
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: `${s.color}18`, border: `1px solid ${s.color}30` }}>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: `${s.color}18`, border: `1px solid ${s.color}30` }}>
               <Iconify Size={20} IconString={s.icon} Style={{ color: s.color }} />
             </div>
             <div>
@@ -429,13 +409,28 @@ export default function AdminNoticiasPage() {
   const isDark = theme === "dark";
   const canManage = hasPermission("canManageNews");
 
-  const [noticias, setNoticias] = useState<Noticia[]>(MOCK_NOTICIAS);
+  const [noticias, setNoticias] = useState<Noticia[]>([]);
+  const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<"noticias" | "estadisticas">("noticias");
   const [search, setSearch] = useState("");
   const [filterCat, setFilterCat] = useState<string>("todos");
   const [filterEst, setFilterEst] = useState<string>("todos");
   const [editor, setEditor] = useState<{ open: boolean; n: Partial<Noticia> | null }>({ open: false, n: null });
   const [preview, setPreview] = useState<Noticia | null>(null);
+
+  const fetchNoticias = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await getNoticiasAdmin();
+      setNoticias(res.noticias);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchNoticias(); }, [fetchNoticias]);
 
   const filtered = noticias.filter((n) => {
     const matchS = n.titulo.toLowerCase().includes(search.toLowerCase()) || n.autor.toLowerCase().includes(search.toLowerCase());
@@ -444,40 +439,28 @@ export default function AdminNoticiasPage() {
     return matchS && matchC && matchE;
   });
 
-  const handleSave = (data: NoticiaFormValues & { id?: string }) => {
-    const tagsArray = data.tags
-      ? data.tags.split(",").map((t) => t.trim()).filter(Boolean)
-      : [];
-
-    if (data.id) {
-      setNoticias((prev) =>
-        prev.map((n) =>
-          n.id === data.id
-            ? { ...n, ...data, tags: tagsArray } as Noticia
-            : n
-        )
-      );
-    } else {
-      setNoticias((prev) => [
-        {
-          ...data,
-          id: Date.now().toString(),
-          slug: data.titulo.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""),
-          fechaPublicacion: new Date().toISOString().split("T")[0],
-          vistas: 0,
-          compartidos: 0,
-          likes: 0,
-          tags: tagsArray,
-        } as Noticia,
-        ...prev,
-      ]);
+  const handleSave = async (data: NoticiaFormValues & { id?: string }) => {
+    try {
+      if (data.id) {
+        await updateNoticia(data.id, data);
+      } else {
+        await createNoticia(data);
+      }
+      await fetchNoticias();
+    } catch (err) {
+      console.error(err);
     }
     setEditor({ open: false, n: null });
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm("¿Eliminar esta noticia?")) {
-      setNoticias((prev) => prev.filter((n) => n.id !== id));
+      try {
+        await deleteNoticia(id);
+        setNoticias((prev) => prev.filter((n) => n.id !== id));
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
 
@@ -578,6 +561,11 @@ export default function AdminNoticiasPage() {
             </div>
 
             {/* Grid */}
+            {loading ? (
+              <div className="text-center py-20">
+                <p className="text-sm font-medium" style={{ color: isDark ? "rgba(255,255,255,0.3)" : "#94a3b8" }}>Cargando noticias...</p>
+              </div>
+            ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               <AnimatePresence mode="popLayout">
                 {filtered.map((n) => {
@@ -687,8 +675,9 @@ export default function AdminNoticiasPage() {
                 })}
               </AnimatePresence>
             </div>
+            )}
 
-            {filtered.length === 0 && (
+            {!loading && filtered.length === 0 && (
               <div className="text-center py-20">
                 <p className="text-lg font-black" style={{ color: isDark ? "rgba(255,255,255,0.2)" : "#cbd5e1" }}>
                   Sin resultados

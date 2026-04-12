@@ -20,10 +20,10 @@ import {
 } from "./schemas";
 
 
+import { submitVolunteer } from "../../platform/APIs/solicitudes";
+
 async function submitVolunteerForm(data: VolunteerFormValues): Promise<void> {
-  // TODO: replace with your actual API call
-  console.log("[VolunteerForm] submitted →", data);
-  await new Promise((r) => setTimeout(r, 1400));
+  await submitVolunteer(data);
 }
 
 

@@ -1,0 +1,4311 @@
+{
+ "Resources": {
+  "CentrosTable883DAA72": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": "cxum-centros"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CentrosTable/Resource"
+   }
+  },
+  "NoticiasTable429A8F57": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": "cxum-noticias"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/NoticiasTable/Resource"
+   }
+  },
+  "SolicitudesTable712AEA38": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": "cxum-solicitudes"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/SolicitudesTable/Resource"
+   }
+  },
+  "ContactosTableCDABD28B": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": "cxum-contactos"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/ContactosTable/Resource"
+   }
+  },
+  "InviteTokensTableC8335281": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "token",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "token",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": "cxum-invite-tokens",
+    "TimeToLiveSpecification": {
+     "AttributeName": "expiresAtEpoch",
+     "Enabled": true
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/InviteTokensTable/Resource"
+   }
+  },
+  "ActivityTable0B58B12C": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "pk",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "createdAt",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "pk",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "createdAt",
+      "KeyType": "RANGE"
+     }
+    ],
+    "TableName": "cxum-activity"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/ActivityTable/Resource"
+   }
+  },
+  "ProfilesTable3B48B4C6": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "username",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "username",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": "cxum-user-profiles"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/ProfilesTable/Resource"
+   }
+  },
+  "AuthorizerMultiRoleServiceRole9F338D61": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/AuthorizerMultiRole/ServiceRole/Resource"
+   }
+  },
+  "AuthorizerMultiRole536FC7EC": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-640168450436-us-east-2",
+     "S3Key": "633a248185ddb331f4ef11bab223084a157c3465da9c43bbab3dc58d1c9e2719.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "COGNITO_USER_POOL_ID": "us-east-2_jjcAqBdVn",
+      "COGNITO_APP_CLIENT_ID": "18n7rhj63h6modf5ol9m637ism",
+      "CENTROS_TABLE": {
+       "Ref": "CentrosTable883DAA72"
+      },
+      "NOTICIAS_TABLE": {
+       "Ref": "NoticiasTable429A8F57"
+      },
+      "SOLICITUDES_TABLE": {
+       "Ref": "SolicitudesTable712AEA38"
+      },
+      "CONTACTOS_TABLE": {
+       "Ref": "ContactosTableCDABD28B"
+      },
+      "INVITE_TOKENS_TABLE": {
+       "Ref": "InviteTokensTableC8335281"
+      },
+      "ACTIVITY_TABLE": {
+       "Ref": "ActivityTable0B58B12C"
+      },
+      "PROFILES_TABLE": {
+       "Ref": "ProfilesTable3B48B4C6"
+      }
+     }
+    },
+    "FunctionName": "AuthorizerMultiRoleCXUM",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "AuthorizerMultiRoleServiceRole9F338D61",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "AuthorizerMultiRoleServiceRole9F338D61"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/AuthorizerMultiRole/Resource",
+    "aws:asset:path": "asset.633a248185ddb331f4ef11bab223084a157c3465da9c43bbab3dc58d1c9e2719",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "GetCentrosServiceRole3D22E798": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/GetCentros/ServiceRole/Resource"
+   }
+  },
+  "GetCentrosServiceRoleDefaultPolicy1089C5E1": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CentrosTable883DAA72",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CentrosTable883DAA72",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "GetCentrosServiceRoleDefaultPolicy1089C5E1",
+    "Roles": [
+     {
+      "Ref": "GetCentrosServiceRole3D22E798"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/GetCentros/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "GetCentros0D9CEB85": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-640168450436-us-east-2",
+     "S3Key": "78ceb215e292cfedf335e2de1290d739b6a69afb3a1c79d2831cfa0fd9621a57.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "COGNITO_USER_POOL_ID": "us-east-2_jjcAqBdVn",
+      "COGNITO_APP_CLIENT_ID": "18n7rhj63h6modf5ol9m637ism",
+      "CENTROS_TABLE": {
+       "Ref": "CentrosTable883DAA72"
+      },
+      "NOTICIAS_TABLE": {
+       "Ref": "NoticiasTable429A8F57"
+      },
+      "SOLICITUDES_TABLE": {
+       "Ref": "SolicitudesTable712AEA38"
+      },
+      "CONTACTOS_TABLE": {
+       "Ref": "ContactosTableCDABD28B"
+      },
+      "INVITE_TOKENS_TABLE": {
+       "Ref": "InviteTokensTableC8335281"
+      },
+      "ACTIVITY_TABLE": {
+       "Ref": "ActivityTable0B58B12C"
+      },
+      "PROFILES_TABLE": {
+       "Ref": "ProfilesTable3B48B4C6"
+      }
+     }
+    },
+    "FunctionName": "getCentrosCXUM",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "GetCentrosServiceRole3D22E798",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "GetCentrosServiceRoleDefaultPolicy1089C5E1",
+    "GetCentrosServiceRole3D22E798"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/GetCentros/Resource",
+    "aws:asset:path": "asset.78ceb215e292cfedf335e2de1290d739b6a69afb3a1c79d2831cfa0fd9621a57",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "MutateCentroServiceRole121CE92E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/MutateCentro/ServiceRole/Resource"
+   }
+  },
+  "MutateCentroServiceRoleDefaultPolicy323E6C1A": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CentrosTable883DAA72",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CentrosTable883DAA72",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CentrosTable883DAA72",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ActivityTable0B58B12C",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MutateCentroServiceRoleDefaultPolicy323E6C1A",
+    "Roles": [
+     {
+      "Ref": "MutateCentroServiceRole121CE92E"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/MutateCentro/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "MutateCentro20801FAD": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-640168450436-us-east-2",
+     "S3Key": "ebd4d754416f371c978a421de07d1799137f9b929c98aefffa25e9be1be92830.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "COGNITO_USER_POOL_ID": "us-east-2_jjcAqBdVn",
+      "COGNITO_APP_CLIENT_ID": "18n7rhj63h6modf5ol9m637ism",
+      "CENTROS_TABLE": {
+       "Ref": "CentrosTable883DAA72"
+      },
+      "NOTICIAS_TABLE": {
+       "Ref": "NoticiasTable429A8F57"
+      },
+      "SOLICITUDES_TABLE": {
+       "Ref": "SolicitudesTable712AEA38"
+      },
+      "CONTACTOS_TABLE": {
+       "Ref": "ContactosTableCDABD28B"
+      },
+      "INVITE_TOKENS_TABLE": {
+       "Ref": "InviteTokensTableC8335281"
+      },
+      "ACTIVITY_TABLE": {
+       "Ref": "ActivityTable0B58B12C"
+      },
+      "PROFILES_TABLE": {
+       "Ref": "ProfilesTable3B48B4C6"
+      }
+     }
+    },
+    "FunctionName": "mutateCentroCXUM",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "MutateCentroServiceRole121CE92E",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "MutateCentroServiceRoleDefaultPolicy323E6C1A",
+    "MutateCentroServiceRole121CE92E"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/MutateCentro/Resource",
+    "aws:asset:path": "asset.ebd4d754416f371c978a421de07d1799137f9b929c98aefffa25e9be1be92830",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "GetNoticiasServiceRoleF8CB585A": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/GetNoticias/ServiceRole/Resource"
+   }
+  },
+  "GetNoticiasServiceRoleDefaultPolicy93B6A2A9": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "NoticiasTable429A8F57",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "NoticiasTable429A8F57",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "GetNoticiasServiceRoleDefaultPolicy93B6A2A9",
+    "Roles": [
+     {
+      "Ref": "GetNoticiasServiceRoleF8CB585A"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/GetNoticias/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "GetNoticias304B5887": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-640168450436-us-east-2",
+     "S3Key": "74cc2da477cbe9017faeb1c92bf32d9962a9d636b1e252ba3203c800bceb577e.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "COGNITO_USER_POOL_ID": "us-east-2_jjcAqBdVn",
+      "COGNITO_APP_CLIENT_ID": "18n7rhj63h6modf5ol9m637ism",
+      "CENTROS_TABLE": {
+       "Ref": "CentrosTable883DAA72"
+      },
+      "NOTICIAS_TABLE": {
+       "Ref": "NoticiasTable429A8F57"
+      },
+      "SOLICITUDES_TABLE": {
+       "Ref": "SolicitudesTable712AEA38"
+      },
+      "CONTACTOS_TABLE": {
+       "Ref": "ContactosTableCDABD28B"
+      },
+      "INVITE_TOKENS_TABLE": {
+       "Ref": "InviteTokensTableC8335281"
+      },
+      "ACTIVITY_TABLE": {
+       "Ref": "ActivityTable0B58B12C"
+      },
+      "PROFILES_TABLE": {
+       "Ref": "ProfilesTable3B48B4C6"
+      }
+     }
+    },
+    "FunctionName": "getNoticiasCXUM",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "GetNoticiasServiceRoleF8CB585A",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "GetNoticiasServiceRoleDefaultPolicy93B6A2A9",
+    "GetNoticiasServiceRoleF8CB585A"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/GetNoticias/Resource",
+    "aws:asset:path": "asset.74cc2da477cbe9017faeb1c92bf32d9962a9d636b1e252ba3203c800bceb577e",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "MutateNoticiaServiceRoleFEC6B10B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/MutateNoticia/ServiceRole/Resource"
+   }
+  },
+  "MutateNoticiaServiceRoleDefaultPolicyCD69825D": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "NoticiasTable429A8F57",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "NoticiasTable429A8F57",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "NoticiasTable429A8F57",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ActivityTable0B58B12C",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MutateNoticiaServiceRoleDefaultPolicyCD69825D",
+    "Roles": [
+     {
+      "Ref": "MutateNoticiaServiceRoleFEC6B10B"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/MutateNoticia/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "MutateNoticia35582E61": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-640168450436-us-east-2",
+     "S3Key": "dbd13470d1a04d05e7f2a3bc1d69bb6a77e99dee3b43f073bb578227b2a2d38a.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "COGNITO_USER_POOL_ID": "us-east-2_jjcAqBdVn",
+      "COGNITO_APP_CLIENT_ID": "18n7rhj63h6modf5ol9m637ism",
+      "CENTROS_TABLE": {
+       "Ref": "CentrosTable883DAA72"
+      },
+      "NOTICIAS_TABLE": {
+       "Ref": "NoticiasTable429A8F57"
+      },
+      "SOLICITUDES_TABLE": {
+       "Ref": "SolicitudesTable712AEA38"
+      },
+      "CONTACTOS_TABLE": {
+       "Ref": "ContactosTableCDABD28B"
+      },
+      "INVITE_TOKENS_TABLE": {
+       "Ref": "InviteTokensTableC8335281"
+      },
+      "ACTIVITY_TABLE": {
+       "Ref": "ActivityTable0B58B12C"
+      },
+      "PROFILES_TABLE": {
+       "Ref": "ProfilesTable3B48B4C6"
+      }
+     }
+    },
+    "FunctionName": "mutateNoticiaCXUM",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "MutateNoticiaServiceRoleFEC6B10B",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "MutateNoticiaServiceRoleDefaultPolicyCD69825D",
+    "MutateNoticiaServiceRoleFEC6B10B"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/MutateNoticia/Resource",
+    "aws:asset:path": "asset.dbd13470d1a04d05e7f2a3bc1d69bb6a77e99dee3b43f073bb578227b2a2d38a",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "ModifyUserRoleServiceRole8FC7F1CA": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/ModifyUserRole/ServiceRole/Resource"
+   }
+  },
+  "ModifyUserRoleServiceRoleDefaultPolicyD3AD079B": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ProfilesTable3B48B4C6",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ProfilesTable3B48B4C6",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ActivityTable0B58B12C",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "cognito-idp:AdminAddUserToGroup",
+        "cognito-idp:AdminRemoveUserFromGroup",
+        "cognito-idp:AdminUpdateUserAttributes",
+        "cognito-idp:AdminDisableUser",
+        "cognito-idp:AdminEnableUser"
+       ],
+       "Effect": "Allow",
+       "Resource": "arn:aws:cognito-idp:us-east-2:640168450436:userpool/us-east-2_jjcAqBdVn"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ModifyUserRoleServiceRoleDefaultPolicyD3AD079B",
+    "Roles": [
+     {
+      "Ref": "ModifyUserRoleServiceRole8FC7F1CA"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/ModifyUserRole/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "ModifyUserRole79B56623": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-640168450436-us-east-2",
+     "S3Key": "c4a4ba852fb6e25efd6c4afdb195f44626d7b6cfc5662c4a4827fb6e0cec5c75.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "COGNITO_USER_POOL_ID": "us-east-2_jjcAqBdVn",
+      "COGNITO_APP_CLIENT_ID": "18n7rhj63h6modf5ol9m637ism",
+      "CENTROS_TABLE": {
+       "Ref": "CentrosTable883DAA72"
+      },
+      "NOTICIAS_TABLE": {
+       "Ref": "NoticiasTable429A8F57"
+      },
+      "SOLICITUDES_TABLE": {
+       "Ref": "SolicitudesTable712AEA38"
+      },
+      "CONTACTOS_TABLE": {
+       "Ref": "ContactosTableCDABD28B"
+      },
+      "INVITE_TOKENS_TABLE": {
+       "Ref": "InviteTokensTableC8335281"
+      },
+      "ACTIVITY_TABLE": {
+       "Ref": "ActivityTable0B58B12C"
+      },
+      "PROFILES_TABLE": {
+       "Ref": "ProfilesTable3B48B4C6"
+      }
+     }
+    },
+    "FunctionName": "modifyUserRoleCXUM",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "ModifyUserRoleServiceRole8FC7F1CA",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "ModifyUserRoleServiceRoleDefaultPolicyD3AD079B",
+    "ModifyUserRoleServiceRole8FC7F1CA"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/ModifyUserRole/Resource",
+    "aws:asset:path": "asset.c4a4ba852fb6e25efd6c4afdb195f44626d7b6cfc5662c4a4827fb6e0cec5c75",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "GetSolicitudesServiceRole3D667EB0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/GetSolicitudes/ServiceRole/Resource"
+   }
+  },
+  "GetSolicitudesServiceRoleDefaultPolicyF57B124E": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "SolicitudesTable712AEA38",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "SolicitudesTable712AEA38",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "GetSolicitudesServiceRoleDefaultPolicyF57B124E",
+    "Roles": [
+     {
+      "Ref": "GetSolicitudesServiceRole3D667EB0"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/GetSolicitudes/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "GetSolicitudes1DE73418": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-640168450436-us-east-2",
+     "S3Key": "ed678b2775328ef4e020bf9a542dcf9e93d77c864f5da09885de73991a373bed.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "COGNITO_USER_POOL_ID": "us-east-2_jjcAqBdVn",
+      "COGNITO_APP_CLIENT_ID": "18n7rhj63h6modf5ol9m637ism",
+      "CENTROS_TABLE": {
+       "Ref": "CentrosTable883DAA72"
+      },
+      "NOTICIAS_TABLE": {
+       "Ref": "NoticiasTable429A8F57"
+      },
+      "SOLICITUDES_TABLE": {
+       "Ref": "SolicitudesTable712AEA38"
+      },
+      "CONTACTOS_TABLE": {
+       "Ref": "ContactosTableCDABD28B"
+      },
+      "INVITE_TOKENS_TABLE": {
+       "Ref": "InviteTokensTableC8335281"
+      },
+      "ACTIVITY_TABLE": {
+       "Ref": "ActivityTable0B58B12C"
+      },
+      "PROFILES_TABLE": {
+       "Ref": "ProfilesTable3B48B4C6"
+      }
+     }
+    },
+    "FunctionName": "getSolicitudesCXUM",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "GetSolicitudesServiceRole3D667EB0",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "GetSolicitudesServiceRoleDefaultPolicyF57B124E",
+    "GetSolicitudesServiceRole3D667EB0"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/GetSolicitudes/Resource",
+    "aws:asset:path": "asset.ed678b2775328ef4e020bf9a542dcf9e93d77c864f5da09885de73991a373bed",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "MutateSolicitudServiceRoleC228CFA7": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/MutateSolicitud/ServiceRole/Resource"
+   }
+  },
+  "MutateSolicitudServiceRoleDefaultPolicy9FF15DD2": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "SolicitudesTable712AEA38",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "SolicitudesTable712AEA38",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "SolicitudesTable712AEA38",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ActivityTable0B58B12C",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "cognito-idp:AdminAddUserToGroup",
+        "cognito-idp:AdminRemoveUserFromGroup",
+        "cognito-idp:AdminUpdateUserAttributes",
+        "cognito-idp:AdminDisableUser",
+        "cognito-idp:AdminEnableUser"
+       ],
+       "Effect": "Allow",
+       "Resource": "arn:aws:cognito-idp:us-east-2:640168450436:userpool/us-east-2_jjcAqBdVn"
+      },
+      {
+       "Action": "cognito-idp:AdminListGroupsForUser",
+       "Effect": "Allow",
+       "Resource": "arn:aws:cognito-idp:us-east-2:640168450436:userpool/us-east-2_jjcAqBdVn"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MutateSolicitudServiceRoleDefaultPolicy9FF15DD2",
+    "Roles": [
+     {
+      "Ref": "MutateSolicitudServiceRoleC228CFA7"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/MutateSolicitud/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "MutateSolicitudDC849133": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-640168450436-us-east-2",
+     "S3Key": "a5b8a1d9e11922ed7143af95c8160a5f0b491193a0e1a4362393c5fae1d6ac40.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "COGNITO_USER_POOL_ID": "us-east-2_jjcAqBdVn",
+      "COGNITO_APP_CLIENT_ID": "18n7rhj63h6modf5ol9m637ism",
+      "CENTROS_TABLE": {
+       "Ref": "CentrosTable883DAA72"
+      },
+      "NOTICIAS_TABLE": {
+       "Ref": "NoticiasTable429A8F57"
+      },
+      "SOLICITUDES_TABLE": {
+       "Ref": "SolicitudesTable712AEA38"
+      },
+      "CONTACTOS_TABLE": {
+       "Ref": "ContactosTableCDABD28B"
+      },
+      "INVITE_TOKENS_TABLE": {
+       "Ref": "InviteTokensTableC8335281"
+      },
+      "ACTIVITY_TABLE": {
+       "Ref": "ActivityTable0B58B12C"
+      },
+      "PROFILES_TABLE": {
+       "Ref": "ProfilesTable3B48B4C6"
+      }
+     }
+    },
+    "FunctionName": "mutateSolicitudCXUM",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "MutateSolicitudServiceRoleC228CFA7",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "MutateSolicitudServiceRoleDefaultPolicy9FF15DD2",
+    "MutateSolicitudServiceRoleC228CFA7"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/MutateSolicitud/Resource",
+    "aws:asset:path": "asset.a5b8a1d9e11922ed7143af95c8160a5f0b491193a0e1a4362393c5fae1d6ac40",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "SubmitVolunteerServiceRole0A11F68D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/SubmitVolunteer/ServiceRole/Resource"
+   }
+  },
+  "SubmitVolunteerServiceRoleDefaultPolicy684EC392": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "SolicitudesTable712AEA38",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "SubmitVolunteerServiceRoleDefaultPolicy684EC392",
+    "Roles": [
+     {
+      "Ref": "SubmitVolunteerServiceRole0A11F68D"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/SubmitVolunteer/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "SubmitVolunteer3DBE43E9": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-640168450436-us-east-2",
+     "S3Key": "a800165b084d8eafb75a7eee6372400b70c33aeff6da571bd0505fe23bf4ae5c.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "COGNITO_USER_POOL_ID": "us-east-2_jjcAqBdVn",
+      "COGNITO_APP_CLIENT_ID": "18n7rhj63h6modf5ol9m637ism",
+      "CENTROS_TABLE": {
+       "Ref": "CentrosTable883DAA72"
+      },
+      "NOTICIAS_TABLE": {
+       "Ref": "NoticiasTable429A8F57"
+      },
+      "SOLICITUDES_TABLE": {
+       "Ref": "SolicitudesTable712AEA38"
+      },
+      "CONTACTOS_TABLE": {
+       "Ref": "ContactosTableCDABD28B"
+      },
+      "INVITE_TOKENS_TABLE": {
+       "Ref": "InviteTokensTableC8335281"
+      },
+      "ACTIVITY_TABLE": {
+       "Ref": "ActivityTable0B58B12C"
+      },
+      "PROFILES_TABLE": {
+       "Ref": "ProfilesTable3B48B4C6"
+      }
+     }
+    },
+    "FunctionName": "submitVolunteerCXUM",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SubmitVolunteerServiceRole0A11F68D",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "SubmitVolunteerServiceRoleDefaultPolicy684EC392",
+    "SubmitVolunteerServiceRole0A11F68D"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/SubmitVolunteer/Resource",
+    "aws:asset:path": "asset.a800165b084d8eafb75a7eee6372400b70c33aeff6da571bd0505fe23bf4ae5c",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "SubmitContactServiceRole08EE497D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/SubmitContact/ServiceRole/Resource"
+   }
+  },
+  "SubmitContactServiceRoleDefaultPolicyD7F4E57C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ContactosTableCDABD28B",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "SubmitContactServiceRoleDefaultPolicyD7F4E57C",
+    "Roles": [
+     {
+      "Ref": "SubmitContactServiceRole08EE497D"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/SubmitContact/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "SubmitContactB56108E2": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-640168450436-us-east-2",
+     "S3Key": "494175a0d5b3ec8b252e523ecd95eab0924f53ff6935a464fdce0a74c192d459.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "COGNITO_USER_POOL_ID": "us-east-2_jjcAqBdVn",
+      "COGNITO_APP_CLIENT_ID": "18n7rhj63h6modf5ol9m637ism",
+      "CENTROS_TABLE": {
+       "Ref": "CentrosTable883DAA72"
+      },
+      "NOTICIAS_TABLE": {
+       "Ref": "NoticiasTable429A8F57"
+      },
+      "SOLICITUDES_TABLE": {
+       "Ref": "SolicitudesTable712AEA38"
+      },
+      "CONTACTOS_TABLE": {
+       "Ref": "ContactosTableCDABD28B"
+      },
+      "INVITE_TOKENS_TABLE": {
+       "Ref": "InviteTokensTableC8335281"
+      },
+      "ACTIVITY_TABLE": {
+       "Ref": "ActivityTable0B58B12C"
+      },
+      "PROFILES_TABLE": {
+       "Ref": "ProfilesTable3B48B4C6"
+      }
+     }
+    },
+    "FunctionName": "submitContactCXUM",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SubmitContactServiceRole08EE497D",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "SubmitContactServiceRoleDefaultPolicyD7F4E57C",
+    "SubmitContactServiceRole08EE497D"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/SubmitContact/Resource",
+    "aws:asset:path": "asset.494175a0d5b3ec8b252e523ecd95eab0924f53ff6935a464fdce0a74c192d459",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "InviteUserServiceRoleFAB61FF7": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/InviteUser/ServiceRole/Resource"
+   }
+  },
+  "InviteUserServiceRoleDefaultPolicyC3BCD18C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ActivityTable0B58B12C",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "cognito-idp:AdminCreateUser",
+        "cognito-idp:AdminAddUserToGroup"
+       ],
+       "Effect": "Allow",
+       "Resource": "arn:aws:cognito-idp:us-east-2:640168450436:userpool/us-east-2_jjcAqBdVn"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "InviteUserServiceRoleDefaultPolicyC3BCD18C",
+    "Roles": [
+     {
+      "Ref": "InviteUserServiceRoleFAB61FF7"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/InviteUser/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "InviteUser67EDA896": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-640168450436-us-east-2",
+     "S3Key": "84cd0b84d1ba94ae44d563748ac403ef593fbd23af807c1ce7a753699cc2b7d8.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "COGNITO_USER_POOL_ID": "us-east-2_jjcAqBdVn",
+      "COGNITO_APP_CLIENT_ID": "18n7rhj63h6modf5ol9m637ism",
+      "CENTROS_TABLE": {
+       "Ref": "CentrosTable883DAA72"
+      },
+      "NOTICIAS_TABLE": {
+       "Ref": "NoticiasTable429A8F57"
+      },
+      "SOLICITUDES_TABLE": {
+       "Ref": "SolicitudesTable712AEA38"
+      },
+      "CONTACTOS_TABLE": {
+       "Ref": "ContactosTableCDABD28B"
+      },
+      "INVITE_TOKENS_TABLE": {
+       "Ref": "InviteTokensTableC8335281"
+      },
+      "ACTIVITY_TABLE": {
+       "Ref": "ActivityTable0B58B12C"
+      },
+      "PROFILES_TABLE": {
+       "Ref": "ProfilesTable3B48B4C6"
+      }
+     }
+    },
+    "FunctionName": "inviteUserCXUM",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "InviteUserServiceRoleFAB61FF7",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "InviteUserServiceRoleDefaultPolicyC3BCD18C",
+    "InviteUserServiceRoleFAB61FF7"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/InviteUser/Resource",
+    "aws:asset:path": "asset.84cd0b84d1ba94ae44d563748ac403ef593fbd23af807c1ce7a753699cc2b7d8",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "GetActivityServiceRoleA3B9D643": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/GetActivity/ServiceRole/Resource"
+   }
+  },
+  "GetActivityServiceRoleDefaultPolicyB041AB81": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ActivityTable0B58B12C",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ActivityTable0B58B12C",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "GetActivityServiceRoleDefaultPolicyB041AB81",
+    "Roles": [
+     {
+      "Ref": "GetActivityServiceRoleA3B9D643"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/GetActivity/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "GetActivity198053D9": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-640168450436-us-east-2",
+     "S3Key": "1640bee26058e37a920b7282c4fae32f5d9601f0c04e6149cf0b0d54e1be46d3.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "COGNITO_USER_POOL_ID": "us-east-2_jjcAqBdVn",
+      "COGNITO_APP_CLIENT_ID": "18n7rhj63h6modf5ol9m637ism",
+      "CENTROS_TABLE": {
+       "Ref": "CentrosTable883DAA72"
+      },
+      "NOTICIAS_TABLE": {
+       "Ref": "NoticiasTable429A8F57"
+      },
+      "SOLICITUDES_TABLE": {
+       "Ref": "SolicitudesTable712AEA38"
+      },
+      "CONTACTOS_TABLE": {
+       "Ref": "ContactosTableCDABD28B"
+      },
+      "INVITE_TOKENS_TABLE": {
+       "Ref": "InviteTokensTableC8335281"
+      },
+      "ACTIVITY_TABLE": {
+       "Ref": "ActivityTable0B58B12C"
+      },
+      "PROFILES_TABLE": {
+       "Ref": "ProfilesTable3B48B4C6"
+      }
+     }
+    },
+    "FunctionName": "getActivityCXUM",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "GetActivityServiceRoleA3B9D643",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "GetActivityServiceRoleDefaultPolicyB041AB81",
+    "GetActivityServiceRoleA3B9D643"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/GetActivity/Resource",
+    "aws:asset:path": "asset.1640bee26058e37a920b7282c4fae32f5d9601f0c04e6149cf0b0d54e1be46d3",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "GenerateInviteTokenServiceRoleCBD5AF7F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/GenerateInviteToken/ServiceRole/Resource"
+   }
+  },
+  "GenerateInviteTokenServiceRoleDefaultPolicyB41ABE93": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "InviteTokensTableC8335281",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "InviteTokensTableC8335281",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "GenerateInviteTokenServiceRoleDefaultPolicyB41ABE93",
+    "Roles": [
+     {
+      "Ref": "GenerateInviteTokenServiceRoleCBD5AF7F"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/GenerateInviteToken/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "GenerateInviteToken3EB51F0C": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-640168450436-us-east-2",
+     "S3Key": "a537a723b39bee953c18644e3eae22249eba422cf2201c986b0afd602b2656b1.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "COGNITO_USER_POOL_ID": "us-east-2_jjcAqBdVn",
+      "COGNITO_APP_CLIENT_ID": "18n7rhj63h6modf5ol9m637ism",
+      "CENTROS_TABLE": {
+       "Ref": "CentrosTable883DAA72"
+      },
+      "NOTICIAS_TABLE": {
+       "Ref": "NoticiasTable429A8F57"
+      },
+      "SOLICITUDES_TABLE": {
+       "Ref": "SolicitudesTable712AEA38"
+      },
+      "CONTACTOS_TABLE": {
+       "Ref": "ContactosTableCDABD28B"
+      },
+      "INVITE_TOKENS_TABLE": {
+       "Ref": "InviteTokensTableC8335281"
+      },
+      "ACTIVITY_TABLE": {
+       "Ref": "ActivityTable0B58B12C"
+      },
+      "PROFILES_TABLE": {
+       "Ref": "ProfilesTable3B48B4C6"
+      }
+     }
+    },
+    "FunctionName": "generateInviteTokenCXUM",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "GenerateInviteTokenServiceRoleCBD5AF7F",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "GenerateInviteTokenServiceRoleDefaultPolicyB41ABE93",
+    "GenerateInviteTokenServiceRoleCBD5AF7F"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/GenerateInviteToken/Resource",
+    "aws:asset:path": "asset.a537a723b39bee953c18644e3eae22249eba422cf2201c986b0afd602b2656b1",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "ValidateInviteTokenServiceRoleF2B6A9DC": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/ValidateInviteToken/ServiceRole/Resource"
+   }
+  },
+  "ValidateInviteTokenServiceRoleDefaultPolicyC5D69DCE": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "InviteTokensTableC8335281",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "InviteTokensTableC8335281",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ValidateInviteTokenServiceRoleDefaultPolicyC5D69DCE",
+    "Roles": [
+     {
+      "Ref": "ValidateInviteTokenServiceRoleF2B6A9DC"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/ValidateInviteToken/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "ValidateInviteToken09C72BDF": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-640168450436-us-east-2",
+     "S3Key": "ac5c2b7fca8019d46511267bf28cd209cb23edadbeca7f2432e50ed5a1aeacd7.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "COGNITO_USER_POOL_ID": "us-east-2_jjcAqBdVn",
+      "COGNITO_APP_CLIENT_ID": "18n7rhj63h6modf5ol9m637ism",
+      "CENTROS_TABLE": {
+       "Ref": "CentrosTable883DAA72"
+      },
+      "NOTICIAS_TABLE": {
+       "Ref": "NoticiasTable429A8F57"
+      },
+      "SOLICITUDES_TABLE": {
+       "Ref": "SolicitudesTable712AEA38"
+      },
+      "CONTACTOS_TABLE": {
+       "Ref": "ContactosTableCDABD28B"
+      },
+      "INVITE_TOKENS_TABLE": {
+       "Ref": "InviteTokensTableC8335281"
+      },
+      "ACTIVITY_TABLE": {
+       "Ref": "ActivityTable0B58B12C"
+      },
+      "PROFILES_TABLE": {
+       "Ref": "ProfilesTable3B48B4C6"
+      }
+     }
+    },
+    "FunctionName": "validateInviteTokenCXUM",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "ValidateInviteTokenServiceRoleF2B6A9DC",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "ValidateInviteTokenServiceRoleDefaultPolicyC5D69DCE",
+    "ValidateInviteTokenServiceRoleF2B6A9DC"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/ValidateInviteToken/Resource",
+    "aws:asset:path": "asset.ac5c2b7fca8019d46511267bf28cd209cb23edadbeca7f2432e50ed5a1aeacd7",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "ConsumeInviteTokenServiceRoleE6525164": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/ConsumeInviteToken/ServiceRole/Resource"
+   }
+  },
+  "ConsumeInviteTokenServiceRoleDefaultPolicy8205FA3E": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "InviteTokensTableC8335281",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "InviteTokensTableC8335281",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ConsumeInviteTokenServiceRoleDefaultPolicy8205FA3E",
+    "Roles": [
+     {
+      "Ref": "ConsumeInviteTokenServiceRoleE6525164"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/ConsumeInviteToken/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "ConsumeInviteTokenF32D0436": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-640168450436-us-east-2",
+     "S3Key": "f7585cb38bc9a77f7dcea63f45b890a738bad57fda4658e37294f07514e0ae37.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "COGNITO_USER_POOL_ID": "us-east-2_jjcAqBdVn",
+      "COGNITO_APP_CLIENT_ID": "18n7rhj63h6modf5ol9m637ism",
+      "CENTROS_TABLE": {
+       "Ref": "CentrosTable883DAA72"
+      },
+      "NOTICIAS_TABLE": {
+       "Ref": "NoticiasTable429A8F57"
+      },
+      "SOLICITUDES_TABLE": {
+       "Ref": "SolicitudesTable712AEA38"
+      },
+      "CONTACTOS_TABLE": {
+       "Ref": "ContactosTableCDABD28B"
+      },
+      "INVITE_TOKENS_TABLE": {
+       "Ref": "InviteTokensTableC8335281"
+      },
+      "ACTIVITY_TABLE": {
+       "Ref": "ActivityTable0B58B12C"
+      },
+      "PROFILES_TABLE": {
+       "Ref": "ProfilesTable3B48B4C6"
+      }
+     }
+    },
+    "FunctionName": "consumeInviteTokenCXUM",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "ConsumeInviteTokenServiceRoleE6525164",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "ConsumeInviteTokenServiceRoleDefaultPolicy8205FA3E",
+    "ConsumeInviteTokenServiceRoleE6525164"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/ConsumeInviteToken/Resource",
+    "aws:asset:path": "asset.f7585cb38bc9a77f7dcea63f45b890a738bad57fda4658e37294f07514e0ae37",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "CxumBackend6F4D0EA7": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "CorsConfiguration": {
+     "AllowHeaders": [
+      "Authorization",
+      "Content-Type"
+     ],
+     "AllowMethods": [
+      "*"
+     ],
+     "AllowOrigins": [
+      "*"
+     ]
+    },
+    "Name": "cxumBACKEND",
+    "ProtocolType": "HTTP"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/Resource"
+   }
+  },
+  "CxumBackendDefaultStageE47509E7": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AutoDeploy": true,
+    "StageName": "$default"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/DefaultStage/Resource"
+   }
+  },
+  "CxumBackendGETadminusersgetListUsersInt1C21829D": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":lambda:us-east-2:640168450436:function:listUsersCXUM"
+      ]
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--usersget/ListUsersInt/Resource"
+   }
+  },
+  "CxumBackendGETadminusersgetListUsersIntPermission621D1F0A": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":lambda:us-east-2:640168450436:function:listUsersCXUM"
+      ]
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:640168450436:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/admin/usersget"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--usersget/ListUsersInt-Permission"
+   }
+  },
+  "CxumBackendGETadminusersget4F1D92A4": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "CxumBackendAdminOnlyAuthorizer55FDF761"
+    },
+    "RouteKey": "GET /admin/usersget",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendGETadminusersgetListUsersInt1C21829D"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--usersget/Resource"
+   }
+  },
+  "CxumBackendAdminOnlyAuthorizer55FDF761": {
+   "Type": "AWS::ApiGatewayV2::Authorizer",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizerPayloadFormatVersion": "2.0",
+    "AuthorizerResultTtlInSeconds": 0,
+    "AuthorizerType": "REQUEST",
+    "AuthorizerUri": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":apigateway:us-east-2:lambda:path/2015-03-31/functions/arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":lambda:us-east-2:640168450436:function:AuthorizerAdminCXUM/invocations"
+      ]
+     ]
+    },
+    "EnableSimpleResponses": true,
+    "IdentitySource": [
+     "$request.header.Authorization"
+    ],
+    "Name": "adminOnlyAuthorizer"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/AdminOnlyAuthorizer/Resource"
+   }
+  },
+  "CxumBackendCxumStackCxumBackendAdminOnlyAuthorizerC07A5EECPermission16708FC8": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":lambda:us-east-2:640168450436:function:AuthorizerAdminCXUM"
+      ]
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:640168450436:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/authorizers/",
+       {
+        "Ref": "CxumBackendAdminOnlyAuthorizer55FDF761"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/CxumStackCxumBackendAdminOnlyAuthorizerC07A5EEC-Permission"
+   }
+  },
+  "CxumBackendPUTadminusersusernameModifyUserRoleIntC9A5F7D5": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "ModifyUserRole79B56623",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/PUT--admin--users--{username}/ModifyUserRoleInt/Resource"
+   }
+  },
+  "CxumBackendPUTadminusersusernameModifyUserRoleIntPermission787CAF71": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ModifyUserRole79B56623",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:640168450436:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/admin/users/{username}"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/PUT--admin--users--{username}/ModifyUserRoleInt-Permission"
+   }
+  },
+  "CxumBackendPUTadminusersusernameAF477248": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "CxumBackendMultiRoleAuthorizer01F621D0"
+    },
+    "RouteKey": "PUT /admin/users/{username}",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendPUTadminusersusernameModifyUserRoleIntC9A5F7D5"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/PUT--admin--users--{username}/Resource"
+   }
+  },
+  "CxumBackendMultiRoleAuthorizer01F621D0": {
+   "Type": "AWS::ApiGatewayV2::Authorizer",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizerPayloadFormatVersion": "2.0",
+    "AuthorizerResultTtlInSeconds": 0,
+    "AuthorizerType": "REQUEST",
+    "AuthorizerUri": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":apigateway:us-east-2:lambda:path/2015-03-31/functions/",
+       {
+        "Fn::GetAtt": [
+         "AuthorizerMultiRole536FC7EC",
+         "Arn"
+        ]
+       },
+       "/invocations"
+      ]
+     ]
+    },
+    "EnableSimpleResponses": true,
+    "IdentitySource": [
+     "$request.header.Authorization"
+    ],
+    "Name": "multiRoleAuthorizer"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/MultiRoleAuthorizer/Resource"
+   }
+  },
+  "CxumBackendCxumStackCxumBackendMultiRoleAuthorizer09AEABCCPermission39A8C69A": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "AuthorizerMultiRole536FC7EC",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:640168450436:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/authorizers/",
+       {
+        "Ref": "CxumBackendMultiRoleAuthorizer01F621D0"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/CxumStackCxumBackendMultiRoleAuthorizer09AEABCC-Permission"
+   }
+  },
+  "CxumBackendGETadmincentrosGetCentrosIntF84B0798": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "GetCentros0D9CEB85",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--centros/GetCentrosInt/Resource"
+   }
+  },
+  "CxumBackendGETadmincentrosGetCentrosIntPermission574733CC": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "GetCentros0D9CEB85",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:640168450436:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/admin/centros"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--centros/GetCentrosInt-Permission"
+   }
+  },
+  "CxumBackendGETadmincentros7ED8C559": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "CxumBackendMultiRoleAuthorizer01F621D0"
+    },
+    "RouteKey": "GET /admin/centros",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendGETadmincentrosGetCentrosIntF84B0798"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--centros/Resource"
+   }
+  },
+  "CxumBackendPOSTadmincentrosCreateCentroInt46300C04": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "MutateCentro20801FAD",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/POST--admin--centros/CreateCentroInt/Resource"
+   }
+  },
+  "CxumBackendPOSTadmincentrosCreateCentroIntPermission204352C6": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "MutateCentro20801FAD",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:640168450436:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/admin/centros"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/POST--admin--centros/CreateCentroInt-Permission"
+   }
+  },
+  "CxumBackendPOSTadmincentros0549D969": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "CxumBackendMultiRoleAuthorizer01F621D0"
+    },
+    "RouteKey": "POST /admin/centros",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendPOSTadmincentrosCreateCentroInt46300C04"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/POST--admin--centros/Resource"
+   }
+  },
+  "CxumBackendPUTadmincentrosidMutateCentroIntECB6E1DE": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "MutateCentro20801FAD",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/PUT--admin--centros--{id}/MutateCentroInt/Resource"
+   }
+  },
+  "CxumBackendPUTadmincentrosidMutateCentroIntPermission12359BEF": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "MutateCentro20801FAD",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:640168450436:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/admin/centros/{id}"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/PUT--admin--centros--{id}/MutateCentroInt-Permission"
+   }
+  },
+  "CxumBackendPUTadmincentrosid71E8AAD9": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "CxumBackendMultiRoleAuthorizer01F621D0"
+    },
+    "RouteKey": "PUT /admin/centros/{id}",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendPUTadmincentrosidMutateCentroIntECB6E1DE"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/PUT--admin--centros--{id}/Resource"
+   }
+  },
+  "CxumBackendDELETEadmincentrosidMutateCentroIntPermission847CAD61": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "MutateCentro20801FAD",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:640168450436:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/admin/centros/{id}"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/DELETE--admin--centros--{id}/MutateCentroInt-Permission"
+   }
+  },
+  "CxumBackendDELETEadmincentrosidBC25D988": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "CxumBackendMultiRoleAuthorizer01F621D0"
+    },
+    "RouteKey": "DELETE /admin/centros/{id}",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendPUTadmincentrosidMutateCentroIntECB6E1DE"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/DELETE--admin--centros--{id}/Resource"
+   }
+  },
+  "CxumBackendGETadminnoticiasGetNoticiasAdminIntD16C2030": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "GetNoticias304B5887",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--noticias/GetNoticiasAdminInt/Resource"
+   }
+  },
+  "CxumBackendGETadminnoticiasGetNoticiasAdminIntPermissionA1A9F525": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "GetNoticias304B5887",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:640168450436:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/admin/noticias"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--noticias/GetNoticiasAdminInt-Permission"
+   }
+  },
+  "CxumBackendGETadminnoticiasDF2716F7": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "CxumBackendMultiRoleAuthorizer01F621D0"
+    },
+    "RouteKey": "GET /admin/noticias",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendGETadminnoticiasGetNoticiasAdminIntD16C2030"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--noticias/Resource"
+   }
+  },
+  "CxumBackendPOSTadminnoticiasCreateNoticiaInt55630C24": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "MutateNoticia35582E61",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/POST--admin--noticias/CreateNoticiaInt/Resource"
+   }
+  },
+  "CxumBackendPOSTadminnoticiasCreateNoticiaIntPermission23B7014F": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "MutateNoticia35582E61",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:640168450436:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/admin/noticias"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/POST--admin--noticias/CreateNoticiaInt-Permission"
+   }
+  },
+  "CxumBackendPOSTadminnoticias88BDF08D": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "CxumBackendMultiRoleAuthorizer01F621D0"
+    },
+    "RouteKey": "POST /admin/noticias",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendPOSTadminnoticiasCreateNoticiaInt55630C24"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/POST--admin--noticias/Resource"
+   }
+  },
+  "CxumBackendPUTadminnoticiasidMutateNoticiaIntB2BE1265": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "MutateNoticia35582E61",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/PUT--admin--noticias--{id}/MutateNoticiaInt/Resource"
+   }
+  },
+  "CxumBackendPUTadminnoticiasidMutateNoticiaIntPermission7F7D03F0": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "MutateNoticia35582E61",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:640168450436:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/admin/noticias/{id}"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/PUT--admin--noticias--{id}/MutateNoticiaInt-Permission"
+   }
+  },
+  "CxumBackendPUTadminnoticiasid7C2E076D": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "CxumBackendMultiRoleAuthorizer01F621D0"
+    },
+    "RouteKey": "PUT /admin/noticias/{id}",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendPUTadminnoticiasidMutateNoticiaIntB2BE1265"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/PUT--admin--noticias--{id}/Resource"
+   }
+  },
+  "CxumBackendDELETEadminnoticiasidMutateNoticiaIntPermissionD678ACC4": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "MutateNoticia35582E61",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:640168450436:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/admin/noticias/{id}"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/DELETE--admin--noticias--{id}/MutateNoticiaInt-Permission"
+   }
+  },
+  "CxumBackendDELETEadminnoticiasid7F73B3BF": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "CxumBackendMultiRoleAuthorizer01F621D0"
+    },
+    "RouteKey": "DELETE /admin/noticias/{id}",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendPUTadminnoticiasidMutateNoticiaIntB2BE1265"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/DELETE--admin--noticias--{id}/Resource"
+   }
+  },
+  "CxumBackendGETadminsolicitudesGetSolicitudesInt9F178EEF": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "GetSolicitudes1DE73418",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--solicitudes/GetSolicitudesInt/Resource"
+   }
+  },
+  "CxumBackendGETadminsolicitudesGetSolicitudesIntPermissionE75E97C1": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "GetSolicitudes1DE73418",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:640168450436:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/admin/solicitudes"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--solicitudes/GetSolicitudesInt-Permission"
+   }
+  },
+  "CxumBackendGETadminsolicitudesEE222917": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "CxumBackendMultiRoleAuthorizer01F621D0"
+    },
+    "RouteKey": "GET /admin/solicitudes",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendGETadminsolicitudesGetSolicitudesInt9F178EEF"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--solicitudes/Resource"
+   }
+  },
+  "CxumBackendPUTadminsolicitudesidMutateSolicitudIntD10C30DD": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "MutateSolicitudDC849133",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/PUT--admin--solicitudes--{id}/MutateSolicitudInt/Resource"
+   }
+  },
+  "CxumBackendPUTadminsolicitudesidMutateSolicitudIntPermission39D32A3F": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "MutateSolicitudDC849133",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:640168450436:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/admin/solicitudes/{id}"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/PUT--admin--solicitudes--{id}/MutateSolicitudInt-Permission"
+   }
+  },
+  "CxumBackendPUTadminsolicitudesidAA857D8A": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "CxumBackendMultiRoleAuthorizer01F621D0"
+    },
+    "RouteKey": "PUT /admin/solicitudes/{id}",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendPUTadminsolicitudesidMutateSolicitudIntD10C30DD"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/PUT--admin--solicitudes--{id}/Resource"
+   }
+  },
+  "CxumBackendGETnoticiasGetNoticiasPublicIntAF790FD7": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "GetNoticias304B5887",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--noticias/GetNoticiasPublicInt/Resource"
+   }
+  },
+  "CxumBackendGETnoticiasGetNoticiasPublicIntPermission3B1BF1AA": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "GetNoticias304B5887",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:640168450436:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/noticias"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--noticias/GetNoticiasPublicInt-Permission"
+   }
+  },
+  "CxumBackendGETnoticias5E78CACF": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "GET /noticias",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendGETnoticiasGetNoticiasPublicIntAF790FD7"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--noticias/Resource"
+   }
+  },
+  "CxumBackendGETnoticiasslugGetNoticiaSlugInt0991ECD9": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "GetNoticias304B5887",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--noticias--{slug}/GetNoticiaSlugInt/Resource"
+   }
+  },
+  "CxumBackendGETnoticiasslugGetNoticiaSlugIntPermissionEB07E1C9": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "GetNoticias304B5887",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:640168450436:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/noticias/{slug}"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--noticias--{slug}/GetNoticiaSlugInt-Permission"
+   }
+  },
+  "CxumBackendGETnoticiasslug606FCEE2": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "GET /noticias/{slug}",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendGETnoticiasslugGetNoticiaSlugInt0991ECD9"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--noticias--{slug}/Resource"
+   }
+  },
+  "CxumBackendGETcentrosGetCentrosPublicInt582A5004": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "GetCentros0D9CEB85",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--centros/GetCentrosPublicInt/Resource"
+   }
+  },
+  "CxumBackendGETcentrosGetCentrosPublicIntPermission98B37553": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "GetCentros0D9CEB85",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:640168450436:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/centros"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--centros/GetCentrosPublicInt-Permission"
+   }
+  },
+  "CxumBackendGETcentros7BA18D34": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "GET /centros",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendGETcentrosGetCentrosPublicInt582A5004"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--centros/Resource"
+   }
+  },
+  "CxumBackendPOSTvoluntariosSubmitVolunteerInt1E01B7E1": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "SubmitVolunteer3DBE43E9",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/POST--voluntarios/SubmitVolunteerInt/Resource"
+   }
+  },
+  "CxumBackendPOSTvoluntariosSubmitVolunteerIntPermissionFFB7209C": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SubmitVolunteer3DBE43E9",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:640168450436:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/voluntarios"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/POST--voluntarios/SubmitVolunteerInt-Permission"
+   }
+  },
+  "CxumBackendPOSTvoluntarios706AC5A2": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "POST /voluntarios",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendPOSTvoluntariosSubmitVolunteerInt1E01B7E1"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/POST--voluntarios/Resource"
+   }
+  },
+  "CxumBackendPOSTcontactoSubmitContactIntE4B89E6F": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "SubmitContactB56108E2",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/POST--contacto/SubmitContactInt/Resource"
+   }
+  },
+  "CxumBackendPOSTcontactoSubmitContactIntPermission702443C1": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SubmitContactB56108E2",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:640168450436:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/contacto"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/POST--contacto/SubmitContactInt-Permission"
+   }
+  },
+  "CxumBackendPOSTcontacto583DE80D": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "POST /contacto",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendPOSTcontactoSubmitContactIntE4B89E6F"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/POST--contacto/Resource"
+   }
+  },
+  "CxumBackendGETadminactivityGetActivityInt071AB15C": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "GetActivity198053D9",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--activity/GetActivityInt/Resource"
+   }
+  },
+  "CxumBackendGETadminactivityGetActivityIntPermission18A2EA6A": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "GetActivity198053D9",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:640168450436:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/admin/activity"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--activity/GetActivityInt-Permission"
+   }
+  },
+  "CxumBackendGETadminactivity568381E3": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "CxumBackendMultiRoleAuthorizer01F621D0"
+    },
+    "RouteKey": "GET /admin/activity",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendGETadminactivityGetActivityInt071AB15C"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--activity/Resource"
+   }
+  },
+  "CxumBackendPOSTadmininviteuserInviteUserIntC7358331": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "InviteUser67EDA896",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/POST--admin--invite-user/InviteUserInt/Resource"
+   }
+  },
+  "CxumBackendPOSTadmininviteuserInviteUserIntPermissionADF42646": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "InviteUser67EDA896",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:640168450436:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/admin/invite-user"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/POST--admin--invite-user/InviteUserInt-Permission"
+   }
+  },
+  "CxumBackendPOSTadmininviteuserE1C14D1C": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "CxumBackendMultiRoleAuthorizer01F621D0"
+    },
+    "RouteKey": "POST /admin/invite-user",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendPOSTadmininviteuserInviteUserIntC7358331"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/POST--admin--invite-user/Resource"
+   }
+  },
+  "CxumBackendGETadmininvitetokenGenerateInviteTokenIntD823E8DB": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "GenerateInviteToken3EB51F0C",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--invite-token/GenerateInviteTokenInt/Resource"
+   }
+  },
+  "CxumBackendGETadmininvitetokenGenerateInviteTokenIntPermission406342E2": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "GenerateInviteToken3EB51F0C",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:640168450436:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/admin/invite-token"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--invite-token/GenerateInviteTokenInt-Permission"
+   }
+  },
+  "CxumBackendGETadmininvitetokenF4897680": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "CxumBackendMultiRoleAuthorizer01F621D0"
+    },
+    "RouteKey": "GET /admin/invite-token",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendGETadmininvitetokenGenerateInviteTokenIntD823E8DB"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--invite-token/Resource"
+   }
+  },
+  "CxumBackendPOSTinvitevalidateValidateInviteTokenInt49E9258B": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "ValidateInviteToken09C72BDF",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/POST--invite--validate/ValidateInviteTokenInt/Resource"
+   }
+  },
+  "CxumBackendPOSTinvitevalidateValidateInviteTokenIntPermissionB00A5257": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ValidateInviteToken09C72BDF",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:640168450436:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/invite/validate"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/POST--invite--validate/ValidateInviteTokenInt-Permission"
+   }
+  },
+  "CxumBackendPOSTinvitevalidate2E490320": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "POST /invite/validate",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendPOSTinvitevalidateValidateInviteTokenInt49E9258B"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/POST--invite--validate/Resource"
+   }
+  },
+  "CxumBackendPOSTinviteconsumeConsumeInviteTokenInt7A6355DD": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "ConsumeInviteTokenF32D0436",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/POST--invite--consume/ConsumeInviteTokenInt/Resource"
+   }
+  },
+  "CxumBackendPOSTinviteconsumeConsumeInviteTokenIntPermissionFD6C2D9F": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ConsumeInviteTokenF32D0436",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:640168450436:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/invite/consume"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/POST--invite--consume/ConsumeInviteTokenInt-Permission"
+   }
+  },
+  "CxumBackendPOSTinviteconsume4594C9D3": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "POST /invite/consume",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendPOSTinviteconsumeConsumeInviteTokenInt7A6355DD"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/POST--invite--consume/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/12OQU/DMAyFf8vuqZm6IXHtkNA4MXXcJzcNxWubVLWzqkT97yipBojT+571/Owc8v0TbDc4cabrNuuognAW1K3CiS+hni32rq4gvGPVGfX8YRMsqsO+qhHCi7dayNkDslF3E3N/+WTGnpjJ2UUR9hBKt5YlPbmO9JxyiRbFuwsyG2EooijewcHr1ki6ggM1KGbC+ZZDOIoMxUBxPUq0Z8Em1a8QR6XzstKrFdOMeH/tn/3NFV4+3UhfZkzVP25ZVGnY+VEblb6LR8g2MfXmZfCyKOtqA1d+uOV7eITt5spE2eitUG+gXPUbyfxXuHsBAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "ApiUrl": {
+   "Description": "URL base del HTTP API Gateway — actualizar VITE_API_URL en frontend/.env",
+   "Value": {
+    "Fn::GetAtt": [
+     "CxumBackend6F4D0EA7",
+     "ApiEndpoint"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

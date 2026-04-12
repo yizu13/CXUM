@@ -7,6 +7,8 @@ import { ROLE_LABELS, ROLE_COLORS } from "./auth";
 import Iconify from "../../components/modularUI/IconsMock";
 import { useAuth } from "./AuthContextComps";
 import LogoCXUM from "../../assets/LogoCXUM.png";
+import SimpleBar from "simplebar-react";
+import "simplebar-react/dist/simplebar.min.css";
 
 // ── Nav items ─────────────────────────────────────────────────────────────────
 interface NavItem {
@@ -204,10 +206,11 @@ export default function AdminSidebar() {
     <motion.aside
       animate={{ width: collapsed ? 72 : 240 }}
       transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-      className="relative shrink-0 h-screen flex flex-col border-r overflow-hidden"
+      className="relative shrink-0 h-screen flex flex-col border-r"
       style={{ background: bg, borderColor: border }}
     >
-      <div className="flex items-center justify-between px-4 pt-5 pb-4">
+      {/* Header */}
+      <div className="shrink-0 flex items-center justify-between px-4 pt-5 pb-4">
         <SidebarLogo collapsed={collapsed} isDark={isDark} />
         <button
           onClick={() => setCollapsed((c) => !c)}
@@ -230,26 +233,30 @@ export default function AdminSidebar() {
       </div>
 
       {/* Divider */}
-      <div className="mx-4 h-px mb-4" style={{ background: divider }} />
+      <div className="shrink-0 mx-4 h-px mb-4" style={{ background: divider }} />
 
-      {/* Nav */}
-      <nav className="flex-1 flex flex-col gap-1 px-3 overflow-y-auto">
-        {NAV_ITEMS.map((item) => (
-          <SidebarNavItem
-            key={item.path}
-            item={item}
-            collapsed={collapsed}
-            user={user}
-            isDark={isDark}
-          />
-        ))}
-      </nav>
+      {/* Nav - Scrollable */}
+      <div className="flex-1 overflow-hidden">
+        <SimpleBar style={{ height: "100%", maxHeight: "100%" }}>
+          <div className="px-3 flex flex-col gap-1 py-1">
+            {NAV_ITEMS.map((item) => (
+              <SidebarNavItem
+                key={item.path}
+                item={item}
+                collapsed={collapsed}
+                user={user}
+                isDark={isDark}
+              />
+            ))}
+          </div>
+        </SimpleBar>
+      </div>
 
       {/* Divider */}
-      <div className="mx-4 h-px mt-4" style={{ background: divider }} />
+      <div className="shrink-0 mx-4 h-px mt-4" style={{ background: divider }} />
 
       {/* User Card */}
-      <div className="px-3 py-4">
+      <div className="shrink-0 px-3 py-4">
         <div
           className={`flex items-center gap-3 p-3 rounded-xl ${collapsed ? "justify-center" : ""}`}
           style={{ background: isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)" }}
@@ -289,7 +296,8 @@ export default function AdminSidebar() {
         </div>
       </div>
 
-      <div className="px-3 pb-5">
+      {/* Logout Button */}
+      <div className="shrink-0 px-3 pb-5">
         <button
           onClick={handleLogout}
           className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${collapsed ? "justify-center" : ""} cursor-pointer`}

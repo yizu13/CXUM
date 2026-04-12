@@ -1,0 +1,808 @@
+{
+  "/CxumStack/CentrosTable": [
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "CentrosTable883DAA72"
+      }
+    }
+  ],
+  "/CxumStack/NoticiasTable": [
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "NoticiasTable429A8F57"
+      }
+    }
+  ],
+  "/CxumStack/SolicitudesTable": [
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "SolicitudesTable712AEA38"
+      }
+    }
+  ],
+  "/CxumStack/ContactosTable": [
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "ContactosTableCDABD28B"
+      }
+    }
+  ],
+  "/CxumStack/InviteTokensTable": [
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "InviteTokensTableC8335281"
+      }
+    }
+  ],
+  "/CxumStack/ActivityTable": [
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "ActivityTable0B58B12C"
+      }
+    }
+  ],
+  "/CxumStack/ProfilesTable": [
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "ProfilesTable3B48B4C6"
+      }
+    }
+  ],
+  "/CxumStack/ApiUrl": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiUrl"
+    }
+  ],
+  "/CxumStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/CxumStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/CxumStack/CentrosTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CentrosTable883DAA72"
+    }
+  ],
+  "/CxumStack/NoticiasTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NoticiasTable429A8F57"
+    }
+  ],
+  "/CxumStack/SolicitudesTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SolicitudesTable712AEA38"
+    }
+  ],
+  "/CxumStack/ContactosTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ContactosTableCDABD28B"
+    }
+  ],
+  "/CxumStack/InviteTokensTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InviteTokensTableC8335281"
+    }
+  ],
+  "/CxumStack/ActivityTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ActivityTable0B58B12C"
+    }
+  ],
+  "/CxumStack/ProfilesTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProfilesTable3B48B4C6"
+    }
+  ],
+  "/CxumStack/AuthorizerMultiRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AuthorizerMultiRole536FC7EC"
+    }
+  ],
+  "/CxumStack/GetCentros/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GetCentros0D9CEB85"
+    }
+  ],
+  "/CxumStack/MutateCentro/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MutateCentro20801FAD"
+    }
+  ],
+  "/CxumStack/GetNoticias/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GetNoticias304B5887"
+    }
+  ],
+  "/CxumStack/MutateNoticia/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MutateNoticia35582E61"
+    }
+  ],
+  "/CxumStack/ModifyUserRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ModifyUserRole79B56623"
+    }
+  ],
+  "/CxumStack/GetSolicitudes/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GetSolicitudes1DE73418"
+    }
+  ],
+  "/CxumStack/MutateSolicitud/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MutateSolicitudDC849133"
+    }
+  ],
+  "/CxumStack/SubmitVolunteer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubmitVolunteer3DBE43E9"
+    }
+  ],
+  "/CxumStack/SubmitContact/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubmitContactB56108E2"
+    }
+  ],
+  "/CxumStack/InviteUser/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InviteUser67EDA896"
+    }
+  ],
+  "/CxumStack/GetActivity/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GetActivity198053D9"
+    }
+  ],
+  "/CxumStack/GenerateInviteToken/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GenerateInviteToken3EB51F0C"
+    }
+  ],
+  "/CxumStack/ValidateInviteToken/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ValidateInviteToken09C72BDF"
+    }
+  ],
+  "/CxumStack/ConsumeInviteToken/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ConsumeInviteTokenF32D0436"
+    }
+  ],
+  "/CxumStack/CxumBackend/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackend6F4D0EA7"
+    }
+  ],
+  "/CxumStack/CxumBackend/CxumStackCxumBackendAdminOnlyAuthorizerC07A5EEC-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendCxumStackCxumBackendAdminOnlyAuthorizerC07A5EECPermission16708FC8"
+    }
+  ],
+  "/CxumStack/CxumBackend/CxumStackCxumBackendMultiRoleAuthorizer09AEABCC-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendCxumStackCxumBackendMultiRoleAuthorizer09AEABCCPermission39A8C69A"
+    }
+  ],
+  "/CxumStack/CDKMetadata/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CDKMetadata"
+    }
+  ],
+  "/CxumStack/AuthorizerMultiRole/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AuthorizerMultiRoleServiceRole9F338D61"
+    }
+  ],
+  "/CxumStack/GetCentros/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GetCentrosServiceRole3D22E798"
+    }
+  ],
+  "/CxumStack/MutateCentro/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MutateCentroServiceRole121CE92E"
+    }
+  ],
+  "/CxumStack/GetNoticias/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GetNoticiasServiceRoleF8CB585A"
+    }
+  ],
+  "/CxumStack/MutateNoticia/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MutateNoticiaServiceRoleFEC6B10B"
+    }
+  ],
+  "/CxumStack/ModifyUserRole/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ModifyUserRoleServiceRole8FC7F1CA"
+    }
+  ],
+  "/CxumStack/GetSolicitudes/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GetSolicitudesServiceRole3D667EB0"
+    }
+  ],
+  "/CxumStack/MutateSolicitud/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MutateSolicitudServiceRoleC228CFA7"
+    }
+  ],
+  "/CxumStack/SubmitVolunteer/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubmitVolunteerServiceRole0A11F68D"
+    }
+  ],
+  "/CxumStack/SubmitContact/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubmitContactServiceRole08EE497D"
+    }
+  ],
+  "/CxumStack/InviteUser/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InviteUserServiceRoleFAB61FF7"
+    }
+  ],
+  "/CxumStack/GetActivity/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GetActivityServiceRoleA3B9D643"
+    }
+  ],
+  "/CxumStack/GenerateInviteToken/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GenerateInviteTokenServiceRoleCBD5AF7F"
+    }
+  ],
+  "/CxumStack/ValidateInviteToken/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ValidateInviteTokenServiceRoleF2B6A9DC"
+    }
+  ],
+  "/CxumStack/ConsumeInviteToken/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ConsumeInviteTokenServiceRoleE6525164"
+    }
+  ],
+  "/CxumStack/CxumBackend/DefaultStage/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendDefaultStageE47509E7"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--usersget/ListUsersInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadminusersgetListUsersIntPermission621D1F0A"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--usersget/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadminusersget4F1D92A4"
+    }
+  ],
+  "/CxumStack/CxumBackend/AdminOnlyAuthorizer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendAdminOnlyAuthorizer55FDF761"
+    }
+  ],
+  "/CxumStack/CxumBackend/PUT--admin--users--{username}/ModifyUserRoleInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPUTadminusersusernameModifyUserRoleIntPermission787CAF71"
+    }
+  ],
+  "/CxumStack/CxumBackend/PUT--admin--users--{username}/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPUTadminusersusernameAF477248"
+    }
+  ],
+  "/CxumStack/CxumBackend/MultiRoleAuthorizer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendMultiRoleAuthorizer01F621D0"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--centros/GetCentrosInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadmincentrosGetCentrosIntPermission574733CC"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--centros/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadmincentros7ED8C559"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--admin--centros/CreateCentroInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTadmincentrosCreateCentroIntPermission204352C6"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--admin--centros/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTadmincentros0549D969"
+    }
+  ],
+  "/CxumStack/CxumBackend/PUT--admin--centros--{id}/MutateCentroInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPUTadmincentrosidMutateCentroIntPermission12359BEF"
+    }
+  ],
+  "/CxumStack/CxumBackend/PUT--admin--centros--{id}/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPUTadmincentrosid71E8AAD9"
+    }
+  ],
+  "/CxumStack/CxumBackend/DELETE--admin--centros--{id}/MutateCentroInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendDELETEadmincentrosidMutateCentroIntPermission847CAD61"
+    }
+  ],
+  "/CxumStack/CxumBackend/DELETE--admin--centros--{id}/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendDELETEadmincentrosidBC25D988"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--noticias/GetNoticiasAdminInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadminnoticiasGetNoticiasAdminIntPermissionA1A9F525"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--noticias/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadminnoticiasDF2716F7"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--admin--noticias/CreateNoticiaInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTadminnoticiasCreateNoticiaIntPermission23B7014F"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--admin--noticias/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTadminnoticias88BDF08D"
+    }
+  ],
+  "/CxumStack/CxumBackend/PUT--admin--noticias--{id}/MutateNoticiaInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPUTadminnoticiasidMutateNoticiaIntPermission7F7D03F0"
+    }
+  ],
+  "/CxumStack/CxumBackend/PUT--admin--noticias--{id}/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPUTadminnoticiasid7C2E076D"
+    }
+  ],
+  "/CxumStack/CxumBackend/DELETE--admin--noticias--{id}/MutateNoticiaInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendDELETEadminnoticiasidMutateNoticiaIntPermissionD678ACC4"
+    }
+  ],
+  "/CxumStack/CxumBackend/DELETE--admin--noticias--{id}/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendDELETEadminnoticiasid7F73B3BF"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--solicitudes/GetSolicitudesInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadminsolicitudesGetSolicitudesIntPermissionE75E97C1"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--solicitudes/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadminsolicitudesEE222917"
+    }
+  ],
+  "/CxumStack/CxumBackend/PUT--admin--solicitudes--{id}/MutateSolicitudInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPUTadminsolicitudesidMutateSolicitudIntPermission39D32A3F"
+    }
+  ],
+  "/CxumStack/CxumBackend/PUT--admin--solicitudes--{id}/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPUTadminsolicitudesidAA857D8A"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--noticias/GetNoticiasPublicInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETnoticiasGetNoticiasPublicIntPermission3B1BF1AA"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--noticias/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETnoticias5E78CACF"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--noticias--{slug}/GetNoticiaSlugInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETnoticiasslugGetNoticiaSlugIntPermissionEB07E1C9"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--noticias--{slug}/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETnoticiasslug606FCEE2"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--centros/GetCentrosPublicInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETcentrosGetCentrosPublicIntPermission98B37553"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--centros/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETcentros7BA18D34"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--voluntarios/SubmitVolunteerInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTvoluntariosSubmitVolunteerIntPermissionFFB7209C"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--voluntarios/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTvoluntarios706AC5A2"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--contacto/SubmitContactInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTcontactoSubmitContactIntPermission702443C1"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--contacto/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTcontacto583DE80D"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--activity/GetActivityInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadminactivityGetActivityIntPermission18A2EA6A"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--activity/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadminactivity568381E3"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--admin--invite-user/InviteUserInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTadmininviteuserInviteUserIntPermissionADF42646"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--admin--invite-user/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTadmininviteuserE1C14D1C"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--invite-token/GenerateInviteTokenInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadmininvitetokenGenerateInviteTokenIntPermission406342E2"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--invite-token/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadmininvitetokenF4897680"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--invite--validate/ValidateInviteTokenInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTinvitevalidateValidateInviteTokenIntPermissionB00A5257"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--invite--validate/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTinvitevalidate2E490320"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--invite--consume/ConsumeInviteTokenInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTinviteconsumeConsumeInviteTokenIntPermissionFD6C2D9F"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--invite--consume/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTinviteconsume4594C9D3"
+    }
+  ],
+  "/CxumStack/GetCentros/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GetCentrosServiceRoleDefaultPolicy1089C5E1"
+    }
+  ],
+  "/CxumStack/MutateCentro/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MutateCentroServiceRoleDefaultPolicy323E6C1A"
+    }
+  ],
+  "/CxumStack/GetNoticias/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GetNoticiasServiceRoleDefaultPolicy93B6A2A9"
+    }
+  ],
+  "/CxumStack/MutateNoticia/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MutateNoticiaServiceRoleDefaultPolicyCD69825D"
+    }
+  ],
+  "/CxumStack/ModifyUserRole/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ModifyUserRoleServiceRoleDefaultPolicyD3AD079B"
+    }
+  ],
+  "/CxumStack/GetSolicitudes/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GetSolicitudesServiceRoleDefaultPolicyF57B124E"
+    }
+  ],
+  "/CxumStack/MutateSolicitud/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MutateSolicitudServiceRoleDefaultPolicy9FF15DD2"
+    }
+  ],
+  "/CxumStack/SubmitVolunteer/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubmitVolunteerServiceRoleDefaultPolicy684EC392"
+    }
+  ],
+  "/CxumStack/SubmitContact/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubmitContactServiceRoleDefaultPolicyD7F4E57C"
+    }
+  ],
+  "/CxumStack/InviteUser/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InviteUserServiceRoleDefaultPolicyC3BCD18C"
+    }
+  ],
+  "/CxumStack/GetActivity/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GetActivityServiceRoleDefaultPolicyB041AB81"
+    }
+  ],
+  "/CxumStack/GenerateInviteToken/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GenerateInviteTokenServiceRoleDefaultPolicyB41ABE93"
+    }
+  ],
+  "/CxumStack/ValidateInviteToken/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ValidateInviteTokenServiceRoleDefaultPolicyC5D69DCE"
+    }
+  ],
+  "/CxumStack/ConsumeInviteToken/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ConsumeInviteTokenServiceRoleDefaultPolicy8205FA3E"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--usersget/ListUsersInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadminusersgetListUsersInt1C21829D"
+    }
+  ],
+  "/CxumStack/CxumBackend/PUT--admin--users--{username}/ModifyUserRoleInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPUTadminusersusernameModifyUserRoleIntC9A5F7D5"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--centros/GetCentrosInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadmincentrosGetCentrosIntF84B0798"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--admin--centros/CreateCentroInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTadmincentrosCreateCentroInt46300C04"
+    }
+  ],
+  "/CxumStack/CxumBackend/PUT--admin--centros--{id}/MutateCentroInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPUTadmincentrosidMutateCentroIntECB6E1DE"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--noticias/GetNoticiasAdminInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadminnoticiasGetNoticiasAdminIntD16C2030"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--admin--noticias/CreateNoticiaInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTadminnoticiasCreateNoticiaInt55630C24"
+    }
+  ],
+  "/CxumStack/CxumBackend/PUT--admin--noticias--{id}/MutateNoticiaInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPUTadminnoticiasidMutateNoticiaIntB2BE1265"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--solicitudes/GetSolicitudesInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadminsolicitudesGetSolicitudesInt9F178EEF"
+    }
+  ],
+  "/CxumStack/CxumBackend/PUT--admin--solicitudes--{id}/MutateSolicitudInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPUTadminsolicitudesidMutateSolicitudIntD10C30DD"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--noticias/GetNoticiasPublicInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETnoticiasGetNoticiasPublicIntAF790FD7"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--noticias--{slug}/GetNoticiaSlugInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETnoticiasslugGetNoticiaSlugInt0991ECD9"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--centros/GetCentrosPublicInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETcentrosGetCentrosPublicInt582A5004"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--voluntarios/SubmitVolunteerInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTvoluntariosSubmitVolunteerInt1E01B7E1"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--contacto/SubmitContactInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTcontactoSubmitContactIntE4B89E6F"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--activity/GetActivityInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadminactivityGetActivityInt071AB15C"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--admin--invite-user/InviteUserInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTadmininviteuserInviteUserIntC7358331"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--invite-token/GenerateInviteTokenInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadmininvitetokenGenerateInviteTokenIntD823E8DB"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--invite--validate/ValidateInviteTokenInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTinvitevalidateValidateInviteTokenInt49E9258B"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--invite--consume/ConsumeInviteTokenInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTinviteconsumeConsumeInviteTokenInt7A6355DD"
+    }
+  ]
+}

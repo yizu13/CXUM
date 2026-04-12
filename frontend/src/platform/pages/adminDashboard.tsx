@@ -1,12 +1,19 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useSettings } from "../../hooks/context/SettingsContext";
 import Iconify from "../../components/modularUI/IconsMock";
 import { ROLE_COLORS, ROLE_LABELS } from "../components/auth";
 import { useAuth } from "../components/AuthContextComps";
+import { generateInviteToken } from "../APIs/inviteTokens";
+import type { InviteTokenResponse } from "../APIs/inviteTokens";
+import { useActivity } from "../../hooks/useActivity";
+import { getCentros } from "../APIs/centros";
+import { getNoticiasAdmin } from "../APIs/noticias";
+import { getSolicitudes } from "../APIs/solicitudes";
+import { getAllUsers } from "../APIs/modifyRole";
 
-const QUICK_LINKS = [
-  {
+const QUICK_LINKS = [  {
     label: "Centros de Acopio",
     desc: "Ver y gestionar centros",
     path: "/plataforma/admin/centros",
@@ -32,21 +39,60 @@ const QUICK_LINKS = [
   },
 ];
 
-const RECENT_ACTIVITY = [
-  { icon: "solar:map-point-bold-duotone",            color: "#f59e0b", text: "Centro Norte CXUM actualizado",          time: "hace 2h" },
-  { icon: "solar:document-bold-duotone",             color: "#3b82f6", text: "Nueva noticia publicada: 'Jornada SDN'", time: "hace 5h" },
-  { icon: "solar:user-check-rounded-bold-duotone",   color: "#22c55e", text: "Solicitud de Ana Reyes aprobada",        time: "hace 1d" },
-  { icon: "solar:bell-bing-bold-duotone",            color: "#ef4444", text: "Nueva solicitud de cambio de rol",       time: "hace 1d" },
-  { icon: "solar:map-point-bold-duotone",            color: "#8b5cf6", text: "Centro Médico Oeste: nuevo responsable", time: "hace 2d" },
-];
-
 export default function AdminDashboardPage() {
-  const { user, hasPermission } = useAuth();
+  const { user, hasPermission, loading } = useAuth();
   const { theme } = useSettings();
   const isDark = theme === "dark";
 
   const roleColor = user ? ROLE_COLORS[user.role] : "#f59e0b";
   const roleLabel = user ? ROLE_LABELS[user.role] : "";
+
+  const { events: activityEvents, loading: activityLoading } = useActivity();
+
+  const [kpis, setKpis] = useState({ centros: "—", voluntarios: "—", noticias: "—", solicitudes: "—" });
+  const [inviteData, setInviteData]   = useState<InviteTokenResponse | null>(null);
+  const [inviteLoading, setInviteLoading] = useState(false);
+  const [inviteError, setInviteError] = useState("");
+  const [copied, setCopied]           = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    Promise.allSettled([
+      getCentros(),
+      getNoticiasAdmin(),
+      getSolicitudes(),
+      getAllUsers(),
+    ]).then(([centrosRes, noticiasRes, solicitudesRes, usersRes]) => {
+      setKpis({
+        centros:     centrosRes.status     === "fulfilled" ? String(centrosRes.value.centros.filter((c) => c.estado === "activo").length) : "—",
+        noticias:    noticiasRes.status    === "fulfilled" ? String(noticiasRes.value.noticias.filter((n) => n.estado === "publicado").length) : "—",
+        solicitudes: solicitudesRes.status === "fulfilled" ? String(solicitudesRes.value.solicitudes.filter((s) => s.status === "pendiente").length) : "—",
+        voluntarios: usersRes.status       === "fulfilled" ? String(usersRes.value.count) : "—",
+      });
+    });
+  }, [user]);
+
+  async function handleGenerateToken() {
+    setInviteLoading(true);
+    setInviteError("");
+    try {
+      const data = await generateInviteToken();
+      setInviteData(data);
+      setCopied(false);
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : "Error desconocido";
+      setInviteError(`No se pudo generar el token: ${msg}`);
+    } finally {
+      setInviteLoading(false);
+    }
+  }
+
+  function handleCopy() {
+    if (!inviteData) return;
+    navigator.clipboard.writeText(inviteData.token);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
 
   const now    = new Date();
   const hour   = now.getHours();
@@ -79,12 +125,15 @@ export default function AdminDashboardPage() {
             {user?.name?.charAt(0) ?? "U"}
           </div>
           <div>
-            <p className="text-sm" style={{ color: textSecondary }}>
+            <p className="text-sm flex gap-1 items-center mb-1" style={{ color: textSecondary }}>
               {greeting},{" "}
               <span className="font-bold" style={{ color: textPrimary }}>
                 {user?.name?.split(" ")[0] ?? "Usuario"}
               </span>{" "}
-              👋
+              <span className=" flex">
+                <Iconify IconString="ph:hand-waving-duotone" Size={18} />
+              </span>
+              
             </p>
             <div className="flex items-center gap-2 mt-0.5">
               <span
@@ -112,10 +161,10 @@ export default function AdminDashboardPage() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
-          { label: "Centros Activos",      value: "3", sub: "+1 este mes",  icon: "solar:map-point-bold-duotone",                  color: "#f59e0b" },
-          { label: "Voluntarios",          value: "6", sub: "1 pendiente",  icon: "solar:users-group-two-rounded-bold-duotone",    color: "#22c55e" },
-          { label: "Noticias Publicadas",  value: "2", sub: "1 borrador",   icon: "solar:document-text-bold-duotone",              color: "#3b82f6" },
-          { label: "Solicitudes Nuevas",   value: "2", sub: "pendientes",   icon: "solar:bell-bing-bold-duotone",                  color: "#ef4444" },
+          { label: "Centros Activos",      value: kpis.centros,     sub: "ver centros",   icon: "solar:map-point-bold-duotone",                  color: "#f59e0b" },
+          { label: "Voluntarios",          value: kpis.voluntarios, sub: "ver usuarios",  icon: "solar:users-group-two-rounded-bold-duotone",    color: "#22c55e" },
+          { label: "Noticias Publicadas",  value: kpis.noticias,    sub: "ver noticias",  icon: "solar:document-text-bold-duotone",              color: "#3b82f6" },
+          { label: "Solicitudes Nuevas",   value: kpis.solicitudes, sub: "pendientes",    icon: "solar:bell-bing-bold-duotone",                  color: "#ef4444" },
         ].map((kpi, i) => (
           <motion.div
             key={kpi.label}
@@ -166,7 +215,7 @@ export default function AdminDashboardPage() {
                   }}
                 >
                   <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                     style={{ background: `${link.color}18`, border: `1px solid ${link.color}30` }}
                   >
                     <Iconify Size={20} IconString={link.icon} Style={{ color: link.color }} />
@@ -201,7 +250,7 @@ export default function AdminDashboardPage() {
                 }}
               >
                 <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                  className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                   style={{ background: "rgba(148,163,184,0.1)", border: "1px solid rgba(148,163,184,0.2)" }}
                 >
                   <Iconify Size={20} IconString="solar:global-bold-duotone" Style={{ color: "#94a3b8" }} />
@@ -235,29 +284,31 @@ export default function AdminDashboardPage() {
           <h2 className="font-black text-base mb-4" style={{ color: textPrimary }}>
             Actividad Reciente
           </h2>
-          <div className="space-y-4">
-            {RECENT_ACTIVITY.map((a, i) => (
-              <div key={i} className="flex items-start gap-3">
-                <div
-                  className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
-                  style={{ background: `${a.color}15`, border: `1px solid ${a.color}25` }}
-                >
-                  <Iconify Size={14} IconString={a.icon} Style={{ color: a.color }} />
+          {activityLoading ? (
+            <p className="text-xs" style={{ color: textSecondary }}>Cargando...</p>
+          ) : activityEvents.length === 0 ? (
+            <p className="text-xs" style={{ color: textSecondary }}>Sin actividad reciente.</p>
+          ) : (
+            <div className="space-y-4">
+              {activityEvents.map((a) => (
+                <div key={a.id} className="flex items-start gap-3">
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
+                    style={{ background: `${a.color}15`, border: `1px solid ${a.color}25` }}>
+                    <Iconify Size={14} IconString={a.icon} Style={{ color: a.color }} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium leading-snug" style={{ color: isDark ? "rgba(255,255,255,0.7)" : "#475569" }}>
+                      {a.text}
+                    </p>
+                    <p className="text-[10px] mt-0.5" style={{ color: textSecondary }}>
+                      {new Date(a.createdAt).toLocaleString("es-DO", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+                      {a.actor && ` · ${a.actor}`}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <p
-                    className="text-xs font-medium leading-snug"
-                    style={{ color: isDark ? "rgba(255,255,255,0.7)" : "#475569" }}
-                  >
-                    {a.text}
-                  </p>
-                  <p className="text-[10px] mt-0.5" style={{ color: textSecondary }}>
-                    {a.time}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </motion.div>
       </div>
 
@@ -285,6 +336,68 @@ export default function AdminDashboardPage() {
           </div>
         </div>
       </motion.div>
+
+      {/* Invite token — visible para administradores (espera a que user cargue) */}
+      {!loading && hasPermission("canManageUsers") && (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="mt-4 rounded-2xl p-5 border"
+          style={cardStyle}
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Iconify Size={18} IconString="solar:key-bold-duotone" Style={{ color: "#f59e0b" }} />
+              <p className="font-black text-sm" style={{ color: textPrimary }}>Token de invitación</p>
+            </div>
+            <button
+              onClick={handleGenerateToken}
+              disabled={inviteLoading}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white transition-opacity disabled:opacity-50"
+              style={{ background: "linear-gradient(135deg, #f59e0b, #fb923c)" }}
+            >
+              <Iconify Size={13} IconString="solar:refresh-bold" Style={{ color: "#fff" }} />
+              {inviteLoading ? "Generando..." : "Generar nuevo"}
+            </button>
+          </div>
+
+          {inviteError && (
+            <p className="text-xs font-medium" style={{ color: "#ef4444" }}>{inviteError}</p>
+          )}
+
+          {!inviteError && inviteData ? (
+            <div
+              className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl"
+              style={{ background: isDark ? "rgba(245,158,11,0.08)" : "rgba(245,158,11,0.06)", border: "1px solid rgba(245,158,11,0.2)" }}
+            >
+              <div>
+                <p className="font-mono font-black text-base tracking-widest" style={{ color: "#f59e0b" }}>
+                  {inviteData.token}
+                </p>
+                <p className="text-[10px] mt-0.5" style={{ color: textSecondary }}>
+                  Expira: {new Date(inviteData.expiresAt).toLocaleTimeString()} · {inviteData.expiresInMinutes} min
+                </p>
+              </div>
+              <button
+                onClick={handleCopy}
+                className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+                style={{ background: copied ? "rgba(34,197,94,0.15)" : "rgba(245,158,11,0.15)" }}
+              >
+                <Iconify
+                  Size={15}
+                  IconString={copied ? "solar:check-circle-bold" : "solar:copy-bold"}
+                  Style={{ color: copied ? "#22c55e" : "#f59e0b" }}
+                />
+              </button>
+            </div>
+          ) : !inviteError && (
+            <p className="text-xs" style={{ color: textSecondary }}>
+              Genera un token para que un nuevo usuario pueda registrarse. Caduca en 20 minutos.
+            </p>
+          )}
+        </motion.div>
+      )}
     </div>
   );
 }

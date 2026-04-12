@@ -5,10 +5,8 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 import { useSettings } from "../../hooks/context/SettingsContext";
-import {
-  COLLECTION_CENTERS,
-  type CollectionCenter,
-} from "../../types/EnumsCollectionCenters";
+import type { CollectionCenter } from "../../types/EnumsCollectionCenters";
+import { useCentros } from "../../hooks/useCentros";
 import Iconify from "../modularUI/IconsMock";
 import { headVariants, mapVariants, STATUS_COLOR, STATUS_LABEL } from "../../types/EnumsCollectionCenters";
 
@@ -44,6 +42,7 @@ const makeIcon = (color: string, active = false) =>
 export default function CollectionMap() {
   const { theme } = useSettings();
   const isDark = theme === "dark";
+  const { centros: COLLECTION_CENTERS, loading } = useCentros();
   const [selected, setSelected] = useState<CollectionCenter | null>(null);
   const [search, setSearch] = useState("");
 
@@ -56,7 +55,7 @@ export default function CollectionMap() {
       c.subtitle.toLowerCase().includes(term) ||
       STATUS_LABEL[c.status].toLowerCase().includes(term)
     );
-  }, [search]);
+  }, [search, COLLECTION_CENTERS]);
 
   useEffect(() => {
     if (selected && !filteredCenters.find((c) => c.id === selected.id))
@@ -164,8 +163,7 @@ export default function CollectionMap() {
                 <p className="mt-1 text-xs" style={{ color: muted }}>
                   {COLLECTION_CENTERS.filter((c) => c.status === "open").length} centros
                   abiertos · {COLLECTION_CENTERS.length} en total
-                </p>
-              </div>
+                </p>              </div>
 
               <div className="px-3 pt-3">
                 <div className="relative">
@@ -207,13 +205,17 @@ export default function CollectionMap() {
                 className="flex-1 overflow-y-auto p-3 space-y-2"
                 style={{ scrollbarWidth: "none" }}
               >
-                {filteredCenters.length === 0 ? (
+                {loading ? (
+                  <div className="pt-8 text-center">
+                    <p className="text-sm font-semibold" style={{ color: text }}>Cargando centros...</p>
+                  </div>
+                ) : filteredCenters.length === 0 ? (
                   <div className="pt-8 text-center">
                     <p className="text-sm font-semibold" style={{ color: text }}>Sin resultados</p>
                     <p className="mt-1 text-xs" style={{ color: muted }}>Intenta con otro término.</p>
                   </div>
-                ) : null}
-                {filteredCenters.map((center) => {
+                ) : (
+                  filteredCenters.map((center) => {
                   const isActive = selected?.id === center.id;
                   const color    = STATUS_COLOR[center.status];
 
@@ -299,7 +301,8 @@ export default function CollectionMap() {
                       )}
                     </button>
                   );
-                })}
+                })
+                )}
               </div>
             </aside>
 

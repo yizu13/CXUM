@@ -54,13 +54,37 @@ export function resendConfirmationCode(email: string): Promise<void> {
   });
 }
 
-export function signIn(email: string, password: string): Promise<void> {
+export type SignInResult = "success" | "newPasswordRequired";
+
+export function signIn(email: string, password: string): Promise<SignInResult> {
   return new Promise((resolve, reject) => {
     const user = new CognitoUser({ Username: email, Pool: userPool });
     const authDetails = new AuthenticationDetails({ Username: email, Password: password });
     user.authenticateUser(authDetails, {
-      onSuccess: () => resolve() ,
+      onSuccess: () => resolve("success"),
       onFailure: (err) => reject(err),
+      newPasswordRequired: () => {
+        // Guardar el usuario en sesión para el cambio de contraseña
+        sessionStorage.setItem("cxum_new_pwd_user", email);
+        resolve("newPasswordRequired");
+      },
+    });
+  });
+}
+
+export function completeNewPassword(email: string, tempPassword: string, newPassword: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const user = new CognitoUser({ Username: email, Pool: userPool });
+    const authDetails = new AuthenticationDetails({ Username: email, Password: tempPassword });
+    user.authenticateUser(authDetails, {
+      onSuccess: () => resolve(),
+      onFailure: (err) => reject(err),
+      newPasswordRequired: (_userAttributes, _requiredAttributes) => {
+        user.completeNewPasswordChallenge(newPassword, {}, {
+          onSuccess: () => resolve(),
+          onFailure: (err) => reject(err),
+        });
+      },
     });
   });
 }

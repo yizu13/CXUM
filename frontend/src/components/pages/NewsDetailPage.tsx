@@ -5,7 +5,8 @@ import { useSettings } from "../../hooks/context/SettingsContext";
 import NavBar from "../layout/NavBar";
 import Footer from "../layout/Footer";
 import Iconify from "../modularUI/IconsMock";
-import { NEWS, NEWS_BY_DATE, type NewsItem } from "../../types/newsSection";
+import type { NewsItem } from "../../types/newsSection";
+import { useNoticia, useNoticias } from "../../hooks/useNoticias";
 
 // ─── Related Card ─────────────────────────────────────────────────────────────
 function RelatedCard({
@@ -115,10 +116,11 @@ export default function NewsDetailPage() {
   const [inView, setInView] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
 
-  const news = NEWS.find((n) => n.slug === slug);
+  const { item: news, loading, notFound } = useNoticia(slug ?? "");
+  const { items: allNews } = useNoticias();
 
   // Noticias relacionadas: misma categoría, excluyendo la actual (máx 3)
-  const related = NEWS_BY_DATE.filter(
+  const related = allNews.filter(
     (n) => n.slug !== slug && n.category === news?.category
   ).slice(0, 3);
 
@@ -127,7 +129,7 @@ export default function NewsDetailPage() {
       ? related
       : [
           ...related,
-          ...NEWS_BY_DATE.filter(
+          ...allNews.filter(
             (n) => n.slug !== slug && !related.find((r) => r.id === n.id)
           ).slice(0, 3 - related.length),
         ];
@@ -138,8 +140,20 @@ export default function NewsDetailPage() {
     return () => clearTimeout(t);
   }, [slug]);
 
+  if (loading) {
+    return (
+      <>
+        <NavBar />
+        <section className={`min-h-screen flex items-center justify-center ${isDark ? "bg-[#05070b]" : "bg-[#f8fafc]"}`}>
+          <p className={`text-sm font-medium ${isDark ? "text-white/30" : "text-slate-400"}`}>Cargando...</p>
+        </section>
+        <Footer />
+      </>
+    );
+  }
+
   // ── 404 interno ──────────────────────────────────────────────────────────────
-  if (!news) {
+  if (notFound || !news) {
     return (
       <>
         <NavBar />

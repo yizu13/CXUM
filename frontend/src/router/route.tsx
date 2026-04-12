@@ -11,6 +11,8 @@ import ScrollToTop from "../hooks/ScrollToTop";
 import LoginPage          from "../platform/pages/login";
 import RegisterPage       from "../platform/pages/register";
 import RestoreAccountPage from "../platform/pages/restoreAccount";
+import ChangePasswordPage from "../platform/pages/changePassword";
+import VerifyEmailPage    from "../platform/pages/verifyEmail";
 
 // Platform admin pages
 import AdminDashboardPage  from "../platform/pages/adminDashboard";
@@ -37,9 +39,11 @@ export default function AppRouter() {
           <Route path="/Noticias/:slug" element={<NewsDetailPage />} />
 
           {/* ── Plataforma / Auth ── */}
-          <Route path="/plataforma/login"     element={<LoginPage />} />
-          <Route path="/plataforma/registro"  element={<RegisterPage />} />
-          <Route path="/plataforma/restaurar" element={<RestoreAccountPage />} />
+          <Route path="/plataforma/login"              element={<LoginPage />} />
+          <Route path="/plataforma/registro"           element={<RegisterPage />} />
+          <Route path="/plataforma/restaurar"          element={<RestoreAccountPage />} />
+          <Route path="/plataforma/cambiar-contrasena" element={<ChangePasswordPage />} />
+          <Route path="/plataforma/verificar"          element={<VerifyEmailPage />} />
 
           {/* ── Admin Panel (protegido) ── */}
           <Route

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -10,23 +10,12 @@ import {
   type CentroFormValues,
 } from "../../components/FormComponents/schemas";
 import Iconify from "../../components/modularUI/IconsMock";
+import { getCentros, createCentro, updateCentro, deleteCentro } from "../APIs/centros";
 import { useAuth } from "../components/AuthContextComps";
+import SimpleBar from "simplebar-react";
+import "simplebar-react/dist/simplebar.min.css";
 
-// ── Types ─────────────────────────────────────────────────────────────────────
-interface Centro {
-  id: string;
-  nombre: string;
-  direccion: string;
-  municipio: string;
-  telefono: string;
-  horario: string;
-  responsable: string;
-  estado: "activo" | "inactivo" | "lleno";
-  capacidad: number;
-  ocupacion: number;
-  tipo: "alimentos" | "ropa" | "medicamentos" | "general";
-  createdAt: string;
-}
+// ── Types re-exported from API ────────────────────────────────────────────────
 
 const TIPO_LABELS = {
   alimentos: "Alimentos",
@@ -51,13 +40,6 @@ const ESTADO_CONFIG = {
   inactivo: { label: "Inactivo", color: "#94a3b8", bg: "rgba(148,163,184,0.12)" },
   lleno:    { label: "Lleno",    color: "#ef4444", bg: "rgba(239,68,68,0.12)"   },
 };
-
-const MOCK_CENTROS: Centro[] = [
-  { id: "1", nombre: "Centro Norte CXUM", direccion: "Av. Principal 123, Sector Norte", municipio: "Santo Domingo Norte", telefono: "809-555-0101", horario: "8:00am – 5:00pm", responsable: "María González", estado: "activo", capacidad: 500, ocupacion: 320, tipo: "general", createdAt: "2024-01-15" },
-  { id: "2", nombre: "Punto de Acopio Este", direccion: "Calle 5 #45, Los Jardines", municipio: "Santo Domingo Este", telefono: "809-555-0202", horario: "7:00am – 4:00pm", responsable: "Carlos Peña", estado: "lleno", capacidad: 300, ocupacion: 300, tipo: "alimentos", createdAt: "2024-02-08" },
-  { id: "3", nombre: "Centro Médico CXUM Oeste", direccion: "Blvd. 30 de Mayo Km 3", municipio: "Santo Domingo Oeste", telefono: "809-555-0303", horario: "9:00am – 6:00pm", responsable: "Ana Reyes", estado: "activo", capacidad: 200, ocupacion: 75, tipo: "medicamentos", createdAt: "2024-03-20" },
-  { id: "4", nombre: "Almacén Textil Centro", direccion: "Calle El Conde #12", municipio: "Distrito Nacional", telefono: "809-555-0404", horario: "8:00am – 3:00pm", responsable: "Luis Martínez", estado: "inactivo", capacidad: 400, ocupacion: 0, tipo: "ropa", createdAt: "2024-04-10" },
-];
 
 // ── StatCard ──────────────────────────────────────────────────────────────────
 function StatCard({
@@ -252,9 +234,11 @@ function CentroModal({
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        className="w-full max-w-lg rounded-3xl p-6 border max-h-[90vh] overflow-y-auto"
+        className="w-full max-w-lg rounded-3xl border max-h-[90vh] overflow-hidden flex flex-col"
         style={{ background: modalBg, borderColor: modalBorder, boxShadow: "0 24px 80px rgba(0,0,0,0.35)" }}
       >
+        <SimpleBar style={{ maxHeight: "90vh" }}>
+        <div className="p-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -372,6 +356,8 @@ function CentroModal({
             </button>
           </div>
         </FormManaged>
+        </div>
+        </SimpleBar>
       </motion.div>
     </div>
   );
@@ -384,7 +370,8 @@ export default function AdminCentrosPage() {
   const isDark = theme === "dark";
   const canEdit = hasPermission("canManageCenters");
 
-  const [centros, setCentros] = useState<Centro[]>(MOCK_CENTROS);
+  const [centros, setCentros] = useState<Centro[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filterEstado, setFilterEstado] = useState<string>("todos");
   const [filterTipo, setFilterTipo] = useState<string>("todos");
@@ -392,6 +379,20 @@ export default function AdminCentrosPage() {
     open: false,
     centro: null,
   });
+
+  const fetchCentros = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await getCentros();
+      setCentros(res.centros);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchCentros(); }, [fetchCentros]);
 
   const filtered = centros.filter((c) => {
     const matchSearch =
@@ -402,27 +403,28 @@ export default function AdminCentrosPage() {
     return matchSearch && matchEstado && matchTipo;
   });
 
-  const handleSave = (data: CentroFormValues & { id?: string }) => {
-    if (data.id) {
-      setCentros((prev) =>
-        prev.map((c) => (c.id === data.id ? { ...c, ...data } as Centro : c))
-      );
-    } else {
-      setCentros((prev) => [
-        {
-          ...data,
-          id: Date.now().toString(),
-          createdAt: new Date().toISOString().split("T")[0],
-        } as Centro,
-        ...prev,
-      ]);
+  const handleSave = async (data: CentroFormValues & { id?: string }) => {
+    try {
+      if (data.id) {
+        await updateCentro(data.id, data);
+      } else {
+        await createCentro(data);
+      }
+      await fetchCentros();
+    } catch (err) {
+      console.error(err);
     }
     setModal({ open: false, centro: null });
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm("¿Eliminar este centro de acopio?")) {
-      setCentros((prev) => prev.filter((c) => c.id !== id));
+      try {
+        await deleteCentro(id);
+        setCentros((prev) => prev.filter((c) => c.id !== id));
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
 
@@ -516,7 +518,11 @@ export default function AdminCentrosPage() {
 
       {/* Grid */}
       <AnimatePresence mode="popLayout">
-        {filtered.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-20">
+            <p className="text-sm font-medium" style={{ color: isDark ? "rgba(255,255,255,0.3)" : "#94a3b8" }}>Cargando centros...</p>
+          </div>
+        ) : filtered.length === 0 ? (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20">
             <p className="text-lg font-black" style={{ color: isDark ? "rgba(255,255,255,0.2)" : "#cbd5e1" }}>
               Sin resultados

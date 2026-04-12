@@ -20,3 +20,19 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
 }
+
+/* ── SimpleBar custom scrollbar ─────────────────────────────────────────── */
+.simplebar-scrollbar::before {
+  background: rgba(245, 158, 11, 0.35) !important;
+  border-radius: 999px !important;
+}
+.simplebar-scrollbar.simplebar-visible::before {
+  opacity: 1 !important;
+}
+.simplebar-track.simplebar-vertical {
+  width: 4px !important;
+  right: 2px !important;
+}
+.simplebar-track.simplebar-horizontal {
+  height: 4px !important;
+}

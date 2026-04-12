@@ -3,6 +3,8 @@ import AdminSidebar from "./AdminSidebar";
 import { useSettings } from "../../hooks/context/SettingsContext";
 import Iconify from "../../components/modularUI/IconsMock";
 import { useAuth } from "./AuthContextComps";
+import SimpleBar from "simplebar-react";
+import "simplebar-react/dist/simplebar.min.css";
 
 export default function AdminLayout() {
   const { theme, setTheme } = useSettings();
@@ -87,9 +89,9 @@ export default function AdminLayout() {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto">
+        <SimpleBar style={{ flex: 1, height: "calc(100vh - 3.5rem)" }}>
           <Outlet />
-        </main>
+        </SimpleBar>
       </div>
     </div>
   );

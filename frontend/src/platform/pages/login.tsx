@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSettings } from "../../hooks/context/SettingsContext";
 import { signIn } from "../components/cognito";
 import AuthMock from "./AuthMock";
@@ -22,6 +22,7 @@ export default function LoginPage() {
   const { theme } = useSettings();
   const { changeReload, setLogin } = useAuth();
   const isDark    = theme === "dark";
+  const navigate  = useNavigate();
 
   const [apiError, setApiError] = useState("");
   const [loading,  setLoading]  = useState(false);
@@ -36,16 +37,23 @@ export default function LoginPage() {
     setApiError("");
     setLoading(true);
     try {
-      await signIn(email, password);
+      const result = await signIn(email, password);
+      if (result === "newPasswordRequired") {
+        navigate(`/plataforma/cambiar-contrasena?email=${encodeURIComponent(email)}`);
+        return;
+      }
       setLogin(true);
       changeReload();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       const msg: Record<string, string> = {
-        NotAuthorizedException:    "Correo o contraseña incorrectos.",
-        UserNotFoundException:     "No existe una cuenta con ese correo.",
-        UserNotConfirmedException: "Debes verificar tu correo antes de ingresar.",
+        NotAuthorizedException: "Correo o contraseña incorrectos.",
+        UserNotFoundException:  "No existe una cuenta con ese correo.",
       };
+      if (err.code === "UserNotConfirmedException") {
+        navigate(`/plataforma/verificar?email=${encodeURIComponent(email)}`);
+        return;
+      }
       setApiError(msg[err.code] ?? err.message ?? "Error al iniciar sesión.");
     } finally {
       setLoading(false);
