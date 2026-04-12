@@ -106,7 +106,8 @@ export const noticiaDefaultValues: NoticiaFormValues = {
 // ─────────────────────────────────────────────
 
 export const voluntarioEditSchema = yup.object({
-  role:      yup.string().oneOf(["voluntario", "escritor", "colaborador", "administrador"]).required("El rol es requerido"),
+  // "administradores" matches the UserRole type defined in auth.ts
+  role:      yup.string().oneOf(["voluntario", "escritor", "colaborador", "administradores"]).required("El rol es requerido"),
   status:    yup.string().oneOf(["activo", "pendiente", "suspendido"]).required("El estado es requerido"),
   telefono:  yup.string().trim().min(7, "Teléfono inválido").max(25).required("El teléfono es requerido"),
   municipio: yup.string().trim().min(2).max(100).required("El municipio es requerido"),

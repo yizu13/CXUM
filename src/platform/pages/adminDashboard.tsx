@@ -61,7 +61,6 @@ export default function AdminDashboardPage() {
 
   const textPrimary   = isDark ? "#ffffff" : "#0f172a";
   const textSecondary = isDark ? "rgba(255,255,255,0.4)" : "#64748b";
-//  const dividerColor  = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)";
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -278,10 +277,10 @@ export default function AdminDashboardPage() {
               <span style={{ color: roleColor }}>{roleLabel}</span>
             </p>
             <p className="text-xs mt-0.5" style={{ color: textSecondary }}>
-              {user?.role === "administrador" && "Tienes acceso completo al sistema incluyendo gestión de usuarios."}
-              {user?.role === "colaborador"   && "Puedes gestionar noticias y centros de acopio."}
-              {user?.role === "escritor"      && "Puedes crear y editar noticias y ver centros de acopio."}
-              {user?.role === "voluntario"    && "Puedes ver estadísticas y consultar centros de acopio."}
+              {user?.role === "administradores" && "Tienes acceso completo al sistema incluyendo gestión de usuarios."}
+              {user?.role === "colaborador"     && "Puedes gestionar noticias y centros de acopio."}
+              {user?.role === "escritor"        && "Puedes crear y editar noticias y ver centros de acopio."}
+              {user?.role === "voluntario"      && "Puedes ver estadísticas y consultar centros de acopio."}
             </p>
           </div>
         </div>
