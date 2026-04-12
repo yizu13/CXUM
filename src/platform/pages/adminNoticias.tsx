@@ -181,8 +181,10 @@ function NoticiaEditor({
   onSave: (data: NoticiaFormValues & { id?: string }) => void;
   isDark: boolean;
 }) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const methods = useForm<NoticiaFormValues>({
-    resolver: yupResolver(noticiaSchema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: yupResolver(noticiaSchema) as any,
     defaultValues: n?.id
       ? {
           titulo:    n.titulo    ?? "",
@@ -236,7 +238,8 @@ function NoticiaEditor({
           </button>
         </div>
 
-        <FormManaged methods={methods} onSubmit={handleSubmit} className="space-y-4">
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+        <FormManaged methods={methods as any} onSubmit={handleSubmit} className="space-y-4">
           <RHFTextField<NoticiaFormValues>
             name="titulo"
             label="Título"

@@ -42,12 +42,12 @@ interface Solicitud {
 }
 
 const MOCK_VOLUNTARIOS: Voluntario[] = [
-  { id: "1", name: "María González",  email: "maria@cxum.org",  role: "colaborador",   status: "activo",     municipio: "SDN", telefono: "809-555-0101", joinedAt: "2024-01-15" },
-  { id: "2", name: "Carlos Peña",     email: "carlos@cxum.org", role: "escritor",      status: "activo",     municipio: "SDE", telefono: "809-555-0202", joinedAt: "2024-02-08" },
-  { id: "3", name: "Ana Reyes",       email: "ana@cxum.org",    role: "voluntario",    status: "pendiente",  municipio: "SDO", telefono: "809-555-0303", joinedAt: "2024-03-20" },
-  { id: "4", name: "Luis Martínez",   email: "luis@cxum.org",   role: "voluntario",    status: "suspendido", municipio: "DN",  telefono: "809-555-0404", joinedAt: "2024-04-10" },
-  { id: "5", name: "Sofía Herrera",   email: "sofia@cxum.org",  role: "administradores", status: "activo",     municipio: "DN",  telefono: "809-555-0505", joinedAt: "2023-12-01" },
-  { id: "6", name: "Pedro Álvarez",   email: "pedro@cxum.org",  role: "escritor",      status: "activo",     municipio: "SDE", telefono: "809-555-0606", joinedAt: "2024-05-22" },
+  { id: "1", name: "María González",  email: "maria@cxum.org",  role: "colaborador",    status: "activo",     municipio: "SDN", telefono: "809-555-0101", joinedAt: "2024-01-15" },
+  { id: "2", name: "Carlos Peña",     email: "carlos@cxum.org", role: "escritor",       status: "activo",     municipio: "SDE", telefono: "809-555-0202", joinedAt: "2024-02-08" },
+  { id: "3", name: "Ana Reyes",       email: "ana@cxum.org",    role: "voluntario",     status: "pendiente",  municipio: "SDO", telefono: "809-555-0303", joinedAt: "2024-03-20" },
+  { id: "4", name: "Luis Martínez",   email: "luis@cxum.org",   role: "voluntario",     status: "suspendido", municipio: "DN",  telefono: "809-555-0404", joinedAt: "2024-04-10" },
+  { id: "5", name: "Sofía Herrera",   email: "sofia@cxum.org",  role: "administradores", status: "activo",    municipio: "DN",  telefono: "809-555-0505", joinedAt: "2023-12-01" },
+  { id: "6", name: "Pedro Álvarez",   email: "pedro@cxum.org",  role: "escritor",       status: "activo",     municipio: "SDE", telefono: "809-555-0606", joinedAt: "2024-05-22" },
 ];
 
 const MOCK_SOLICITUDES: Solicitud[] = [
@@ -69,10 +69,10 @@ const SOL_STATUS_CONFIG: Record<SolicitudStatus, { label: string; color: string;
 };
 
 const ROLE_OPTIONS: { value: string; label: string }[] = [
-  { value: "voluntario",    label: "Voluntario"    },
-  { value: "escritor",      label: "Escritor"      },
-  { value: "colaborador",   label: "Colaborador"   },
-  { value: "administradores", label: "Administradores" },
+  { value: "voluntario",     label: "Voluntario"    },
+  { value: "escritor",       label: "Escritor"      },
+  { value: "colaborador",    label: "Colaborador"   },
+  { value: "administradores", label: "Administrador" },
 ];
 
 const STATUS_OPTIONS: { value: string; label: string }[] = [
@@ -125,10 +125,12 @@ function VoluntarioModal({
   const { user } = useAuth();
   const roleColor = ROLE_COLORS[v.role];
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const methods = useForm<VoluntarioEditFormValues>({
-    resolver: yupResolver(voluntarioEditSchema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: yupResolver(voluntarioEditSchema) as any,
     defaultValues: {
-      role:      v.role,
+      role:      v.role as VoluntarioEditFormValues["role"],
       status:    v.status,
       telefono:  v.telefono,
       municipio: v.municipio,
@@ -179,7 +181,8 @@ function VoluntarioModal({
           </button>
         </div>
 
-        <FormManaged methods={methods} onSubmit={handleSubmit} className="space-y-4">
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+        <FormManaged methods={methods as any} onSubmit={handleSubmit} className="space-y-4">
           <RHFSelect<VoluntarioEditFormValues>
             name="role"
             label="Rol"

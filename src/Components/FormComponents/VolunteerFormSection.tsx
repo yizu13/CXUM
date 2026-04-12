@@ -86,9 +86,10 @@ export default function VolunteerFormSection() {
   const { theme } = useSettings();
   const isDark = theme === "dark";
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const methods = useForm<VolunteerFormValues>({
-
-    resolver: yupResolver(volunteerSchema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: yupResolver(volunteerSchema) as any,
     defaultValues: volunteerDefaultValues,
     mode: "onTouched",
   });
@@ -109,7 +110,8 @@ export default function VolunteerFormSection() {
   const textSecondary = isDark ? "text-white/45" : "text-slate-500";
 
   return (
-    <FormManaged methods={methods} onSubmit={onSubmit}>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    <FormManaged methods={methods as any} onSubmit={onSubmit}>
       <div className={`w-full max-w-3xl mx-auto p-8 md:p-12 rounded-3xl border backdrop-blur-md ${cardBg}`}>
         <div className="flex flex-col gap-8">
 

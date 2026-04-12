@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useSettings } from "../../hooks/context/SettingsContext";
 import NavBar from "../layout/NavBar";
 import Footer from "../layout/Footer";
-import Iconify from "../ModularUI/IconsMock";
+import Iconify from "../modularUI/IconsMock";
 import { NEWS, NEWS_BY_DATE, type NewsItem } from "../../types/newsSection";
 
 // ─── Related Card ─────────────────────────────────────────────────────────────
