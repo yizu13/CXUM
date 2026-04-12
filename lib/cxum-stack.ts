@@ -4,6 +4,7 @@ import * as apigwv2 from "aws-cdk-lib/aws-apigatewayv2";
 import * as integrations from "aws-cdk-lib/aws-apigatewayv2-integrations";
 import * as authorizers from "aws-cdk-lib/aws-apigatewayv2-authorizers";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
+import * as s3 from "aws-cdk-lib/aws-s3";
 import * as iam from "aws-cdk-lib/aws-iam";
 import { Construct } from "constructs";
 import * as path from "path";
@@ -69,6 +70,26 @@ export class CxumStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
 
+    // ─── S3 Bucket para imágenes ─────────────────────────────────────────────
+    const imagesBucket = new s3.Bucket(this, "ImagesBucket", {
+      bucketName: `cxum-images-${this.account}`,
+      publicReadAccess: true,
+      blockPublicAccess: new s3.BlockPublicAccess({
+        blockPublicAcls: false,
+        blockPublicPolicy: false,
+        ignorePublicAcls: false,
+        restrictPublicBuckets: false,
+      }),
+      cors: [
+        {
+          allowedMethods: [s3.HttpMethods.GET, s3.HttpMethods.PUT, s3.HttpMethods.POST],
+          allowedOrigins: ["*"],
+          allowedHeaders: ["*"],
+        },
+      ],
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
     // ─── Lambdas existentes (importadas) ──────────────────────────────────────
     const authorizerAdminFn = lambda.Function.fromFunctionName(this, "CxumAuthorizerAdmin", "AuthorizerAdminCXUM");
 
@@ -90,6 +111,7 @@ export class CxumStack extends cdk.Stack {
           INVITE_TOKENS_TABLE: inviteTokensTable.tableName,
           ACTIVITY_TABLE: activityTable.tableName,
           PROFILES_TABLE: profilesTable.tableName,
+          IMAGES_BUCKET: imagesBucket.bucketName,
           ...extraEnv,
         },
       });
@@ -114,6 +136,14 @@ export class CxumStack extends cdk.Stack {
     const generateInviteTokenFn = makeFn("GenerateInviteToken", "generateInviteTokenCXUM", "generateInviteToken");
     const validateInviteTokenFn = makeFn("ValidateInviteToken", "validateInviteTokenCXUM", "validateInviteToken");
     const consumeInviteTokenFn  = makeFn("ConsumeInviteToken",  "consumeInviteTokenCXUM",  "consumeInviteToken");
+    const uploadImageFn         = makeFn("UploadImage",         "uploadImageCXUM",         "uploadImage");
+    const listImagesFn          = makeFn("ListImages",          "listImagesCXUM",          "listImages");
+
+    // ─── Permisos S3 ──────────────────────────────────────────────────────────
+    imagesBucket.grantPut(uploadImageFn);
+    imagesBucket.grantRead(listImagesFn);
+    imagesBucket.grantDelete(listImagesFn);
+    imagesBucket.grantPublicAccess();
 
     // ─── Permisos DynamoDB ────────────────────────────────────────────────────
     centrosTable.grantReadData(getCentrosFn);
@@ -343,10 +373,36 @@ export class CxumStack extends cdk.Stack {
       integration: new integrations.HttpLambdaIntegration("ConsumeInviteTokenInt", consumeInviteTokenFn),
     });
 
+    // ─── Upload de imágenes ───────────────────────────────────────────────────
+    httpApi.addRoutes({
+      path: "/admin/upload-image",
+      methods: [apigwv2.HttpMethod.POST],
+      integration: new integrations.HttpLambdaIntegration("UploadImageInt", uploadImageFn),
+      authorizer: multiRoleAuthorizer,
+    });
+
+    // ─── Galería de medios ────────────────────────────────────────────────────
+    httpApi.addRoutes({
+      path: "/admin/media",
+      methods: [apigwv2.HttpMethod.GET, apigwv2.HttpMethod.DELETE],
+      integration: new integrations.HttpLambdaIntegration("ListImagesInt", listImagesFn),
+      authorizer: multiRoleAuthorizer,
+    });
+
     // ─── Outputs ──────────────────────────────────────────────────────────────
     new cdk.CfnOutput(this, "ApiUrl", {
       value: httpApi.apiEndpoint,
       description: "URL base del HTTP API Gateway — actualizar VITE_API_URL en frontend/.env",
+    });
+
+    new cdk.CfnOutput(this, "ImagesBucketName", {
+      value: imagesBucket.bucketName,
+      description: "Nombre del bucket S3 para imágenes",
+    });
+
+    new cdk.CfnOutput(this, "ImagesBucketUrl", {
+      value: `https://${imagesBucket.bucketName}.s3.amazonaws.com`,
+      description: "URL base del bucket S3 para imágenes",
     });
   }
 }

@@ -5,6 +5,7 @@ export { default as RHFSelect }             from "./RHFSelect";
 export { default as RHFCheckbox }           from "./RHFCheckbox";
 export { default as RHFDatePicker }         from "./RHFDatePicker";
 export { default as RHFChipGroup }          from "./RHFChipGroup";
+export { default as RHFImageUpload }        from "./RHFImageUpload";
 export { default as ContactFormSection }    from "./ContactFormSection";
 export { default as VolunteerFormSection }  from "./VolunteerFormSection";
 // ── Auth ──────────────────────────────────────────────────────────────────────

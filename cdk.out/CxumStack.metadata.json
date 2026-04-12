@@ -61,6 +61,18 @@
       "data": "ApiUrl"
     }
   ],
+  "/CxumStack/ImagesBucketName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ImagesBucketName"
+    }
+  ],
+  "/CxumStack/ImagesBucketUrl": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ImagesBucketUrl"
+    }
+  ],
   "/CxumStack/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
@@ -113,6 +125,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ProfilesTable3B48B4C6"
+    }
+  ],
+  "/CxumStack/ImagesBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ImagesBucket1E86AFB2"
     }
   ],
   "/CxumStack/AuthorizerMultiRole/Resource": [
@@ -205,6 +223,18 @@
       "data": "ConsumeInviteTokenF32D0436"
     }
   ],
+  "/CxumStack/UploadImage/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UploadImageC507297B"
+    }
+  ],
+  "/CxumStack/ListImages/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ListImages72A1738D"
+    }
+  ],
   "/CxumStack/CxumBackend/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -227,6 +257,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CDKMetadata"
+    }
+  ],
+  "/CxumStack/ImagesBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ImagesBucketPolicy5ED12B6C"
     }
   ],
   "/CxumStack/AuthorizerMultiRole/ServiceRole/Resource": [
@@ -317,6 +353,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ConsumeInviteTokenServiceRoleE6525164"
+    }
+  ],
+  "/CxumStack/UploadImage/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UploadImageServiceRole64704095"
+    }
+  ],
+  "/CxumStack/ListImages/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ListImagesServiceRole66A5B4CE"
     }
   ],
   "/CxumStack/CxumBackend/DefaultStage/Resource": [
@@ -601,6 +649,42 @@
       "data": "CxumBackendPOSTinviteconsume4594C9D3"
     }
   ],
+  "/CxumStack/CxumBackend/POST--admin--upload-image/UploadImageInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTadminuploadimageUploadImageIntPermission51D70A2E"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--admin--upload-image/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTadminuploadimage5E70A386"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--media/ListImagesInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadminmediaListImagesIntPermissionD876B0F7"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--media/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadminmediaD585F5E4"
+    }
+  ],
+  "/CxumStack/CxumBackend/DELETE--admin--media/ListImagesInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendDELETEadminmediaListImagesIntPermission265266D8"
+    }
+  ],
+  "/CxumStack/CxumBackend/DELETE--admin--media/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendDELETEadminmediaF9AAF81D"
+    }
+  ],
   "/CxumStack/GetCentros/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -683,6 +767,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ConsumeInviteTokenServiceRoleDefaultPolicy8205FA3E"
+    }
+  ],
+  "/CxumStack/UploadImage/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UploadImageServiceRoleDefaultPolicy8C3207BA"
+    }
+  ],
+  "/CxumStack/ListImages/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ListImagesServiceRoleDefaultPolicy467C90F1"
     }
   ],
   "/CxumStack/CxumBackend/GET--admin--usersget/ListUsersInt/Resource": [
@@ -803,6 +899,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CxumBackendPOSTinviteconsumeConsumeInviteTokenInt7A6355DD"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--admin--upload-image/UploadImageInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTadminuploadimageUploadImageInt0D7A8384"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--media/ListImagesInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadminmediaListImagesInt584D91D1"
     }
   ]
 }

@@ -180,6 +180,77 @@
     "aws:cdk:path": "CxumStack/ProfilesTable/Resource"
    }
   },
+  "ImagesBucket1E86AFB2": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketName": "cxum-images-640168450436",
+    "CorsConfiguration": {
+     "CorsRules": [
+      {
+       "AllowedHeaders": [
+        "*"
+       ],
+       "AllowedMethods": [
+        "GET",
+        "PUT",
+        "POST"
+       ],
+       "AllowedOrigins": [
+        "*"
+       ]
+      }
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": false,
+     "BlockPublicPolicy": false,
+     "IgnorePublicAcls": false,
+     "RestrictPublicBuckets": false
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/ImagesBucket/Resource"
+   }
+  },
+  "ImagesBucketPolicy5ED12B6C": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "ImagesBucket1E86AFB2"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:GetObject",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "ImagesBucket1E86AFB2",
+            "Arn"
+           ]
+          },
+          "/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/ImagesBucket/Policy/Resource"
+   }
+  },
   "AuthorizerMultiRoleServiceRole9F338D61": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -245,6 +316,9 @@
       },
       "PROFILES_TABLE": {
        "Ref": "ProfilesTable3B48B4C6"
+      },
+      "IMAGES_BUCKET": {
+       "Ref": "ImagesBucket1E86AFB2"
       }
      }
     },
@@ -387,6 +461,9 @@
       },
       "PROFILES_TABLE": {
        "Ref": "ProfilesTable3B48B4C6"
+      },
+      "IMAGES_BUCKET": {
+       "Ref": "ImagesBucket1E86AFB2"
       }
      }
     },
@@ -540,7 +617,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-640168450436-us-east-2",
-     "S3Key": "ebd4d754416f371c978a421de07d1799137f9b929c98aefffa25e9be1be92830.zip"
+     "S3Key": "0b4c0483a3d43afe04d1aa52d2b96ab30fa777835a7c35f0567465c820f3ff40.zip"
     },
     "Environment": {
      "Variables": {
@@ -566,6 +643,9 @@
       },
       "PROFILES_TABLE": {
        "Ref": "ProfilesTable3B48B4C6"
+      },
+      "IMAGES_BUCKET": {
+       "Ref": "ImagesBucket1E86AFB2"
       }
      }
     },
@@ -586,7 +666,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "CxumStack/MutateCentro/Resource",
-    "aws:asset:path": "asset.ebd4d754416f371c978a421de07d1799137f9b929c98aefffa25e9be1be92830",
+    "aws:asset:path": "asset.0b4c0483a3d43afe04d1aa52d2b96ab30fa777835a7c35f0567465c820f3ff40",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -709,6 +789,9 @@
       },
       "PROFILES_TABLE": {
        "Ref": "ProfilesTable3B48B4C6"
+      },
+      "IMAGES_BUCKET": {
+       "Ref": "ImagesBucket1E86AFB2"
       }
      }
     },
@@ -888,6 +971,9 @@
       },
       "PROFILES_TABLE": {
        "Ref": "ProfilesTable3B48B4C6"
+      },
+      "IMAGES_BUCKET": {
+       "Ref": "ImagesBucket1E86AFB2"
       }
      }
     },
@@ -1064,6 +1150,9 @@
       },
       "PROFILES_TABLE": {
        "Ref": "ProfilesTable3B48B4C6"
+      },
+      "IMAGES_BUCKET": {
+       "Ref": "ImagesBucket1E86AFB2"
       }
      }
     },
@@ -1207,6 +1296,9 @@
       },
       "PROFILES_TABLE": {
        "Ref": "ProfilesTable3B48B4C6"
+      },
+      "IMAGES_BUCKET": {
+       "Ref": "ImagesBucket1E86AFB2"
       }
      }
     },
@@ -1402,6 +1494,9 @@
       },
       "PROFILES_TABLE": {
        "Ref": "ProfilesTable3B48B4C6"
+      },
+      "IMAGES_BUCKET": {
+       "Ref": "ImagesBucket1E86AFB2"
       }
      }
     },
@@ -1529,6 +1624,9 @@
       },
       "PROFILES_TABLE": {
        "Ref": "ProfilesTable3B48B4C6"
+      },
+      "IMAGES_BUCKET": {
+       "Ref": "ImagesBucket1E86AFB2"
       }
      }
     },
@@ -1656,6 +1754,9 @@
       },
       "PROFILES_TABLE": {
        "Ref": "ProfilesTable3B48B4C6"
+      },
+      "IMAGES_BUCKET": {
+       "Ref": "ImagesBucket1E86AFB2"
       }
      }
     },
@@ -1791,6 +1892,9 @@
       },
       "PROFILES_TABLE": {
        "Ref": "ProfilesTable3B48B4C6"
+      },
+      "IMAGES_BUCKET": {
+       "Ref": "ImagesBucket1E86AFB2"
       }
      }
     },
@@ -1908,7 +2012,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-640168450436-us-east-2",
-     "S3Key": "1640bee26058e37a920b7282c4fae32f5d9601f0c04e6149cf0b0d54e1be46d3.zip"
+     "S3Key": "e9180665099205843a62736fb77517223cababeda35587d1360b0becb504fcb9.zip"
     },
     "Environment": {
      "Variables": {
@@ -1934,6 +2038,9 @@
       },
       "PROFILES_TABLE": {
        "Ref": "ProfilesTable3B48B4C6"
+      },
+      "IMAGES_BUCKET": {
+       "Ref": "ImagesBucket1E86AFB2"
       }
      }
     },
@@ -1954,7 +2061,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "CxumStack/GetActivity/Resource",
-    "aws:asset:path": "asset.1640bee26058e37a920b7282c4fae32f5d9601f0c04e6149cf0b0d54e1be46d3",
+    "aws:asset:path": "asset.e9180665099205843a62736fb77517223cababeda35587d1360b0becb504fcb9",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -2081,6 +2188,9 @@
       },
       "PROFILES_TABLE": {
        "Ref": "ProfilesTable3B48B4C6"
+      },
+      "IMAGES_BUCKET": {
+       "Ref": "ImagesBucket1E86AFB2"
       }
      }
     },
@@ -2228,6 +2338,9 @@
       },
       "PROFILES_TABLE": {
        "Ref": "ProfilesTable3B48B4C6"
+      },
+      "IMAGES_BUCKET": {
+       "Ref": "ImagesBucket1E86AFB2"
       }
      }
     },
@@ -2375,6 +2488,9 @@
       },
       "PROFILES_TABLE": {
        "Ref": "ProfilesTable3B48B4C6"
+      },
+      "IMAGES_BUCKET": {
+       "Ref": "ImagesBucket1E86AFB2"
       }
      }
     },
@@ -2396,6 +2512,303 @@
    "Metadata": {
     "aws:cdk:path": "CxumStack/ConsumeInviteToken/Resource",
     "aws:asset:path": "asset.f7585cb38bc9a77f7dcea63f45b890a738bad57fda4658e37294f07514e0ae37",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "UploadImageServiceRole64704095": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/UploadImage/ServiceRole/Resource"
+   }
+  },
+  "UploadImageServiceRoleDefaultPolicy8C3207BA": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging",
+        "s3:Abort*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "ImagesBucket1E86AFB2",
+            "Arn"
+           ]
+          },
+          "/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "UploadImageServiceRoleDefaultPolicy8C3207BA",
+    "Roles": [
+     {
+      "Ref": "UploadImageServiceRole64704095"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/UploadImage/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "UploadImageC507297B": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-640168450436-us-east-2",
+     "S3Key": "d2aa44f85f8864146e660342c91ec8dbe9ba416776e23db025d0302b09be7902.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "COGNITO_USER_POOL_ID": "us-east-2_jjcAqBdVn",
+      "COGNITO_APP_CLIENT_ID": "18n7rhj63h6modf5ol9m637ism",
+      "CENTROS_TABLE": {
+       "Ref": "CentrosTable883DAA72"
+      },
+      "NOTICIAS_TABLE": {
+       "Ref": "NoticiasTable429A8F57"
+      },
+      "SOLICITUDES_TABLE": {
+       "Ref": "SolicitudesTable712AEA38"
+      },
+      "CONTACTOS_TABLE": {
+       "Ref": "ContactosTableCDABD28B"
+      },
+      "INVITE_TOKENS_TABLE": {
+       "Ref": "InviteTokensTableC8335281"
+      },
+      "ACTIVITY_TABLE": {
+       "Ref": "ActivityTable0B58B12C"
+      },
+      "PROFILES_TABLE": {
+       "Ref": "ProfilesTable3B48B4C6"
+      },
+      "IMAGES_BUCKET": {
+       "Ref": "ImagesBucket1E86AFB2"
+      }
+     }
+    },
+    "FunctionName": "uploadImageCXUM",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "UploadImageServiceRole64704095",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "UploadImageServiceRoleDefaultPolicy8C3207BA",
+    "UploadImageServiceRole64704095"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/UploadImage/Resource",
+    "aws:asset:path": "asset.d2aa44f85f8864146e660342c91ec8dbe9ba416776e23db025d0302b09be7902",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "ListImagesServiceRole66A5B4CE": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/ListImages/ServiceRole/Resource"
+   }
+  },
+  "ListImagesServiceRoleDefaultPolicy467C90F1": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetObject*",
+        "s3:GetBucket*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ImagesBucket1E86AFB2",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "ImagesBucket1E86AFB2",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "s3:DeleteObject*",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "ImagesBucket1E86AFB2",
+            "Arn"
+           ]
+          },
+          "/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ListImagesServiceRoleDefaultPolicy467C90F1",
+    "Roles": [
+     {
+      "Ref": "ListImagesServiceRole66A5B4CE"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/ListImages/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "ListImages72A1738D": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-640168450436-us-east-2",
+     "S3Key": "09481fd5a286a9bec48659a940813a4fdcf53313b9a5dcdfb672c5a9b3c3ec11.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "COGNITO_USER_POOL_ID": "us-east-2_jjcAqBdVn",
+      "COGNITO_APP_CLIENT_ID": "18n7rhj63h6modf5ol9m637ism",
+      "CENTROS_TABLE": {
+       "Ref": "CentrosTable883DAA72"
+      },
+      "NOTICIAS_TABLE": {
+       "Ref": "NoticiasTable429A8F57"
+      },
+      "SOLICITUDES_TABLE": {
+       "Ref": "SolicitudesTable712AEA38"
+      },
+      "CONTACTOS_TABLE": {
+       "Ref": "ContactosTableCDABD28B"
+      },
+      "INVITE_TOKENS_TABLE": {
+       "Ref": "InviteTokensTableC8335281"
+      },
+      "ACTIVITY_TABLE": {
+       "Ref": "ActivityTable0B58B12C"
+      },
+      "PROFILES_TABLE": {
+       "Ref": "ProfilesTable3B48B4C6"
+      },
+      "IMAGES_BUCKET": {
+       "Ref": "ImagesBucket1E86AFB2"
+      }
+     }
+    },
+    "FunctionName": "listImagesCXUM",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "ListImagesServiceRole66A5B4CE",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "ListImagesServiceRoleDefaultPolicy467C90F1",
+    "ListImagesServiceRole66A5B4CE"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/ListImages/Resource",
+    "aws:asset:path": "asset.09481fd5a286a9bec48659a940813a4fdcf53313b9a5dcdfb672c5a9b3c3ec11",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -4253,10 +4666,225 @@
     "aws:cdk:path": "CxumStack/CxumBackend/POST--invite--consume/Resource"
    }
   },
+  "CxumBackendPOSTadminuploadimageUploadImageInt0D7A8384": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "UploadImageC507297B",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/POST--admin--upload-image/UploadImageInt/Resource"
+   }
+  },
+  "CxumBackendPOSTadminuploadimageUploadImageIntPermission51D70A2E": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "UploadImageC507297B",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:640168450436:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/admin/upload-image"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/POST--admin--upload-image/UploadImageInt-Permission"
+   }
+  },
+  "CxumBackendPOSTadminuploadimage5E70A386": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "CxumBackendMultiRoleAuthorizer01F621D0"
+    },
+    "RouteKey": "POST /admin/upload-image",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendPOSTadminuploadimageUploadImageInt0D7A8384"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/POST--admin--upload-image/Resource"
+   }
+  },
+  "CxumBackendGETadminmediaListImagesInt584D91D1": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "ListImages72A1738D",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--media/ListImagesInt/Resource"
+   }
+  },
+  "CxumBackendGETadminmediaListImagesIntPermissionD876B0F7": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ListImages72A1738D",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:640168450436:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/admin/media"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--media/ListImagesInt-Permission"
+   }
+  },
+  "CxumBackendGETadminmediaD585F5E4": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "CxumBackendMultiRoleAuthorizer01F621D0"
+    },
+    "RouteKey": "GET /admin/media",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendGETadminmediaListImagesInt584D91D1"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--media/Resource"
+   }
+  },
+  "CxumBackendDELETEadminmediaListImagesIntPermission265266D8": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ListImages72A1738D",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:640168450436:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/admin/media"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/DELETE--admin--media/ListImagesInt-Permission"
+   }
+  },
+  "CxumBackendDELETEadminmediaF9AAF81D": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "CxumBackendMultiRoleAuthorizer01F621D0"
+    },
+    "RouteKey": "DELETE /admin/media",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendGETadminmediaListImagesInt584D91D1"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/DELETE--admin--media/Resource"
+   }
+  },
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/12OQU/DMAyFf8vuqZm6IXHtkNA4MXXcJzcNxWubVLWzqkT97yipBojT+571/Owc8v0TbDc4cabrNuuognAW1K3CiS+hni32rq4gvGPVGfX8YRMsqsO+qhHCi7dayNkDslF3E3N/+WTGnpjJ2UUR9hBKt5YlPbmO9JxyiRbFuwsyG2EooijewcHr1ki6ggM1KGbC+ZZDOIoMxUBxPUq0Z8Em1a8QR6XzstKrFdOMeH/tn/3NFV4+3UhfZkzVP25ZVGnY+VEblb6LR8g2MfXmZfCyKOtqA1d+uOV7eITt5spE2eitUG+gXPUbyfxXuHsBAAA="
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/12OzU7DMBCEn6V3Z6lCkbimSKicqFLu1cYxYZvEjux1o2Dl3ZHjliBOM99ofyaHfPcM2w2OLpN1m3VUQTgxylbg6M6hnjT2pq4gfGDVKfHyqRczC/cIYe9lqziGN5fkaDqS0xrfOMEenZpFh31VI4RXryWT0TEVd4ibf/1R2Z6cI6NnQdhDKE2qsuj6LblY7YzOKXZQRBE4UIOsRpyuOYQD81AMFBeiRDwxNsvBZGJUGs/JvWlWjcV7mX+4zhWev4ylb2WX0780z6JUzngrlVj6xCekmzj17nnwPAttagUX93DNd/AE283FEWXWa6ZeQZn0B+0EqqSrAQAA"
    },
    "Metadata": {
     "aws:cdk:path": "CxumStack/CDKMetadata/Default"
@@ -4270,6 +4898,27 @@
     "Fn::GetAtt": [
      "CxumBackend6F4D0EA7",
      "ApiEndpoint"
+    ]
+   }
+  },
+  "ImagesBucketName": {
+   "Description": "Nombre del bucket S3 para imágenes",
+   "Value": {
+    "Ref": "ImagesBucket1E86AFB2"
+   }
+  },
+  "ImagesBucketUrl": {
+   "Description": "URL base del bucket S3 para imágenes",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "ImagesBucket1E86AFB2"
+      },
+      ".s3.amazonaws.com"
+     ]
     ]
    }
   }

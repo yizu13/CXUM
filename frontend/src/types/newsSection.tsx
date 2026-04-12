@@ -13,6 +13,7 @@ export interface NewsItem {
   author: string;
   readTime: number; // minutos
   views: number;
+  contenido?: string; // contenido completo del artículo (HTML o texto)
 }
 
 export const NEWS: NewsItem[] = [

@@ -11,7 +11,7 @@ import pendiente from "../../assets/pendiente.png";
 const TEAM_MEMBERS = [
   {
     name: "Karla Faxas",
-    role: "Fundadora y Generente de Marketing",
+    role: "Fundadora y Gerente de Marketing",
     src: KarlaFaxas,
   },
   {
@@ -26,7 +26,7 @@ const TEAM_MEMBERS = [
   },
   {
     name: "Josmeiry Torres",
-    role: "Geerente de Posts y Comunicaciones",
+    role: "Gerente de Posts y Comunicaciones",
     src: jomi,
   },
   {

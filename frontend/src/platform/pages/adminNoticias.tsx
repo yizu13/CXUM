@@ -3,13 +3,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useSettings } from "../../hooks/context/SettingsContext";
-import { FormManaged, RHFTextField, RHFTextArea, RHFSelect } from "../../components/FormComponents";
+import { FormManaged, RHFTextField, RHFTextArea, RHFSelect, RHFImageUpload } from "../../components/FormComponents";
 import {
   noticiaSchema,
   noticiaDefaultValues,
   type NoticiaFormValues,
 } from "../../components/FormComponents/schemas";
 import Iconify from "../../components/modularUI/IconsMock";
+import AdminButton from "../components/AdminButton";
+import FilterSelect from "../../components/modularUI/FilterSelect";
 import { getNoticiasAdmin, createNoticia, updateNoticia, deleteNoticia } from "../APIs/noticias";
 import type { Noticia } from "../APIs/noticias";
 import { useAuth } from "../components/AuthContextComps";
@@ -98,13 +100,15 @@ function NoticiaPreview({ n, onClose }: { n: Noticia; onClose: () => void }) {
               Vista Previa
             </span>
           </div>
-          <button
+          <AdminButton
+            variant="ghost"
+            size="sm"
+            icon="solar:close-circle-bold-duotone"
             onClick={onClose}
-            className="absolute top-4 right-4 w-8 h-8 rounded-xl flex items-center justify-center text-white/60 hover:text-white transition-colors"
+            forceDark={true}
+            className="absolute top-4 right-4 !rounded-xl"
             style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(8px)" }}
-          >
-            <Iconify Size={16} IconString="solar:close-circle-bold-duotone" Style={{ color: "currentColor" }} />
-          </button>
+          />
           <div className="absolute bottom-4 left-4 right-4">
             <h1 className="text-white font-black text-xl leading-tight">{n.titulo}</h1>
           </div>
@@ -157,6 +161,8 @@ function NoticiaEditor({
   onSave: (data: NoticiaFormValues & { id?: string }) => void;
   isDark: boolean;
 }) {
+  const [saving, setSaving] = useState(false);
+  
   const methods = useForm<NoticiaFormValues>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: yupResolver(noticiaSchema) as any,
@@ -177,8 +183,14 @@ function NoticiaEditor({
   // eslint-disable-next-line react-hooks/incompatible-library
   const portadaValue = methods.watch("portada");
 
-  const handleSubmit = (data: NoticiaFormValues) => {
-    onSave({ ...data, id: n?.id });
+  const handleSubmit = async (data: NoticiaFormValues) => {
+    if (saving) return;
+    setSaving(true);
+    try {
+      await onSave({ ...data, id: n?.id });
+    } finally {
+      setSaving(false);
+    }
   };
 
   const modalBg = isDark ? "#0f1117" : "#ffffff";
@@ -207,13 +219,12 @@ function NoticiaEditor({
               Completa los campos de la noticia
             </p>
           </div>
-          <button
+          <AdminButton
+            variant="ghost"
+            size="sm"
+            icon="solar:close-circle-bold-duotone"
             onClick={onClose}
-            className="w-8 h-8 rounded-xl flex items-center justify-center transition-colors"
-            style={{ color: isDark ? "rgba(255,255,255,0.4)" : "#94a3b8" }}
-          >
-            <Iconify Size={18} IconString="solar:close-circle-bold-duotone" Style={{ color: "currentColor" }} />
-          </button>
+          />
         </div>
 
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
@@ -247,19 +258,12 @@ function NoticiaEditor({
             required
           />
 
-          <div>
-            <RHFTextField<NoticiaFormValues>
-              name="portada"
-              label="URL de Portada"
-              placeholder="https://images.unsplash.com/..."
-              required
-            />
-            {portadaValue && (
-              <div className="mt-2 h-28 rounded-xl overflow-hidden border" style={{ borderColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)" }}>
-                <img src={portadaValue} alt="preview portada" className="w-full h-full object-cover" />
-              </div>
-            )}
-          </div>
+          <RHFImageUpload<NoticiaFormValues>
+            name="portada"
+            label="Imagen de Portada"
+            helperText="Sube una imagen o pega una URL (JPG, PNG, WEBP, GIF - máx 5MB)"
+            required
+          />
 
           <RHFTextArea<NoticiaFormValues>
             name="resumen"
@@ -285,27 +289,24 @@ function NoticiaEditor({
           />
 
           <div className="flex gap-3 pt-2">
-            <button
+            <AdminButton
               type="button"
+              variant="ghost"
+              fullWidth
+              disabled={saving}
               onClick={onClose}
-              className="flex-1 py-2.5 rounded-xl border text-sm font-bold transition-colors"
-              style={{
-                color: isDark ? "rgba(255,255,255,0.4)" : "#64748b",
-                borderColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)",
-              }}
             >
               Cancelar
-            </button>
-            <button
+            </AdminButton>
+            <AdminButton
               type="submit"
-              className="flex-1 py-2.5 rounded-xl text-sm font-black text-white"
-              style={{
-                background: "linear-gradient(135deg, #f59e0b, #fb923c)",
-                boxShadow: "0 4px 20px rgba(245,158,11,0.35)",
-              }}
+              variant="primary"
+              fullWidth
+              loading={saving}
+              loadingText="Guardando..."
             >
               {n?.id ? "Guardar Cambios" : "Crear Noticia"}
-            </button>
+            </AdminButton>
           </div>
         </FormManaged>
           </div>
@@ -447,10 +448,11 @@ export default function AdminNoticiasPage() {
         await createNoticia(data);
       }
       await fetchNoticias();
+      setEditor({ open: false, n: null });
     } catch (err) {
       console.error(err);
+      throw err;
     }
-    setEditor({ open: false, n: null });
   };
 
   const handleDelete = async (id: string) => {
@@ -489,16 +491,13 @@ export default function AdminNoticiasPage() {
           </p>
         </div>
         {canManage && tab === "noticias" && (
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
+          <AdminButton
+            variant="primary"
+            icon="solar:add-circle-bold-duotone"
             onClick={() => setEditor({ open: true, n: null })}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-black text-white"
-            style={{ background: "linear-gradient(135deg, #f59e0b, #fb923c)", boxShadow: "0 4px 20px rgba(245,158,11,0.3)" }}
           >
-            <Iconify Size={16} IconString="solar:add-circle-bold-duotone" Style={{ color: "#fff" }} />
             Nueva Noticia
-          </motion.button>
+          </AdminButton>
         )}
       </div>
 
@@ -536,28 +535,30 @@ export default function AdminNoticiasPage() {
                   style={inputStyle}
                 />
               </div>
-              <select
-                className="px-3 py-2.5 rounded-xl border text-sm font-semibold outline-none"
+              
+              <FilterSelect
                 value={filterCat}
-                onChange={(e) => setFilterCat(e.target.value)}
-                style={inputStyle}
-              >
-                <option value="todos">Todas las categorías</option>
-                {Object.entries(CATEGORIA_CONFIG).map(([k, v]) => (
-                  <option key={k} value={k}>{v.label}</option>
-                ))}
-              </select>
-              <select
-                className="px-3 py-2.5 rounded-xl border text-sm font-semibold outline-none"
+                onChange={setFilterCat}
+                placeholder="Todas las categorías"
+                icon="solar:tag-bold-duotone"
+                options={Object.entries(CATEGORIA_CONFIG).map(([k, v]) => ({
+                  value: k,
+                  label: v.label,
+                  color: v.color,
+                }))}
+              />
+              
+              <FilterSelect
                 value={filterEst}
-                onChange={(e) => setFilterEst(e.target.value)}
-                style={inputStyle}
-              >
-                <option value="todos">Todos los estados</option>
-                {Object.entries(ESTADO_CONFIG).map(([k, v]) => (
-                  <option key={k} value={k}>{v.label}</option>
-                ))}
-              </select>
+                onChange={setFilterEst}
+                placeholder="Todos los estados"
+                icon="solar:eye-bold-duotone"
+                options={Object.entries(ESTADO_CONFIG).map(([k, v]) => ({
+                  value: k,
+                  label: v.label,
+                  color: v.color,
+                }))}
+              />
             </div>
 
             {/* Grid */}
@@ -641,31 +642,32 @@ export default function AdminNoticiasPage() {
                         )}
 
                         <div className="flex items-center gap-2">
-                          <button
+                          <AdminButton
+                            size="sm"
+                            variant="ghost"
+                            icon="solar:eye-bold-duotone"
                             onClick={() => setPreview(n)}
-                            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-colors"
-                            style={{ color: isDark ? "rgba(255,255,255,0.4)" : "#64748b", border: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"}` }}
                           >
-                            <Iconify Size={12} IconString="solar:eye-bold-duotone" Style={{ color: "currentColor" }} />
                             Preview
-                          </button>
+                          </AdminButton>
                           {canManage && (
                             <>
-                              <button
+                              <AdminButton
+                                size="sm"
+                                variant="ghost"
+                                icon="solar:pen-2-bold-duotone"
                                 onClick={() => setEditor({ open: true, n })}
-                                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-colors"
-                                style={{ color: "#f59e0b", border: "1px solid rgba(245,158,11,0.25)" }}
+                                className="!text-amber-500 !border-amber-500/25"
                               >
-                                <Iconify Size={12} IconString="solar:pen-2-bold-duotone" Style={{ color: "currentColor" }} />
                                 Editar
-                              </button>
-                              <button
+                              </AdminButton>
+                              <AdminButton
+                                size="sm"
+                                variant="danger"
+                                icon="solar:trash-bin-trash-bold-duotone"
                                 onClick={() => handleDelete(n.id)}
-                                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-colors ml-auto"
-                                style={{ color: "rgba(239,68,68,0.6)", border: "1px solid rgba(239,68,68,0.15)" }}
-                              >
-                                <Iconify Size={12} IconString="solar:trash-bin-trash-bold-duotone" Style={{ color: "currentColor" }} />
-                              </button>
+                                className="ml-auto"
+                              />
                             </>
                           )}
                         </div>

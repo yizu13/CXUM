@@ -7,6 +7,7 @@ interface CentroFromApi {
   id: string; nombre: string; direccion: string; municipio: string;
   telefono: string; horario: string; responsable: string;
   estado: string; capacidad: number; ocupacion: number; tipo: string;
+  latitud?: number; longitud?: number;
 }
 
 function toCentro(c: CentroFromApi): CollectionCenter {
@@ -21,8 +22,8 @@ function toCentro(c: CentroFromApi): CollectionCenter {
     address: c.direccion,
     schedule: c.horario,
     status,
-    lat: 18.4861,  // coordenadas por defecto — se pueden agregar al modelo DynamoDB
-    lng: -69.9312,
+    lat: c.latitud ?? 18.4861,
+    lng: c.longitud ?? -69.9312,
     acceptedItems: [c.tipo.charAt(0).toUpperCase() + c.tipo.slice(1)],
   };
 }

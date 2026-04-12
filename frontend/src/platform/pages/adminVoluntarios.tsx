@@ -12,6 +12,8 @@ import {
 import { ROLE_LABELS, ROLE_COLORS } from "../../platform/components/auth";
 import type { UserRole } from "../../platform/components/auth";
 import Iconify from "../../components/modularUI/IconsMock";
+import AdminButton from "../components/AdminButton";
+import FilterSelect from "../../components/modularUI/FilterSelect";
 import { getAllUsers, updateUserRole } from "../APIs/modifyRole";
 import { getSolicitudes, resolverSolicitud, inviteUserToSystem } from "../APIs/solicitudes";
 import type { Solicitud } from "../APIs/solicitudes";
@@ -107,10 +109,12 @@ function IncluirModal({
                 <p className="font-black text-base" style={{ color: textPrimary }}>Incluir en el sistema</p>
                 <p className="text-xs" style={{ color: textMuted }}>Esta acción creará una cuenta en el admin panel</p>
               </div>
-              <button onClick={onClose} className="ml-auto w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
-                style={{ color: textMuted }}>
-                <Iconify Size={16} IconString="solar:close-circle-bold-duotone" Style={{ color: "currentColor" }} />
-              </button>
+              <AdminButton
+              variant="ghost"
+              size="sm"
+                icon="solar:close-circle-bold-duotone"
+            onClick={onClose}
+          />
             </div>
 
             <div className="rounded-2xl p-4 mb-5" style={{ background: isDark ? "rgba(245,158,11,0.06)" : "rgba(245,158,11,0.05)", border: "1px solid rgba(245,158,11,0.15)" }}>
@@ -129,17 +133,12 @@ function IncluirModal({
               </div>
             )}
 
-            <div className="flex gap-3">
-              <button onClick={onClose} className="flex-1 py-2.5 rounded-xl border text-sm font-bold"
-                style={{ color: textMuted, borderColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)" }}>
+            <AdminButton type="button" variant="ghost" fullWidth onClick={onClose}>
                 Cancelar
-              </button>
-              <button onClick={handleConfirm} disabled={loading}
-                className="flex-1 py-2.5 rounded-xl text-sm font-black text-white disabled:opacity-50"
-                style={{ background: "linear-gradient(135deg, #f59e0b, #fb923c)", boxShadow: "0 4px 20px rgba(245,158,11,0.35)" }}>
-                {loading ? "Creando cuenta..." : "Confirmar"}
-              </button>
-            </div>
+              </AdminButton>
+              <AdminButton type="button" variant="primary" fullWidth loading={loading} loadingText="Creando cuenta..." onClick={handleConfirm}>
+                Confirmar
+              </AdminButton>
           </>
         ) : (
           <>
@@ -173,10 +172,9 @@ function IncluirModal({
               El usuario deberá ingresar con <strong style={{ color: textPrimary }}>{solicitud.email}</strong> y cambiar su contraseña al primer inicio de sesión.
             </p>
 
-            <button onClick={onClose} className="w-full py-2.5 rounded-xl text-sm font-black text-white"
-              style={{ background: "linear-gradient(135deg, #22c55e, #16a34a)" }}>
+            <AdminButton variant="success" fullWidth onClick={onClose}>
               Listo
-            </button>
+            </AdminButton>
           </>
         )}
       </motion.div>
@@ -251,6 +249,7 @@ function VoluntarioModal({
   isDark: boolean;
 }) {
   const { user } = useAuth();
+  const [saving, setSaving] = useState(false);
   const roleColor = ROLE_COLORS[v.role];
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -265,9 +264,15 @@ function VoluntarioModal({
     },
   });
 
-  const handleSubmit = (data: VoluntarioEditFormValues) => {
-    onSave({ ...v, ...data } as Voluntario);
-    onClose();
+  const handleSubmit = async (data: VoluntarioEditFormValues) => {
+    if (saving) return;
+    setSaving(true);
+    try {
+      await onSave({ ...v, ...data } as Voluntario);
+      onClose();
+    } finally {
+      setSaving(false);
+    }
   };
 
   const modalBg     = isDark ? "#0f1117" : "#ffffff";
@@ -300,13 +305,12 @@ function VoluntarioModal({
               {v.email}
             </p>
           </div>
-          <button
+          <AdminButton
+            variant="ghost"
+            size="sm"
+            icon="solar:close-circle-bold-duotone"
             onClick={onClose}
-            className="w-8 h-8 rounded-xl flex items-center justify-center transition-colors shrink-0"
-            style={{ color: isDark ? "rgba(255,255,255,0.4)" : "#94a3b8" }}
-          >
-            <Iconify Size={18} IconString="solar:close-circle-bold-duotone" Style={{ color: "currentColor" }} />
-          </button>
+          />
         </div>
 
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
@@ -338,27 +342,12 @@ function VoluntarioModal({
           />
 
           <div className="flex gap-3 pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 py-2.5 rounded-xl border text-sm font-bold transition-colors"
-              style={{
-                color: isDark ? "rgba(255,255,255,0.4)" : "#64748b",
-                borderColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)",
-              }}
-            >
+            <AdminButton type="button" variant="ghost" fullWidth disabled={saving} onClick={onClose}>
               Cancelar
-            </button>
-            <button
-              type="submit"
-              className="flex-1 py-2.5 rounded-xl text-sm font-black text-white"
-              style={{
-                background: "linear-gradient(135deg, #f59e0b, #fb923c)",
-                boxShadow: "0 4px 20px rgba(245,158,11,0.35)",
-              }}
-            >
+            </AdminButton>
+            <AdminButton type="submit" variant="primary" fullWidth loading={saving} loadingText="Guardando...">
               Guardar Cambios
-            </button>
+            </AdminButton>
           </div>
         </FormManaged>
       </motion.div>
@@ -737,37 +726,37 @@ export default function AdminVoluntariosPage() {
 
                       {canManage && s.status === "pendiente" && (
                         <div className="flex items-center gap-2 flex-shrink-0">
-                          <button
+                          <AdminButton
+                            size="sm"
+                            variant="ghost"
                             onClick={() => setDetalleModal(s)}
-                            className="px-3 py-1.5 rounded-lg text-xs font-bold transition-colors"
-                            style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#64748b", border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}` }}
                           >
                             Ver detalle
-                          </button>
-                          <button
+                          </AdminButton>
+                          <AdminButton
+                            size="sm"
+                            variant="danger"
                             onClick={() => handleSolicitud(s.id, "rechazar")}
-                            className="px-3 py-1.5 rounded-lg text-xs font-bold transition-colors"
-                            style={{ color: "#ef4444", border: "1px solid rgba(239,68,68,0.25)" }}
                           >
                             Rechazar
-                          </button>
-                          <button
+                          </AdminButton>
+                          <AdminButton
+                            size="sm"
+                            variant="success"
                             onClick={() => handleSolicitud(s.id, "aprobar")}
-                            className="px-3 py-1.5 rounded-lg text-xs font-black text-white"
-                            style={{ background: "linear-gradient(135deg, #22c55e, #16a34a)", boxShadow: "0 2px 12px rgba(34,197,94,0.3)" }}
                           >
                             Aprobar
-                          </button>
+                          </AdminButton>
                         </div>
                       )}
                       {s.status !== "pendiente" && (
-                        <button
+                        <AdminButton
+                          size="sm"
+                          variant="ghost"
                           onClick={() => setDetalleModal(s)}
-                          className="px-3 py-1.5 rounded-lg text-xs font-bold transition-colors shrink-0"
-                          style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#64748b", border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}` }}
                         >
                           Ver detalle
-                        </button>
+                        </AdminButton>
                       )}
                     </div>
                   </div>
@@ -794,28 +783,33 @@ export default function AdminVoluntariosPage() {
                   style={inputStyle}
                 />
               </div>
-              <select
-                className="px-3 py-2.5 rounded-xl border text-sm font-semibold outline-none"
+              
+              <FilterSelect
                 value={filterRole}
-                onChange={(e) => setFilterRole(e.target.value)}
-                style={inputStyle}
-              >
-                <option value="todos">Todos los roles</option>
-                {ROLE_OPTIONS.map((r) => (
-                  <option key={r.value} value={r.value}>{r.label}</option>
-                ))}
-              </select>
-              <select
-                className="px-3 py-2.5 rounded-xl border text-sm font-semibold outline-none"
+                onChange={setFilterRole}
+                placeholder="Todos los roles"
+                icon="solar:shield-user-bold-duotone"
+                options={ROLE_OPTIONS.map((r) => ({
+                  value: r.value,
+                  label: r.label,
+                  color: ROLE_COLORS[r.value as keyof typeof ROLE_COLORS],
+                }))}
+              />
+              
+              <FilterSelect
                 value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-                style={inputStyle}
-              >
-                <option value="todos">Todos los estados</option>
-                {STATUS_OPTIONS.map((s) => (
-                  <option key={s.value} value={s.value}>{s.label}</option>
-                ))}
-              </select>
+                onChange={setFilterStatus}
+                placeholder="Todos los estados"
+                icon="solar:check-circle-bold-duotone"
+                options={STATUS_OPTIONS.map((s) => {
+                  const cfg = STATUS_CONFIG[s.value as keyof typeof STATUS_CONFIG];
+                  return {
+                    value: s.value,
+                    label: s.label,
+                    color: cfg.color,
+                  };
+                })}
+              />
             </div>
 
             {/* Table */}
@@ -882,14 +876,15 @@ export default function AdminVoluntariosPage() {
                             </td>
                             {canManage && (
                               <td className="px-4 py-3.5">
-                                <button
+                                <AdminButton
+                                  size="sm"
+                                  variant="ghost"
+                                  icon="solar:pen-2-bold-duotone"
                                   onClick={() => setEditModal(v)}
-                                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all opacity-0 group-hover:opacity-100"
-                                  style={{ color: "#f59e0b", border: "1px solid rgba(245,158,11,0.25)" }}
+                                  className="!text-amber-500 !border-amber-500/25 opacity-0 group-hover:opacity-100"
                                 >
-                                  <Iconify Size={12} IconString="solar:pen-2-bold-duotone" Style={{ color: "currentColor" }} />
                                   Editar
-                                </button>
+                                </AdminButton>
                               </td>
                             )}
                           </motion.tr>
@@ -964,14 +959,14 @@ export default function AdminVoluntariosPage() {
                         </div>
 
                         {canManage && !yaIncluido && (
-                          <button
+                          <AdminButton
+                            size="sm"
+                            variant="indigo"
+                            icon="solar:user-plus-bold-duotone"
                             onClick={() => setIncluirModal(s)}
-                            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black text-white shrink-0"
-                            style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", boxShadow: "0 4px 16px rgba(99,102,241,0.35)" }}
                           >
-                            <Iconify Size={14} IconString="solar:user-plus-bold-duotone" Style={{ color: "#fff" }} />
                             Incluir en sistema
-                          </button>
+                          </AdminButton>
                         )}
                       </div>
                     </div>

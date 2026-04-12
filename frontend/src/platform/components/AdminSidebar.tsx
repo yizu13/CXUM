@@ -40,6 +40,12 @@ const NAV_ITEMS: NavItem[] = [
     iconActive: "solar:document-text-bold-duotone",
   },
   {
+    label: "Galería de Medios",
+    path: "/plataforma/admin/media",
+    icon: "solar:gallery-linear",
+    iconActive: "solar:gallery-bold-duotone",
+  },
+  {
     label: "Voluntarios",
     path: "/plataforma/admin/voluntarios",
     icon: "solar:users-group-two-rounded-linear",

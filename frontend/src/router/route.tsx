@@ -19,6 +19,7 @@ import AdminDashboardPage  from "../platform/pages/adminDashboard";
 import AdminCentrosPage    from "../platform/pages/adminCentros";
 import AdminNoticiasPage   from "../platform/pages/adminNoticias";
 import AdminVoluntariosPage from "../platform/pages/adminVoluntarios";
+import AdminMediaPage      from "../platform/pages/adminMedia";
 
 // Layout & guards
 import AdminLayout    from "../platform/components/AdminLayout";
@@ -84,6 +85,16 @@ export default function AppRouter() {
                <ProtectedRoute requiredPermission="canManageUsers">
                   <AdminVoluntariosPage />
                </ProtectedRoute>
+              }
+            />
+
+            {/* Galería de Medios — visibles para todos los autenticados */}
+            <Route
+              path="media"
+              element={
+                <ProtectedRoute>
+                  <AdminMediaPage />
+                </ProtectedRoute>
               }
             />
           </Route>

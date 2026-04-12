@@ -28,6 +28,7 @@ function toNewsItem(n: {
     author: n.autor,
     readTime: Math.max(1, Math.ceil((n.contenido?.length ?? 500) / 1000)),
     views: n.vistas ?? 0,
+    contenido: n.contenido,
   };
 }
 

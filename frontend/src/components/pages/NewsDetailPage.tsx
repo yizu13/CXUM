@@ -332,54 +332,17 @@ export default function NewsDetailPage() {
             <div className="h-px w-full" style={{ background: divider }} />
 
             {/* Cuerpo del artículo */}
-            <div className={`flex flex-col gap-5 text-sm md:text-[0.95rem] leading-relaxed ${textMuted}`}>
-              <p>
-                La iniciativa impulsada por la Fundación CXUM continúa marcando una diferencia
-                significativa en las comunidades más vulnerables del país. En esta ocasión,
-                el equipo de voluntarios coordinó esfuerzos durante semanas para garantizar
-                que cada detalle del proyecto en materia de{" "}
-                <strong className={textPrimary}>{news.category.toLowerCase()}</strong>{" "}
-                llegara a quienes más lo necesitan.
-              </p>
-
-              <p>
-                Gracias al compromiso de <strong className={textPrimary}>{news.author}</strong> y
-                de los colaboradores de la organización, fue posible articular alianzas
-                estratégicas con empresas locales, instituciones educativas y organismos
-                gubernamentales, multiplicando así el impacto de cada acción.
-              </p>
-
-              <p>
-                El evento, celebrado el{" "}
-                <strong className={textPrimary}>{news.date}</strong>, reunió a decenas de
-                personas que donaron su tiempo y recursos. Los asistentes destacaron la
-                organización del evento y la calidad del trabajo realizado por el equipo
-                de CXUM, subrayando que iniciativas como esta son fundamentales para
-                construir una sociedad más justa e inclusiva.
-              </p>
-
-              {/* Cita destacada */}
-              <blockquote
-                className="rounded-2xl px-6 py-5 my-2"
-                style={{
-                  background: isDark ? `${news.categoryColor}18` : `${news.categoryColor}12`,
-                  borderLeft: `4px solid ${news.categoryColor}`,
-                }}
-              >
-                <p className={`text-base font-semibold italic ${textPrimary}`}>
-                  "Cada acción que tomamos hoy es una semilla que germina en el futuro de
-                  nuestra comunidad. Seguiremos trabajando sin descanso."
+            <div 
+              className={`flex flex-col gap-5 text-sm md:text-[0.95rem] leading-relaxed ${textMuted}`}
+              style={{ whiteSpace: "pre-wrap" }}
+            >
+              {news.contenido ? (
+                <div dangerouslySetInnerHTML={{ __html: news.contenido }} />
+              ) : (
+                <p className="text-center py-8" style={{ color: isDark ? "rgba(255,255,255,0.3)" : "#94a3b8" }}>
+                  No hay contenido disponible para esta noticia.
                 </p>
-                <span className="text-xs font-bold mt-2 block" style={{ color: news.categoryColor }}>
-                  — {news.author}, Fundación CXUM
-                </span>
-              </blockquote>
-
-              <p>
-                Si deseas conocer más sobre cómo puedes contribuir, visita nuestra sección
-                de voluntarios o contáctanos directamente a través de los canales oficiales.
-                Juntos, podemos construir una comunidad más fuerte y solidaria.
-              </p>
+              )}
             </div>
 
             <div className="h-px w-full" style={{ background: divider }} />

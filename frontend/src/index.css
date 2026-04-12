@@ -23,16 +23,18 @@ body {
 
 /* ── SimpleBar custom scrollbar ─────────────────────────────────────────── */
 .simplebar-scrollbar::before {
-  background: rgba(245, 158, 11, 0.35) !important;
+  background: rgba(245, 158, 11, 0.6) !important;
   border-radius: 999px !important;
 }
 .simplebar-scrollbar.simplebar-visible::before {
   opacity: 1 !important;
 }
 .simplebar-track.simplebar-vertical {
-  width: 4px !important;
+  width: 6px !important;
   right: 2px !important;
+  background: transparent !important;
 }
 .simplebar-track.simplebar-horizontal {
-  height: 4px !important;
+  height: 6px !important;
+  background: transparent !important;
 }

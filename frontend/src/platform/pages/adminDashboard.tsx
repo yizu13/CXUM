@@ -12,6 +12,8 @@ import { getCentros } from "../APIs/centros";
 import { getNoticiasAdmin } from "../APIs/noticias";
 import { getSolicitudes } from "../APIs/solicitudes";
 import { getAllUsers } from "../APIs/modifyRole";
+import SimpleBar from "simplebar-react";
+import "simplebar-react/dist/simplebar.min.css";
 
 const QUICK_LINKS = [  {
     label: "Centros de Acopio",
@@ -36,6 +38,14 @@ const QUICK_LINKS = [  {
     icon: "solar:users-group-two-rounded-bold-duotone",
     color: "#22c55e",
     permission: "canManageUsers" as const,
+  },
+  {
+    label: "Galería de Medios",
+    desc: "Imágenes y archivos subidos",
+    path: "/plataforma/admin/media",
+    icon: "solar:gallery-bold-duotone",
+    color: "#8b5cf6",
+    permission: null,
   },
 ];
 
@@ -278,36 +288,45 @@ export default function AdminDashboardPage() {
           initial={{ opacity: 0, x: 12 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
-          className="rounded-2xl p-5 border"
-          style={cardStyle}
+          className="rounded-2xl border flex flex-col"
+          style={{ ...cardStyle, maxHeight: "500px" }}
         >
-          <h2 className="font-black text-base mb-4" style={{ color: textPrimary }}>
-            Actividad Reciente
-          </h2>
+          <div className="p-5 pb-3 shrink-0">
+            <h2 className="font-black text-base" style={{ color: textPrimary }}>
+              Actividad Reciente
+            </h2>
+          </div>
+          
           {activityLoading ? (
-            <p className="text-xs" style={{ color: textSecondary }}>Cargando...</p>
-          ) : activityEvents.length === 0 ? (
-            <p className="text-xs" style={{ color: textSecondary }}>Sin actividad reciente.</p>
-          ) : (
-            <div className="space-y-4">
-              {activityEvents.map((a) => (
-                <div key={a.id} className="flex items-start gap-3">
-                  <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
-                    style={{ background: `${a.color}15`, border: `1px solid ${a.color}25` }}>
-                    <Iconify Size={14} IconString={a.icon} Style={{ color: a.color }} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium leading-snug" style={{ color: isDark ? "rgba(255,255,255,0.7)" : "#475569" }}>
-                      {a.text}
-                    </p>
-                    <p className="text-[10px] mt-0.5" style={{ color: textSecondary }}>
-                      {new Date(a.createdAt).toLocaleString("es-DO", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
-                      {a.actor && ` · ${a.actor}`}
-                    </p>
-                  </div>
-                </div>
-              ))}
+            <div className="px-5 pb-5">
+              <p className="text-xs" style={{ color: textSecondary }}>Cargando...</p>
             </div>
+          ) : activityEvents.length === 0 ? (
+            <div className="px-5 pb-5">
+              <p className="text-xs" style={{ color: textSecondary }}>Sin actividad reciente.</p>
+            </div>
+          ) : (
+            <SimpleBar style={{ maxHeight: "420px", paddingLeft: "20px", paddingRight: "20px", paddingBottom: "20px" }}>
+              <div className="space-y-4">
+                {activityEvents.map((a) => (
+                  <div key={a.id} className="flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
+                      style={{ background: `${a.color}15`, border: `1px solid ${a.color}25` }}>
+                      <Iconify Size={14} IconString={a.icon} Style={{ color: a.color }} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium leading-snug" style={{ color: isDark ? "rgba(255,255,255,0.7)" : "#475569" }}>
+                        {a.text}
+                      </p>
+                      <p className="text-[10px] mt-0.5" style={{ color: textSecondary }}>
+                        {new Date(a.createdAt).toLocaleString("es-DO", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+                        {a.actor && ` · ${a.actor}`}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </SimpleBar>
           )}
         </motion.div>
       </div>

@@ -72,12 +72,15 @@ export const centroSchema = yup.object({
   responsable: yup.string().trim().min(2).max(100).required("El responsable es requerido"),
   capacidad:   yup.number().typeError("Debe ser un número").min(1, "Mínimo 1").max(99999).required("La capacidad es requerida"),
   ocupacion:   yup.number().typeError("Debe ser un número").min(0).required("La ocupación es requerida"),
+  latitud:     yup.number().typeError("Debe ser un número").min(-90, "Latitud inválida").max(90, "Latitud inválida").required("La latitud es requerida"),
+  longitud:    yup.number().typeError("Debe ser un número").min(-180, "Longitud inválida").max(180, "Longitud inválida").required("La longitud es requerida"),
 });
 
 export type CentroFormValues = yup.InferType<typeof centroSchema>;
 export const centroDefaultValues: CentroFormValues = {
   nombre: "", tipo: "general", estado: "activo", direccion: "", municipio: "",
   telefono: "", horario: "", responsable: "", capacidad: 200, ocupacion: 0,
+  latitud: 18.4861, longitud: -69.9312,
 };
 
 // ─────────────────────────────────────────────

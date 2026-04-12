@@ -10,7 +10,9 @@ import {
   type CentroFormValues,
 } from "../../components/FormComponents/schemas";
 import Iconify from "../../components/modularUI/IconsMock";
-import { getCentros, createCentro, updateCentro, deleteCentro } from "../APIs/centros";
+import AdminButton from "../components/AdminButton";
+import FilterSelect from "../../components/modularUI/FilterSelect";
+import { getCentros, createCentro, updateCentro, deleteCentro, type Centro } from "../APIs/centros";
 import { useAuth } from "../components/AuthContextComps";
 import SimpleBar from "simplebar-react";
 import "simplebar-react/dist/simplebar.min.css";
@@ -202,6 +204,8 @@ function CentroModal({
   onSave: (data: CentroFormValues & { id?: string }) => void;
   isDark: boolean;
 }) {
+  const [saving, setSaving] = useState(false);
+  
   const methods = useForm<CentroFormValues>({
     resolver: yupResolver(centroSchema),
     defaultValues: centro?.id
@@ -216,12 +220,20 @@ function CentroModal({
           responsable: centro.responsable ?? "",
           capacidad:   centro.capacidad   ?? 200,
           ocupacion:   centro.ocupacion   ?? 0,
+          latitud:     centro.latitud     ?? 18.4861,
+          longitud:    centro.longitud    ?? -69.9312,
         }
       : centroDefaultValues,
   });
 
-  const handleSubmit = (data: CentroFormValues) => {
-    onSave({ ...data, id: centro?.id });
+  const handleSubmit = async (data: CentroFormValues) => {
+    if (saving) return;
+    setSaving(true);
+    try {
+      await onSave({ ...data, id: centro?.id });
+    } finally {
+      setSaving(false);
+    }
   };
 
   const overlayStyle = { background: "rgba(0,0,0,0.72)", backdropFilter: "blur(10px)" };
@@ -249,13 +261,12 @@ function CentroModal({
               Completa los datos del centro de acopio
             </p>
           </div>
-          <button
+          <AdminButton
+            variant="ghost"
+            size="sm"
+            icon="solar:close-circle-bold-duotone"
             onClick={onClose}
-            className="w-8 h-8 rounded-xl flex items-center justify-center transition-colors"
-            style={{ color: isDark ? "rgba(255,255,255,0.4)" : "#94a3b8" }}
-          >
-            <Iconify Size={18} IconString="solar:close-circle-bold-duotone" Style={{ color: "currentColor" }} />
-          </button>
+          />
         </div>
 
         <FormManaged methods={methods} onSubmit={handleSubmit} className="space-y-4">
@@ -332,28 +343,42 @@ function CentroModal({
             />
           </div>
 
+          <div className="grid grid-cols-2 gap-4">
+            <RHFTextField<CentroFormValues>
+              name="latitud"
+              label="Latitud"
+              type="number"
+              placeholder="18.4861"
+              helperText="Coordenada de latitud (ej: 18.4861)"
+              required
+            />
+            <RHFTextField<CentroFormValues>
+              name="longitud"
+              label="Longitud"
+              type="number"
+              placeholder="-69.9312"
+              helperText="Coordenada de longitud (ej: -69.9312)"
+              required
+            />
+          </div>
+
+          <div className="rounded-xl p-3 text-xs" style={{ background: isDark ? "rgba(99,102,241,0.08)" : "rgba(99,102,241,0.06)", border: "1px solid rgba(99,102,241,0.2)", color: isDark ? "rgba(255,255,255,0.6)" : "#64748b" }}>
+            <p className="font-semibold mb-1 flex items-center" style={{ color: isDark ? "#a5b4fc" : "#6366f1" }}>
+              <Iconify IconString="solar:lightbulb-bold-duotone" Size={20}/> Tip: Obtén las coordenadas
+            </p>
+            <p>
+              Busca la ubicación en Google Maps, haz clic derecho y copia las coordenadas. 
+              El primer número es la latitud, el segundo es la longitud.
+            </p>
+          </div>
+
           <div className="flex gap-3 pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 py-2.5 rounded-xl border text-sm font-bold transition-colors"
-              style={{
-                color: isDark ? "rgba(255,255,255,0.4)" : "#64748b",
-                borderColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)",
-              }}
-            >
+          <AdminButton type="button" variant="ghost" fullWidth disabled={saving} onClick={onClose}>
               Cancelar
-            </button>
-            <button
-              type="submit"
-              className="flex-1 py-2.5 rounded-xl text-sm font-black text-white"
-              style={{
-                background: "linear-gradient(135deg, #f59e0b, #fb923c)",
-                boxShadow: "0 4px 20px rgba(245,158,11,0.35)",
-              }}
-            >
+            </AdminButton>
+            <AdminButton type="submit" variant="primary" fullWidth loading={saving} loadingText="Guardando...">
               {centro?.id ? "Guardar Cambios" : "Crear Centro"}
-            </button>
+            </AdminButton>
           </div>
         </FormManaged>
         </div>
@@ -411,10 +436,11 @@ export default function AdminCentrosPage() {
         await createCentro(data);
       }
       await fetchCentros();
+      setModal({ open: false, centro: null });
     } catch (err) {
       console.error(err);
+      throw err;
     }
-    setModal({ open: false, centro: null });
   };
 
   const handleDelete = async (id: string) => {
@@ -454,19 +480,13 @@ export default function AdminCentrosPage() {
           </p>
         </div>
         {canEdit && (
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
+          <AdminButton
+            variant="primary"
+            icon="solar:add-circle-bold-duotone"
             onClick={() => setModal({ open: true, centro: null })}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-black text-white"
-            style={{
-              background: "linear-gradient(135deg, #f59e0b, #fb923c)",
-              boxShadow: "0 4px 20px rgba(245,158,11,0.3)",
-            }}
           >
-            <Iconify Size={16} IconString="solar:add-circle-bold-duotone" Style={{ color: "#fff" }} />
             Nuevo Centro
-          </motion.button>
+          </AdminButton>
         )}
       </div>
 
@@ -492,28 +512,30 @@ export default function AdminCentrosPage() {
             style={{ ...inputStyle, paddingLeft: "2.25rem" }}
           />
         </div>
-        <select
-          className="px-3 py-2.5 rounded-xl border text-sm font-semibold outline-none"
+        
+        <FilterSelect
           value={filterEstado}
-          onChange={(e) => setFilterEstado(e.target.value)}
-          style={inputStyle}
-        >
-          <option value="todos">Todos los estados</option>
-          {Object.entries(ESTADO_CONFIG).map(([k, v]) => (
-            <option key={k} value={k}>{v.label}</option>
-          ))}
-        </select>
-        <select
-          className="px-3 py-2.5 rounded-xl border text-sm font-semibold outline-none"
+          onChange={setFilterEstado}
+          placeholder="Todos los estados"
+          icon="solar:check-circle-bold-duotone"
+          options={Object.entries(ESTADO_CONFIG).map(([k, v]) => ({
+            value: k,
+            label: v.label,
+            color: v.color,
+          }))}
+        />
+        
+        <FilterSelect
           value={filterTipo}
-          onChange={(e) => setFilterTipo(e.target.value)}
-          style={inputStyle}
-        >
-          <option value="todos">Todos los tipos</option>
-          {Object.entries(TIPO_LABELS).map(([k, v]) => (
-            <option key={k} value={k}>{v}</option>
-          ))}
-        </select>
+          onChange={setFilterTipo}
+          placeholder="Todos los tipos"
+          icon="solar:box-bold-duotone"
+          options={Object.entries(TIPO_LABELS).map(([k, v]) => ({
+            value: k,
+            label: v,
+            color: TIPO_COLORS[k as keyof typeof TIPO_COLORS],
+          }))}
+        />
       </div>
 
       {/* Grid */}
