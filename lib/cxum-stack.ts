@@ -188,6 +188,7 @@ export class CxumStack extends cdk.Stack {
     const consumeInviteTokenFn  = makeFn("ConsumeInviteToken",  "consumeInviteTokenCXUM",  "consumeInviteToken");
     const uploadImageFn         = makeFn("UploadImage",         "uploadImageCXUM",         "uploadImage");
     const listImagesFn          = makeFn("ListImages",          "listImagesCXUM",          "listImages");
+    const getTempPasswordFn     = makeFn("GetTempPassword",     "getTempPasswordCXUM",     "getTempPassword");
 
     // ─── Permisos S3 ──────────────────────────────────────────────────────────
     imagesBucket.grantPut(uploadImageFn);
@@ -245,6 +246,16 @@ export class CxumStack extends cdk.Stack {
         actions: [
           "cognito-idp:AdminCreateUser",
           "cognito-idp:AdminAddUserToGroup",
+        ],
+        resources: [cognitoArn],
+      })
+    );
+
+    getTempPasswordFn.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: [
+          "cognito-idp:AdminGetUser",
+          "cognito-idp:AdminSetUserPassword",
         ],
         resources: [cognitoArn],
       })
@@ -397,6 +408,14 @@ export class CxumStack extends cdk.Stack {
       path: "/admin/invite-user",
       methods: [apigwv2.HttpMethod.POST],
       integration: new integrations.HttpLambdaIntegration("InviteUserInt", inviteUserFn),
+      authorizer: multiRoleAuthorizer,
+    });
+
+    // Obtener contraseña temporal de un usuario
+    httpApi.addRoutes({
+      path: "/admin/users/{username}/temp-password",
+      methods: [apigwv2.HttpMethod.GET],
+      integration: new integrations.HttpLambdaIntegration("GetTempPasswordInt", getTempPasswordFn),
       authorizer: multiRoleAuthorizer,
     });
 

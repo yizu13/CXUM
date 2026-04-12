@@ -112,7 +112,7 @@ export default function VolunteerFormSection() {
   return (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     <FormManaged methods={methods as any} onSubmit={onSubmit}>
-      <div className={`w-full max-w-3xl mx-auto p-8 md:p-12 rounded-3xl border backdrop-blur-md ${cardBg}`}>
+      <div className={`w-full max-w-3xl mx-auto p-5 sm:p-8 md:p-12 rounded-3xl border backdrop-blur-md ${cardBg}`}>
         <div className="flex flex-col gap-8">
 
           <div className="flex flex-col gap-3">

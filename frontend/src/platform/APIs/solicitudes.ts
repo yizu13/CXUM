@@ -51,3 +51,13 @@ export const inviteUserToSystem = (email: string, name: string) =>
     method: "POST",
     body: JSON.stringify({ email, name }),
   });
+
+export interface GetTempPasswordResponse {
+  message: string;
+  username: string;
+  tempPassword: string;
+  userStatus: string;
+}
+
+export const getTempPassword = (username: string) =>
+  apiFetch<GetTempPasswordResponse>(`/admin/users/${username}/temp-password`);

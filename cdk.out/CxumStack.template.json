@@ -2953,6 +2953,126 @@
     "aws:asset:property": "Code"
    }
   },
+  "GetTempPasswordServiceRoleD6A76386": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/GetTempPassword/ServiceRole/Resource"
+   }
+  },
+  "GetTempPasswordServiceRoleDefaultPolicyBB4A5B2C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "cognito-idp:AdminGetUser",
+        "cognito-idp:AdminSetUserPassword"
+       ],
+       "Effect": "Allow",
+       "Resource": "arn:aws:cognito-idp:us-east-2:640168450436:userpool/us-east-2_jjcAqBdVn"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "GetTempPasswordServiceRoleDefaultPolicyBB4A5B2C",
+    "Roles": [
+     {
+      "Ref": "GetTempPasswordServiceRoleD6A76386"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/GetTempPassword/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "GetTempPassword2B216C17": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-640168450436-us-east-2",
+     "S3Key": "9f9f05174444ff521863c527a9699f157aa536384ad97f977d5a77a92669a63a.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "COGNITO_USER_POOL_ID": "us-east-2_jjcAqBdVn",
+      "COGNITO_APP_CLIENT_ID": "18n7rhj63h6modf5ol9m637ism",
+      "CENTROS_TABLE": {
+       "Ref": "CentrosTable883DAA72"
+      },
+      "NOTICIAS_TABLE": {
+       "Ref": "NoticiasTable429A8F57"
+      },
+      "SOLICITUDES_TABLE": {
+       "Ref": "SolicitudesTable712AEA38"
+      },
+      "CONTACTOS_TABLE": {
+       "Ref": "ContactosTableCDABD28B"
+      },
+      "INVITE_TOKENS_TABLE": {
+       "Ref": "InviteTokensTableC8335281"
+      },
+      "ACTIVITY_TABLE": {
+       "Ref": "ActivityTable0B58B12C"
+      },
+      "PROFILES_TABLE": {
+       "Ref": "ProfilesTable3B48B4C6"
+      },
+      "IMAGES_BUCKET": {
+       "Ref": "ImagesBucket1E86AFB2"
+      }
+     }
+    },
+    "FunctionName": "getTempPasswordCXUM",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "GetTempPasswordServiceRoleD6A76386",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "GetTempPasswordServiceRoleDefaultPolicyBB4A5B2C",
+    "GetTempPasswordServiceRoleD6A76386"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/GetTempPassword/Resource",
+    "aws:asset:path": "asset.9f9f05174444ff521863c527a9699f157aa536384ad97f977d5a77a92669a63a",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
   "CxumBackend6F4D0EA7": {
    "Type": "AWS::ApiGatewayV2::Api",
    "Properties": {
@@ -4576,6 +4696,84 @@
    },
    "Metadata": {
     "aws:cdk:path": "CxumStack/CxumBackend/POST--admin--invite-user/Resource"
+   }
+  },
+  "CxumBackendGETadminusersusernametemppasswordGetTempPasswordInt1E3970CF": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "GetTempPassword2B216C17",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--users--{username}--temp-password/GetTempPasswordInt/Resource"
+   }
+  },
+  "CxumBackendGETadminusersusernametemppasswordGetTempPasswordIntPermissionCC48715A": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "GetTempPassword2B216C17",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:640168450436:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/admin/users/{username}/temp-password"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--users--{username}--temp-password/GetTempPasswordInt-Permission"
+   }
+  },
+  "CxumBackendGETadminusersusernametemppasswordAF8CED96": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "CxumBackendMultiRoleAuthorizer01F621D0"
+    },
+    "RouteKey": "GET /admin/users/{username}/temp-password",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendGETadminusersusernametemppasswordGetTempPasswordInt1E3970CF"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--users--{username}--temp-password/Resource"
    }
   },
   "CxumBackendGETadmininvitetokenGenerateInviteTokenIntD823E8DB": {

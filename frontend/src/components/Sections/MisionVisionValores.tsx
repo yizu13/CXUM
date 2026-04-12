@@ -55,13 +55,13 @@ export default function MisionVisionValores() {
     <section
       id="MisionVision"
       ref={ref}
-      className={`w-full ${bg} transition-colors duration-500 px-6 md:px-12 lg:px-20 py-24`}
+      className={`w-full ${bg} transition-colors duration-500 px-4 md:px-12 lg:px-20 py-16 md:py-24`}
     >
       <div className="max-w-6xl mx-auto flex flex-col gap-10">
 
         <div className="flex flex-col gap-2">
           <motion.h2
-            className={`text-4xl md:text-5xl font-black leading-tight tracking-tight ${textPrimary}`}
+            className={`text-3xl md:text-5xl font-black leading-tight tracking-tight ${textPrimary}`}
             custom={0}
             variants={fadeUp}
             initial="hidden"
@@ -80,14 +80,14 @@ export default function MisionVisionValores() {
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 grid-rows-[auto] gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-12 grid-rows-[auto] gap-3 md:gap-4">
 
           <motion.div
             custom={2}
             variants={fadeUp}
             initial="hidden"
             animate={section ? "visible" : "exit"}
-            className={`md:col-span-7 relative rounded-2xl overflow-hidden min-h-65 flex flex-col justify-end p-7 ${cardLight}`}
+            className={`md:col-span-7 relative rounded-2xl overflow-hidden min-h-56 md:min-h-65 flex flex-col justify-end p-5 md:p-7 ${cardLight}`}
           >
             <span className="text-2xl absolute right-5 top-5 z-20">
                 <Iconify IconString="solar:flag-bold-duotone" Size={56} Style={{color: isDark ? "white" : "#ff6900"}}/>
@@ -136,7 +136,7 @@ export default function MisionVisionValores() {
             variants={fadeUp}
             initial="hidden"
             animate={section ? "visible" : "exit"}
-            className={`md:col-span-5 relative rounded-2xl overflow-hidden min-h-65 flex flex-col justify-between p-7 ${cardDark}`}
+            className={`md:col-span-5 relative rounded-2xl overflow-hidden min-h-56 md:min-h-65 flex flex-col justify-between p-5 md:p-7 ${cardDark}`}
           >
             <div className="flex justify-between items-start z-10">
               <span />
@@ -170,7 +170,7 @@ export default function MisionVisionValores() {
             variants={fadeUp}
             initial="hidden"
             animate={section ? "visible" : "exit"}
-            className={`md:col-span-4 relative rounded-2xl overflow-hidden min-h-45 flex flex-col justify-between p-6 ${cardAccent}`}
+            className={`md:col-span-4 relative rounded-2xl overflow-hidden min-h-40 md:min-h-45 flex flex-col justify-between p-5 md:p-6 ${cardAccent}`}
           >
             <span className="text-2xl"><Iconify IconString="solar:leaf-bold-duotone" Size={32} Style={{color: "#ff6900"}}/></span>
             <div className="flex flex-col gap-1">
@@ -188,7 +188,7 @@ export default function MisionVisionValores() {
           variants={fadeUp}
           initial="hidden"
           animate={section ? "visible" : "exit"}
-          className={`md:col-span-8 relative rounded-2xl overflow-hidden min-h-45 flex flex-col md:flex-row gap-0 ${cardLight}`}
+          className={`md:col-span-8 relative rounded-2xl overflow-hidden min-h-40 md:min-h-45 flex flex-col md:flex-row gap-0 ${cardLight}`}
         >
           <div className="flex-1 flex flex-col justify-center gap-2 p-6 z-10">
             <div
@@ -217,7 +217,7 @@ export default function MisionVisionValores() {
             variants={fadeUp}
             initial="hidden"
             animate={section ? "visible" : "exit"}
-            className={`md:col-span-3 relative rounded-2xl overflow-hidden min-h-40 flex flex-col justify-between p-6 ${cardLight}`}
+            className={`md:col-span-3 relative rounded-2xl overflow-hidden min-h-36 md:min-h-40 flex flex-col justify-between p-5 md:p-6 ${cardLight}`}
           >
             
               <Iconify IconString="solar:leaf-bold" Size={32} Style={{color: isDark ? "white" : "#ff6900"}}/>
@@ -234,7 +234,7 @@ export default function MisionVisionValores() {
             variants={fadeUp}
             initial="hidden"
             animate={section ? "visible" : "exit"}
-            className={`md:col-span-3 relative rounded-2xl overflow-hidden min-h-40 flex flex-col justify-between p-6 ${cardAccent}`}
+            className={`md:col-span-3 relative rounded-2xl overflow-hidden min-h-36 md:min-h-40 flex flex-col justify-between p-5 md:p-6 ${cardAccent}`}
           >
             <Iconify IconString="mdi:deal" Size={32} Style={{color: isDark ? "white" : "#ff6900"}}/>
             <div className="flex flex-col gap-1">
@@ -250,7 +250,7 @@ export default function MisionVisionValores() {
             variants={fadeUp}
             initial="hidden"
             animate={section ? "visible" : "exit"}
-            className={`md:col-span-6 relative rounded-2xl overflow-hidden min-h-40 flex flex-col justify-between p-6 ${cardLight}`}
+            className={`md:col-span-6 relative rounded-2xl overflow-hidden min-h-36 md:min-h-40 flex flex-col justify-between p-5 md:p-6 ${cardLight}`}
           >
             <span
               className={`absolute right-4 bottom-0 font-black leading-none select-none ${

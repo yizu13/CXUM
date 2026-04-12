@@ -139,15 +139,15 @@ export default function CollectionMap() {
           initial="hidden"
           animate={inView ? "visible" : "exit"}
           className="w-full overflow-hidden rounded-3xl shadow-2xl"
-          style={{ border: `1px solid ${border}`, height: "620px" }}
+          style={{ border: `1px solid ${border}` }}
         >
-          <div className="flex h-full flex-col lg:flex-row">
+          <div className="flex h-full flex-col lg:flex-row" style={{ height: "clamp(520px, 90vw, 700px)" }}>
 
             <aside
-              className="flex w-full shrink-0 flex-col lg:w-85"
+              className="flex w-full shrink-0 flex-col lg:w-85 max-h-[42%] lg:max-h-none border-b lg:border-b-0 lg:border-r"
               style={{
-                borderRight: `1px solid ${border}`,
                 background: cardBg,
+                borderColor: border,
               }}
             >
               <div
@@ -203,7 +203,7 @@ export default function CollectionMap() {
 
               <div
                 className="flex-1 overflow-y-auto p-3 space-y-2"
-                style={{ scrollbarWidth: "none" }}
+                style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
               >
                 {loading ? (
                   <div className="pt-8 text-center">

@@ -277,7 +277,7 @@ function CentroModal({
             required
           />
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <RHFSelect<CentroFormValues>
               name="tipo"
               label="Tipo"
@@ -306,7 +306,7 @@ function CentroModal({
             required
           />
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <RHFTextField<CentroFormValues>
               name="telefono"
               label="Teléfono"
@@ -328,7 +328,7 @@ function CentroModal({
             required
           />
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <RHFTextField<CentroFormValues>
               name="capacidad"
               label="Capacidad Total"
@@ -343,7 +343,7 @@ function CentroModal({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <RHFTextField<CentroFormValues>
               name="latitud"
               label="Latitud"
@@ -465,12 +465,12 @@ export default function AdminCentrosPage() {
   } as React.CSSProperties;
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex items-start justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-0 sm:justify-between mb-6 sm:mb-8">
         <div>
           <h1
-            className="font-black text-2xl tracking-tight"
+            className="font-black text-xl sm:text-2xl tracking-tight"
             style={{ color: isDark ? "#fff" : "#0f172a" }}
           >
             Centros de Acopio

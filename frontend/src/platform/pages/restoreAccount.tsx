@@ -134,7 +134,7 @@ export default function RestoreAccountPage() {
 
   return (
     <AuthMock>
-      <div className="w-full rounded-3xl p-8 flex flex-col gap-8">
+      <div className="w-full rounded-3xl p-4 sm:p-8 flex flex-col gap-6 sm:gap-8">
         <div className="flex flex-col items-center gap-2">
           <h1 className={`text-2xl font-black tracking-tight ${textPrimary}`}>
             {step === "email" ? "Recuperar contraseña" : "Nueva contraseña"}

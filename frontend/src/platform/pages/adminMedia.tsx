@@ -130,15 +130,15 @@ export default function AdminMediaPage() {
 
   return (
     <div
-      className="p-6 max-w-7xl mx-auto"
+      className="p-4 sm:p-6 max-w-7xl mx-auto"
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
     >
       {/* Header */}
-      <div className="flex items-start justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-0 sm:justify-between mb-6 sm:mb-8">
         <div>
-          <h1 className="font-black text-2xl tracking-tight" style={{ color: isDark ? "#fff" : "#0f172a" }}>
+          <h1 className="font-black text-xl sm:text-2xl tracking-tight" style={{ color: isDark ? "#fff" : "#0f172a" }}>
             Galería de Medios
           </h1>
           <p className="text-sm mt-1" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "#64748b" }}>

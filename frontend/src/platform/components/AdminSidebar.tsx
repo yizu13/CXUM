@@ -94,11 +94,13 @@ function SidebarNavItem({
   collapsed,
   user,
   isDark,
+  onClose,
 }: {
   item: NavItem;
   collapsed: boolean;
   user: import("./auth").AuthUser | null;
   isDark: boolean;
+  onClose?: () => void;
 }) {
   const hasAccess = !item.requiredGroup || item.requiredGroup.some((g) => user?.groups?.includes(g));
   if (!hasAccess) return null;
@@ -107,6 +109,7 @@ function SidebarNavItem({
     <NavLink
       to={item.path}
       end={item.path === "/plataforma/admin"}
+      onClick={onClose}
       className="group relative flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-200 cursor-pointer"
       style={({ isActive }) => ({
         background: isActive
@@ -185,7 +188,7 @@ function SidebarNavItem({
 }
 
 // ── Main Sidebar ──────────────────────────────────────────────────────────────
-export default function AdminSidebar() {
+export default function AdminSidebar({ onClose }: { onClose?: () => void }) {
   const { user, setUser } = useAuth();
   const { theme } = useSettings();
   const isDark = theme === "dark";
@@ -196,6 +199,7 @@ export default function AdminSidebar() {
     signOut();
     setUser(null);
     navigate("/plataforma/login");
+    onClose?.(); // Cerrar sidebar móvil si está abierto
   };
 
   const roleColor = user ? ROLE_COLORS[user.role] : "#6366f1";
@@ -209,40 +213,53 @@ export default function AdminSidebar() {
   const toggleHoverBg = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)";
 
   return (
-    <motion.aside
-      animate={{ width: collapsed ? 72 : 240 }}
-      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-      className="relative shrink-0 h-screen flex flex-col border-r"
+    <aside
+      className="relative w-60 lg:w-auto shrink-0 h-screen flex flex-col border-r"
       style={{ background: bg, borderColor: border }}
     >
       {/* Header */}
       <div className="shrink-0 flex items-center justify-between px-4 pt-5 pb-4">
         <SidebarLogo collapsed={collapsed} isDark={isDark} />
-        <button
-          onClick={() => setCollapsed((c) => !c)}
-          className="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
-          style={{ color: toggleColor }}
-          onMouseEnter={(e) => (e.currentTarget.style.background = toggleHoverBg)}
-          onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-          title={collapsed ? "Expandir" : "Colapsar"}
-        >
-          <Iconify
-            Size={16}
-            IconString={
-              collapsed
-                ? "solar:alt-arrow-right-linear"
-                : "solar:alt-arrow-left-linear"
-            }
-            Style={{ color: "currentColor" }}
-          />
-        </button>
+        <div className="flex items-center gap-1">
+          {/* Close button — mobile only */}
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="lg:hidden shrink-0 w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
+              style={{ color: toggleColor }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = toggleHoverBg)}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+              title="Cerrar menú"
+            >
+              <Iconify Size={16} IconString="solar:close-circle-linear" Style={{ color: "currentColor" }} />
+            </button>
+          )}
+          <button
+            onClick={() => setCollapsed((c) => !c)}
+            className="hidden lg:flex shrink-0 w-7 h-7 rounded-lg items-center justify-center transition-colors"
+            style={{ color: toggleColor }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = toggleHoverBg)}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+            title={collapsed ? "Expandir" : "Colapsar"}
+          >
+            <Iconify
+              Size={16}
+              IconString={
+                collapsed
+                  ? "solar:alt-arrow-right-linear"
+                  : "solar:alt-arrow-left-linear"
+              }
+              Style={{ color: "currentColor" }}
+            />
+          </button>
+        </div>
       </div>
 
       {/* Divider */}
       <div className="shrink-0 mx-4 h-px mb-4" style={{ background: divider }} />
 
       {/* Nav - Scrollable */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden min-h-0">
         <SimpleBar style={{ height: "100%", maxHeight: "100%" }}>
           <div className="px-3 flex flex-col gap-1 py-1">
             {NAV_ITEMS.map((item) => (
@@ -252,6 +269,7 @@ export default function AdminSidebar() {
                 collapsed={collapsed}
                 user={user}
                 isDark={isDark}
+                onClose={onClose}
               />
             ))}
           </div>
@@ -340,6 +358,6 @@ export default function AdminSidebar() {
           </AnimatePresence>
         </button>
       </div>
-    </motion.aside>
+    </aside>
   );
 }

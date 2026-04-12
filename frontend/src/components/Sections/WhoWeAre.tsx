@@ -27,7 +27,7 @@ export default function WhoWeAre() {
   return (
     <section 
     id="Quiénessomos"
-      className={`relative flex flex-col md:flex-row items-center justify-between w-full min-h-[80vh] px-8 py-20 gap-12 overflow-hidden transition-colors duration-500 ${
+      className={`relative flex flex-col md:flex-row items-center justify-between w-full min-h-[80vh] px-6 sm:px-8 py-16 sm:py-20 gap-10 sm:gap-12 overflow-hidden transition-colors duration-500 ${
         isDark ? "bg-[#05070b]" : "bg-[#f4f4ef]"
       }`}
     >
@@ -39,7 +39,7 @@ export default function WhoWeAre() {
         variants={textVariants}
         custom={0}
       >
-        <div className="relative w-32 h-32 sm:w-80 sm:h-80 lg:w-96 lg:h-96 rounded-full bg-linear-to-tr from-orange-500 to-orange-400 shadow-2xl">
+        <div className="relative w-52 h-52 sm:w-80 sm:h-80 lg:w-96 lg:h-96 rounded-full bg-linear-to-tr from-orange-500 to-orange-400 shadow-2xl">
           <img
             src={imageWithOutBackground}
             alt=""
@@ -54,9 +54,10 @@ export default function WhoWeAre() {
 
       <div className="w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left space-y-6">
         <motion.h1
-          className={`text-5xl font-black sm:text-6xl lg:text-7xl leading-tight ${
+          className={`font-black leading-tight ${
             isDark ? "text-white" : "text-slate-900"
           }`}
+          style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)" }}
           variants={textVariants}
           custom={1}
           initial="hidden"

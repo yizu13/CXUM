@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import CXUMLOGO from "../../assets/LogoCXUM.png";
 import { useSettings } from "../../hooks/context/SettingsContext";
 import { useAnimation } from "../../hooks/context/AnimationContext";
@@ -9,6 +9,135 @@ import { NAV_LINKS } from "../../types/NavBarLinks";
 import NavBarDropDown from "../modularUI/NavBarDropDown";
 import { useNavigate } from "react-router-dom";
 import x from "../../assets/xStilizada.png";
+import { InfoCards } from "../../types/NavBarLinks";
+import { useLocation } from "react-router-dom";
+import SimpleBar from "simplebar-react";
+import "simplebar-react/dist/simplebar.min.css";
+
+// ─ Mobile Menu ──────────────────────────────────────────────────────────────
+function MobileMenu({
+  open,
+  onClose,
+  isDark,
+  navigate,
+}: {
+  open: boolean;
+  onClose: () => void;
+  isDark: boolean;
+  navigate: ReturnType<typeof useNavigate>;
+}) {
+  const location = useLocation();
+  const bg      = isDark ? "#0a0c12" : "#ffffff";
+  const border  = isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)";
+  const text    = isDark ? "rgba(255,255,255,0.7)" : "#334155";
+  const textSub = isDark ? "rgba(255,255,255,0.35)" : "#94a3b8";
+
+  function scrollTo(link: string, path: string) {
+    onClose();
+    if (path !== location.pathname) {
+      navigate(path);
+      document.documentElement.scrollTo({ top: 0, left: 0, behavior: "instant" });
+      setTimeout(() => {
+        const el = document.querySelector(link);
+        if (el) el.scrollIntoView({ behavior: "smooth" });
+      }, 800);
+    } else {
+      const el = document.querySelector(link);
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    }
+  }
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            key="backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="fixed inset-0 z-9998 bg-black/50 backdrop-blur-sm"
+          />
+          {/* Drawer */}
+          <motion.div
+            key="drawer"
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed top-0 right-0 bottom-0 z-9999 w-[85vw] max-w-sm flex flex-col"
+            style={{ background: bg, borderLeft: `1px solid ${border}` }}
+          >
+            {/* Top bar */}
+            <div className="shrink-0 flex items-center justify-between px-5 pt-6 pb-4" style={{ borderBottom: `1px solid ${border}` }}>
+              <div className="flex items-center gap-2">
+                <img src={CXUMLOGO} width={32} height={32} alt="Logo" className="rounded-full" />
+                <span className="font-black text-sm" style={{ color: isDark ? "#fff" : "#0f172a" }}>CXUM</span>
+              </div>
+              <button
+                onClick={onClose}
+                className="w-8 h-8 rounded-xl flex items-center justify-center active:scale-95 transition-transform"
+                style={{ background: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)", color: text }}
+              >
+                <Iconify IconString="solar:close-circle-bold-duotone" Size={20} />
+              </button>
+            </div>
+
+            {/* Nav links with SimpleBar */}
+            <div className="flex-1 min-h-0 overflow-hidden">
+              <SimpleBar style={{ height: "100%", maxHeight: "100%" }}>
+                <div className="px-4 py-4 space-y-1">
+                  {InfoCards.map((card, i) => (
+                    <div key={i}>
+                      <p className="text-[10px] font-black uppercase tracking-[0.15em] px-3 py-2 mt-2" style={{ color: "#f59e0b" }}>
+                        {NAV_LINKS[i]}
+                      </p>
+                      {card.sections.map((section, si) => (
+                        <div key={si}>
+                          {section.cards.map((c, ci) => (
+                            <button
+                              key={ci}
+                              onClick={() => scrollTo(c.link, c.path)}
+                              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all active:scale-[0.98]"
+                              style={{ color: text }}
+                              onMouseEnter={e => (e.currentTarget.style.background = isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)")}
+                              onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                            >
+                              <Iconify IconString={c.IconsString || ""} Size={20} Style={{ color: "#f59e0b", flexShrink: 0 }} />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-semibold truncate">{c.cardTitle}</p>
+                                {"CardSubtitle" in c && c.CardSubtitle && (
+                                  <p className="text-xs truncate" style={{ color: textSub }}>{c.CardSubtitle}</p>
+                                )}
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </SimpleBar>
+            </div>
+
+            {/* Bottom actions */}
+            <div className="shrink-0 px-4 pb-8 pt-4 space-y-3" style={{ borderTop: `1px solid ${border}` }}>
+              <button
+                onClick={() => { onClose(); navigate("/Contacto"); }}
+                className="w-full py-3 rounded-2xl text-sm font-black text-white active:scale-[0.98] transition-transform"
+                style={{ background: "linear-gradient(135deg, #fc3d3d, #f97316)", boxShadow: "0 4px 20px rgba(252,61,61,0.3)" }}
+              >
+                Donar Ahora
+              </button>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+}
 
 export default function NavBar() {
   const [phase, setPhase] = useState(0);
@@ -20,6 +149,7 @@ export default function NavBar() {
   const [show, setShow] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [cardWidth, setCardWidth] = useState<number>(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const contentRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -66,7 +196,17 @@ export default function NavBar() {
   };
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-100 flex justify-center items-center px-6 pt-8 pointer-events-none font-outfit flex-col">
+    <>
+      {/* Mobile menu - fuera del contenedor principal */}
+      <MobileMenu
+        open={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+        isDark={isDark}
+        navigate={navigate}
+      />
+
+      <div className="fixed top-0 left-0 right-0 z-100 flex justify-center items-center px-4 sm:px-6 pt-6 sm:pt-8 pointer-events-none font-outfit flex-col">
+
       <div className="relative flex items-center w-full max-w-280">
         {phase >= 1 && (
           <motion.div
@@ -107,7 +247,7 @@ export default function NavBar() {
             </div>
 
             {phase >= 2 && (
-              <motion.nav initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-8">
+              <motion.nav initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="hidden md:flex items-center gap-8">
                 {NAV_LINKS.map((link, i) => (
                   <motion.div
                     key={link}
@@ -170,7 +310,22 @@ export default function NavBar() {
                       <Iconify IconString="duo-icons:moon-stars" Size={20} />
                     )}
                   </motion.button>
-                  <DefaultButton textString="Donar Ahora" onClick={() => navigate("/Contacto")} color="#fc3d3d"/>
+                  {/* Donar — solo desktop */}
+                  <div className="hidden md:block">
+                    <DefaultButton textString="Donar Ahora" onClick={() => navigate("/Contacto")} color="#fc3d3d"/>
+                  </div>
+                  {/* Hamburguesa — solo móvil */}
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setMobileMenuOpen(true)}
+                    className={`md:hidden flex items-center justify-center w-10 h-10 rounded-full border
+                               transition-all duration-300 cursor-pointer shadow-sm
+                               ${glassStyles.themeBtn}`}
+                  >
+                    <Iconify IconString="solar:hamburger-menu-bold" Size={20} />
+                  </motion.button>
                 </>
               )}
             </div>
@@ -189,8 +344,9 @@ export default function NavBar() {
           <img src={CXUMLOGO} width={40} height={40} alt="Logo" className="rounded-full object-contain" />
         </motion.div>
       </div>
-            <NavBarDropDown show={show} cardWidth={cardWidth} 
-            setFlag={setFlag} contentRef={(el) => {contentRef.current = el;}} activeIndex={activeIndex} glassStyles={glassStyles}/>
-    </div>
+      <NavBarDropDown show={show} cardWidth={cardWidth} 
+        setFlag={setFlag} contentRef={(el) => {contentRef.current = el;}} activeIndex={activeIndex} glassStyles={glassStyles}/>
+      </div>
+    </>
   );
 }

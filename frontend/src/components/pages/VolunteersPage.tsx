@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useSettings } from "../../hooks/context/SettingsContext";
+import { useSEO } from "../../hooks/useSEO";
 import NavBar from "../layout/NavBar";
 import Footer from "../layout/Footer";
 import Iconify from "../modularUI/IconsMock";
@@ -99,6 +100,7 @@ function AvatarCard({ member, isDark, textPrimary }: AvatarCardProps) {
 export default function VolunteersPage() {
   const { theme } = useSettings();
   const isDark = theme === "dark";
+  useSEO();
 
   const sectionRef = useRef<HTMLElement>(null);
   const [inView, setInView] = useState(false);
@@ -133,9 +135,9 @@ export default function VolunteersPage() {
       <section
         id="voluntarios"
         ref={sectionRef}
-        className={`min-h-screen w-full ${bg} pt-36 pb-24 px-6 md:px-16 lg:px-24`}
+        className={`min-h-screen w-full ${bg} pt-28 sm:pt-36 pb-16 sm:pb-24 px-4 sm:px-6 md:px-16 lg:px-24`}
       >
-        <div className="max-w-6xl mx-auto flex flex-col gap-24">
+        <div className="max-w-6xl mx-auto flex flex-col gap-16 sm:gap-24">
 
           <div className="flex flex-col items-center gap-12">
 
@@ -203,7 +205,7 @@ export default function VolunteersPage() {
               variants={fadeUp(0.2)} initial="hidden" animate={inView ? "visible" : "hidden"}
               className="w-full"
             >
-              <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3 auto-rows-auto">
+              <div className="grid grid-cols-3 sm:grid-cols-6 md:grid-cols-8 gap-2 sm:gap-3 auto-rows-auto">
                 {VOLUNTEER_MEMBERS.map((member, i) => {
                   const isLarge  = member.size === "large";
                   const isMedium = member.size === "medium";

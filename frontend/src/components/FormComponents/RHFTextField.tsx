@@ -127,7 +127,7 @@ export default function RHFTextField<T extends FieldValues>({
       render={({ field, fieldState: { error } }) => (
         <div className="flex flex-col gap-1.5">
 
-          <div className="flex items-center justify-between gap-2">
+          <div className="flex items-start justify-between gap-2 flex-wrap">
             <label
               htmlFor={String(name)}
               className="text-xs font-semibold tracking-wider uppercase select-none"

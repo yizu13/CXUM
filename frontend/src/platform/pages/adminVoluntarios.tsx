@@ -15,7 +15,7 @@ import Iconify from "../../components/modularUI/IconsMock";
 import AdminButton from "../components/AdminButton";
 import FilterSelect from "../../components/modularUI/FilterSelect";
 import { getAllUsers, updateUserRole } from "../APIs/modifyRole";
-import { getSolicitudes, resolverSolicitud, inviteUserToSystem } from "../APIs/solicitudes";
+import { getSolicitudes, resolverSolicitud, inviteUserToSystem, getTempPassword } from "../APIs/solicitudes";
 import type { Solicitud } from "../APIs/solicitudes";
 import { useAuth } from "../components/AuthContextComps";
 
@@ -30,9 +30,93 @@ interface Voluntario {
   municipio: string;
   telefono: string;
   joinedAt: string;
+  userStatus?: string; // Estado de Cognito: FORCE_CHANGE_PASSWORD, CONFIRMED, etc.
 }
 
 type SolicitudStatus = "pendiente" | "aprobada" | "rechazada";
+
+// ── Modal: Ver Contraseña Temporal ───────────────────────────────────────────
+function TempPasswordModal({
+  voluntario,
+  tempPassword,
+  onClose,
+  isDark,
+}: {
+  voluntario: Voluntario;
+  tempPassword: string;
+  onClose: () => void;
+  isDark: boolean;
+}) {
+  const [copied, setCopied] = useState(false);
+
+  function handleCopy(text: string) {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  const modalBg     = isDark ? "#0f1117" : "#ffffff";
+  const modalBorder = isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)";
+  const textPrimary = isDark ? "#fff" : "#0f172a";
+  const textMuted   = isDark ? "rgba(255,255,255,0.4)" : "#64748b";
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(10px)" }}>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+        className="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-3xl p-6 border"
+        style={{ background: modalBg, borderColor: modalBorder, boxShadow: "0 24px 80px rgba(0,0,0,0.35)" }}
+      >
+        <div className="flex flex-col items-center gap-3 mb-5 text-center">
+          <div className="w-12 h-12 rounded-2xl flex items-center justify-center"
+            style={{ background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.3)" }}>
+            <Iconify Size={24} IconString="solar:key-bold-duotone" Style={{ color: "#6366f1" }} />
+          </div>
+          <p className="font-black text-base" style={{ color: textPrimary }}>Contraseña Temporal</p>
+          <p className="text-xs" style={{ color: textMuted }}>
+            Usuario: <strong style={{ color: textPrimary }}>{voluntario.name}</strong>
+          </p>
+          <p className="text-xs" style={{ color: textMuted }}>{voluntario.email}</p>
+        </div>
+
+        <div className="rounded-2xl p-4 mb-5 flex items-center justify-between gap-3"
+          style={{ background: isDark ? "rgba(99,102,241,0.08)" : "rgba(99,102,241,0.06)", border: "1px solid rgba(99,102,241,0.2)" }}>
+          <div className="flex-1">
+            <p className="text-xs font-medium mb-1" style={{ color: textMuted }}>Contraseña</p>
+            <p className="font-mono font-black text-lg tracking-widest break-all" style={{ color: "#6366f1" }}>
+              {tempPassword}
+            </p>
+          </div>
+          <button onClick={() => handleCopy(tempPassword)}
+            className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+            style={{ background: copied ? "rgba(34,197,94,0.15)" : "rgba(99,102,241,0.15)" }}>
+            <Iconify Size={16}
+              IconString={copied ? "solar:check-circle-bold" : "solar:copy-bold"}
+              Style={{ color: copied ? "#22c55e" : "#6366f1" }} />
+          </button>
+        </div>
+
+        <div className="rounded-xl p-4 mb-5 text-sm"
+          style={{ background: isDark ? "rgba(245,158,11,0.06)" : "rgba(245,158,11,0.05)", border: "1px solid rgba(245,158,11,0.15)", color: textMuted }}>
+          <p className="font-semibold mb-2 flex items-center" style={{ color: "#f59e0b" }}><Iconify IconString="solar:shield-warning-bold-duotone" Size={20}/> Importante</p>
+          <ul className="space-y-1 text-xs">
+            <li>• Esta contraseña ha sido regenerada automáticamente</li>
+            <li>• El usuario debe cambiarla en su primer inicio de sesión</li>
+            <li>• Comparte esta contraseña de forma segura con el usuario</li>
+            <li>• Puedes consultarla nuevamente mientras no sea cambiada</li>
+          </ul>
+        </div>
+
+        <AdminButton variant="primary" fullWidth onClick={onClose}>
+          Cerrar
+        </AdminButton>
+      </motion.div>
+    </div>
+  );
+}
 
 // ── Modal: Incluir en sistema ─────────────────────────────────────────────────
 function IncluirModal({
@@ -43,7 +127,7 @@ function IncluirModal({
 }: {
   solicitud: Solicitud;
   onClose: () => void;
-  onConfirm: (s: Solicitud) => Promise<void>;
+  onConfirm: (s: Solicitud) => Promise<{ tempPassword: string }>;
   isDark: boolean;
 }) {
   const [loading, setLoading] = useState(false);
@@ -56,7 +140,6 @@ function IncluirModal({
     setError("");
     try {
       const res = await onConfirm(solicitud);
-      // @ts-expect-error res viene del padre
       setResult(res);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Error desconocido";
@@ -95,7 +178,7 @@ function IncluirModal({
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        className="w-full max-w-md rounded-3xl p-6 border"
+        className="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-3xl p-6 border"
         style={{ background: modalBg, borderColor: modalBorder, boxShadow: "0 24px 80px rgba(0,0,0,0.35)" }}
       >
         {!result ? (
@@ -252,7 +335,6 @@ function VoluntarioModal({
   const [saving, setSaving] = useState(false);
   const roleColor = ROLE_COLORS[v.role];
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const methods = useForm<VoluntarioEditFormValues>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: yupResolver(voluntarioEditSchema) as any,
@@ -287,7 +369,7 @@ function VoluntarioModal({
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        className="w-full max-w-md rounded-3xl p-6 border"
+        className="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-3xl p-6 border"
         style={{ background: modalBg, borderColor: modalBorder, boxShadow: "0 24px 80px rgba(0,0,0,0.35)" }}
       >
         <div className="flex items-center gap-3 mb-6">
@@ -355,6 +437,29 @@ function VoluntarioModal({
   );
 }
 
+// ── Row Component (helper para DetalleSolicitudModal) ────────────────────────
+function SolicitudRow({ 
+  label, 
+  value, 
+  textPrimary, 
+  textMuted 
+}: { 
+  label: string; 
+  value?: string | string[]; 
+  textPrimary: string; 
+  textMuted: string; 
+}) {
+  if (!value || (Array.isArray(value) && value.length === 0)) return null;
+  return (
+    <div className="flex flex-col gap-0.5">
+      <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: textMuted }}>{label}</p>
+      <p className="text-sm font-medium" style={{ color: textPrimary }}>
+        {Array.isArray(value) ? value.join(", ") : value}
+      </p>
+    </div>
+  );
+}
+
 // ── Detalle Solicitud Modal ───────────────────────────────────────────────────
 function DetalleSolicitudModal({
   s,
@@ -378,18 +483,6 @@ function DetalleSolicitudModal({
   const divider     = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)";
 
   const statusCfg = SOL_STATUS_CONFIG[s.status];
-
-  function Row({ label, value }: { label: string; value?: string | string[] }) {
-    if (!value || (Array.isArray(value) && value.length === 0)) return null;
-    return (
-      <div className="flex flex-col gap-0.5">
-        <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: textMuted }}>{label}</p>
-        <p className="text-sm font-medium" style={{ color: textPrimary }}>
-          {Array.isArray(value) ? value.join(", ") : value}
-        </p>
-      </div>
-    );
-  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
@@ -426,19 +519,19 @@ function DetalleSolicitudModal({
 
           {/* Contacto */}
           <div className="grid grid-cols-2 gap-4">
-            <Row label="Teléfono" value={s.phone} />
-            <Row label="Documento" value={s.idDocument} />
-            <Row label="Fecha de nacimiento" value={s.birthDate} />
-            <Row label="Dirección" value={s.address} />
-            <Row label="Redes sociales" value={s.socialMedia} />
-            <Row label="Ocupación" value={s.occupation} />
-            <Row label="Nivel educativo" value={s.educationLevel} />
+            <SolicitudRow label="Teléfono" value={s.phone} textPrimary={textPrimary} textMuted={textMuted} />
+            <SolicitudRow label="Documento" value={s.idDocument} textPrimary={textPrimary} textMuted={textMuted} />
+            <SolicitudRow label="Fecha de nacimiento" value={s.birthDate} textPrimary={textPrimary} textMuted={textMuted} />
+            <SolicitudRow label="Dirección" value={s.address} textPrimary={textPrimary} textMuted={textMuted} />
+            <SolicitudRow label="Redes sociales" value={s.socialMedia} textPrimary={textPrimary} textMuted={textMuted} />
+            <SolicitudRow label="Ocupación" value={s.occupation} textPrimary={textPrimary} textMuted={textMuted} />
+            <SolicitudRow label="Nivel educativo" value={s.educationLevel} textPrimary={textPrimary} textMuted={textMuted} />
           </div>
 
           {(s.areas && s.areas.length > 0) && (
             <>
               <div className="h-px" style={{ background: divider }} />
-              <Row label="Áreas de interés" value={s.areas} />
+              <SolicitudRow label="Áreas de interés" value={s.areas} textPrimary={textPrimary} textMuted={textMuted} />
             </>
           )}
 
@@ -446,8 +539,8 @@ function DetalleSolicitudModal({
             <>
               <div className="h-px" style={{ background: divider }} />
               <div className="grid grid-cols-2 gap-4">
-                <Row label="Disponibilidad" value={s.availability} />
-                <Row label="Horas semanales" value={s.weeklyHours} />
+                <SolicitudRow label="Disponibilidad" value={s.availability} textPrimary={textPrimary} textMuted={textMuted} />
+                <SolicitudRow label="Horas semanales" value={s.weeklyHours} textPrimary={textPrimary} textMuted={textMuted} />
               </div>
             </>
           )}
@@ -455,14 +548,14 @@ function DetalleSolicitudModal({
           {s.skills && (
             <>
               <div className="h-px" style={{ background: divider }} />
-              <Row label="Habilidades" value={s.skills} />
+              <SolicitudRow label="Habilidades" value={s.skills} textPrimary={textPrimary} textMuted={textMuted} />
             </>
           )}
 
           {s.motivation && (
             <>
               <div className="h-px" style={{ background: divider }} />
-              <Row label="Motivación" value={s.motivation} />
+              <SolicitudRow label="Motivación" value={s.motivation} textPrimary={textPrimary} textMuted={textMuted} />
             </>
           )}
 
@@ -470,9 +563,9 @@ function DetalleSolicitudModal({
             <>
               <div className="h-px" style={{ background: divider }} />
               <div className="grid grid-cols-2 gap-4">
-                <Row label="Contacto de emergencia" value={s.emergencyName} />
-                <Row label="Relación" value={s.emergencyRelation} />
-                <Row label="Teléfono emergencia" value={s.emergencyPhone} />
+                <SolicitudRow label="Contacto de emergencia" value={s.emergencyName} textPrimary={textPrimary} textMuted={textMuted} />
+                <SolicitudRow label="Relación" value={s.emergencyRelation} textPrimary={textPrimary} textMuted={textMuted} />
+                <SolicitudRow label="Teléfono emergencia" value={s.emergencyPhone} textPrimary={textPrimary} textMuted={textMuted} />
               </div>
             </>
           )}
@@ -480,7 +573,7 @@ function DetalleSolicitudModal({
           {s.referral && (
             <>
               <div className="h-px" style={{ background: divider }} />
-              <Row label="¿Cómo nos conoció?" value={s.referral} />
+              <SolicitudRow label="¿Cómo nos conoció?" value={s.referral} textPrimary={textPrimary} textMuted={textMuted} />
             </>
           )}
         </div>
@@ -519,6 +612,7 @@ export default function AdminVoluntariosPage() {
   const [voluntarios, setVoluntarios] = useState<Voluntario[]>([]);
   const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
   const [externos, setExternos] = useState<Solicitud[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_loadingVols, setLoadingVols] = useState(true);
   const [loadingSols, setLoadingSols] = useState(true);
   const [search, setSearch] = useState("");
@@ -527,6 +621,8 @@ export default function AdminVoluntariosPage() {
   const [editModal, setEditModal] = useState<Voluntario | null>(null);
   const [incluirModal, setIncluirModal] = useState<Solicitud | null>(null);
   const [detalleModal, setDetalleModal] = useState<Solicitud | null>(null);
+  const [tempPasswordModal, setTempPasswordModal] = useState<{ voluntario: Voluntario; tempPassword: string } | null>(null);
+  const [loadingTempPwd, setLoadingTempPwd] = useState<string | null>(null); // username being fetched
 
   useEffect(() => {
     const VALID_ROLES: UserRole[] = ["administradores", "colaborador", "escritor", "voluntario"];
@@ -544,6 +640,7 @@ export default function AdminVoluntariosPage() {
             municipio: u.attributes?.municipio ?? "",
             telefono: u.attributes?.telefono ?? "",
             joinedAt: u.attributes?.joinedAt ?? "",
+            userStatus: u.userStatus ?? u.status, // userStatus de Cognito (FORCE_CHANGE_PASSWORD, CONFIRMED, etc.)
           } as Voluntario;
         });
         setVoluntarios(mapped);
@@ -592,12 +689,13 @@ export default function AdminVoluntariosPage() {
     }
   };
 
-  async function handleInviteUser(solicitud: Solicitud): Promise<void> {
-    await inviteUserToSystem(solicitud.email, solicitud.nombre);
+  async function handleInviteUser(solicitud: Solicitud): Promise<{ tempPassword: string }> {
+    const result = await inviteUserToSystem(solicitud.email, solicitud.nombre);
     // Marcar localmente como incluida (no hay campo en DynamoDB para esto aún)
     setExternos((prev) => prev.map((s) =>
       s.id === solicitud.id ? { ...s, sistemaIncluido: true } as Solicitud & { sistemaIncluido: boolean } : s
     ));
+    return result;
   }
 
   const cardStyle = {
@@ -617,9 +715,9 @@ export default function AdminVoluntariosPage() {
   const tableRowHover    = isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)";
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h1 className="font-black text-2xl tracking-tight" style={{ color: isDark ? "#fff" : "#0f172a" }}>
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="font-black text-xl sm:text-2xl tracking-tight" style={{ color: isDark ? "#fff" : "#0f172a" }}>
           Voluntarios
         </h1>
         <p className="text-sm mt-1" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "#64748b" }}>
@@ -627,20 +725,20 @@ export default function AdminVoluntariosPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         {[
           { label: "Total Voluntarios",  value: voluntarios.length,                                    icon: "solar:users-group-two-rounded-bold-duotone", color: "#f59e0b" },
           { label: "Activos",            value: voluntarios.filter((v) => v.status === "activo").length, icon: "solar:check-circle-bold-duotone",           color: "#22c55e" },
           { label: "Pendientes",         value: voluntarios.filter((v) => v.status === "pendiente").length, icon: "solar:clock-circle-bold-duotone",        color: "#f59e0b" },
           { label: "Solicitudes Nuevas", value: pendientesCount,                                       icon: "solar:bell-bing-bold-duotone",               color: "#ef4444" },
         ].map((s) => (
-          <div key={s.label} className="rounded-2xl p-5 border flex items-center gap-4" style={cardStyle}>
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: `${s.color}18`, border: `1px solid ${s.color}30` }}>
-              <Iconify Size={20} IconString={s.icon} Style={{ color: s.color }} />
+          <div key={s.label} className="rounded-2xl p-4 sm:p-5 border flex items-center gap-3" style={cardStyle}>
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: `${s.color}18`, border: `1px solid ${s.color}30` }}>
+              <Iconify Size={18} IconString={s.icon} Style={{ color: s.color }} />
             </div>
-            <div>
-              <p className="text-xs font-medium" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "#64748b" }}>{s.label}</p>
-              <p className="font-black text-xl" style={{ color: isDark ? "#fff" : "#0f172a" }}>{s.value}</p>
+            <div className="min-w-0">
+              <p className="text-[11px] sm:text-xs font-medium leading-tight" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "#64748b" }}>{s.label}</p>
+              <p className="font-black text-xl sm:text-2xl" style={{ color: isDark ? "#fff" : "#0f172a" }}>{s.value}</p>
             </div>
           </div>
         ))}
@@ -648,7 +746,7 @@ export default function AdminVoluntariosPage() {
 
       {/* Tabs */}
       <div
-        className="flex items-center border-b mb-6"
+        className="flex items-center border-b mb-6 overflow-x-auto scrollbar-hide"
         style={{ borderColor: isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.08)" }}
       >
         <TabButton active={tab === "solicitudes"} onClick={() => setTab("solicitudes")} isDark={isDark}>
@@ -693,14 +791,14 @@ export default function AdminVoluntariosPage() {
                 return (
                   <div key={s.id} className="rounded-2xl p-5 border" style={cardStyle}>
                     <div className="flex items-start justify-between gap-4 flex-wrap">
-                      <div className="flex items-start gap-3">
+                      <div className="flex items-start gap-3 flex-1 min-w-0">
                         <div
-                          className="w-9 h-9 rounded-xl flex items-center justify-center font-black text-white text-sm flex-shrink-0"
+                          className="w-9 h-9 rounded-xl flex items-center justify-center font-black text-white text-sm shrink-0"
                           style={{ background: `${roleColor}20`, border: `1px solid ${roleColor}35` }}
                         >
                           {s.nombre.charAt(0)}
                         </div>
-                        <div>
+                        <div className="min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
                             <p className="font-bold text-sm" style={{ color: isDark ? "#fff" : "#0f172a" }}>
                               {s.nombre}
@@ -716,15 +814,15 @@ export default function AdminVoluntariosPage() {
                             {s.email} · {new Date(s.fecha).toLocaleDateString("es-DO")}
                           </p>
                           {s.mensaje && (
-                          <p className="text-xs mt-2 max-w-lg" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#475569" }}>
-                            {s.mensaje}
-                          </p>
+                            <p className="text-xs mt-2 max-w-lg" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#475569" }}>
+                              {s.mensaje}
+                            </p>
                           )}
                         </div>
                       </div>
 
-                      {canManage && s.status === "pendiente" && (
-                        <div className="flex items-center gap-2 flex-shrink-0">
+                      {canManage && s.status === "pendiente" ? (
+                        <div className="flex items-center gap-2 shrink-0 flex-wrap mt-2 sm:mt-0">
                           <AdminButton
                             size="sm"
                             variant="ghost"
@@ -747,8 +845,7 @@ export default function AdminVoluntariosPage() {
                             Aprobar
                           </AdminButton>
                         </div>
-                      )}
-                      {s.status !== "pendiente" && (
+                      ) : s.status !== "pendiente" ? (
                         <AdminButton
                           size="sm"
                           variant="ghost"
@@ -756,7 +853,7 @@ export default function AdminVoluntariosPage() {
                         >
                           Ver detalle
                         </AdminButton>
-                      )}
+                      ) : null}
                     </div>
                   </div>
                 );
@@ -852,7 +949,18 @@ export default function AdminVoluntariosPage() {
                                   {v.name.charAt(0)}
                                 </div>
                                 <div>
-                                  <p className="font-semibold text-sm" style={{ color: isDark ? "#fff" : "#0f172a" }}>{v.name} {v.email == user?.email && "(Tú)"}</p>
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <p className="font-semibold text-sm" style={{ color: isDark ? "#fff" : "#0f172a" }}>
+                                      {v.name} {v.email === user?.email && "(Tú)"}
+                                    </p>
+                                    {v.userStatus === "FORCE_CHANGE_PASSWORD" && (
+                                      <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full"
+                                        style={{ background: "rgba(99,102,241,0.12)", color: "#6366f1", border: "1px solid rgba(99,102,241,0.25)" }}>
+                                        <Iconify Size={10} IconString="solar:key-bold-duotone" Style={{ color: "#6366f1" }} />
+                                        Contraseña temporal
+                                      </span>
+                                    )}
+                                  </div>
                                   <p className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.3)" : "#94a3b8" }}>{v.email}</p>
                                 </div>
                               </div>
@@ -875,15 +983,41 @@ export default function AdminVoluntariosPage() {
                             </td>
                             {canManage && (
                               <td className="px-4 py-3.5">
-                                <AdminButton
-                                  size="sm"
-                                  variant="ghost"
-                                  icon="solar:pen-2-bold-duotone"
-                                  onClick={() => setEditModal(v)}
-                                  className="!text-amber-500 !border-amber-500/25 opacity-0 group-hover:opacity-100"
-                                >
-                                  Editar
-                                </AdminButton>
+                                <div className="flex items-center gap-2">
+                                  <AdminButton
+                                    size="sm"
+                                    variant="ghost"
+                                    icon="solar:pen-2-bold-duotone"
+                                    onClick={() => setEditModal(v)}
+                                    className="text-amber-500! border-amber-500/25! opacity-0 group-hover:opacity-100"
+                                  >
+                                    Editar
+                                  </AdminButton>
+                                  {v.userStatus === "FORCE_CHANGE_PASSWORD" && (
+                                    <AdminButton
+                                      size="sm"
+                                      variant="indigo"
+                                      icon="solar:key-bold-duotone"
+                                      loading={loadingTempPwd === v.id}
+                                      loadingText="Cargando..."
+                                      onClick={async () => {
+                                        setLoadingTempPwd(v.id);
+                                        try {
+                                          const result = await getTempPassword(v.id);
+                                          setTempPasswordModal({ voluntario: v, tempPassword: result.tempPassword });
+                                        } catch (err) {
+                                          console.error(err);
+                                          const errorMsg = err instanceof Error ? err.message : "Error desconocido";
+                                          alert(`Error: ${errorMsg}`);
+                                        } finally {
+                                          setLoadingTempPwd(null);
+                                        }
+                                      }}
+                                    >
+                                      Ver contraseña
+                                    </AdminButton>
+                                  )}
+                                </div>
                               </td>
                             )}
                           </motion.tr>
@@ -928,7 +1062,7 @@ export default function AdminVoluntariosPage() {
                   return (
                     <div key={s.id} className="rounded-2xl p-5 border" style={cardStyle}>
                       <div className="flex items-start justify-between gap-4 flex-wrap">
-                        <div className="flex items-start gap-3">
+                      <div className="flex items-start gap-3">
                           <div className="w-9 h-9 rounded-xl flex items-center justify-center font-black text-white text-sm shrink-0"
                             style={{ background: "rgba(99,102,241,0.2)", border: "1px solid rgba(99,102,241,0.3)" }}>
                             {s.nombre.charAt(0)}
@@ -1014,6 +1148,17 @@ export default function AdminVoluntariosPage() {
             onAprobar={(id) => handleSolicitud(id, "aprobar")}
             onRechazar={(id) => handleSolicitud(id, "rechazar")}
             canManage={canManage}
+            isDark={isDark}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {tempPasswordModal && (
+          <TempPasswordModal
+            voluntario={tempPasswordModal.voluntario}
+            tempPassword={tempPasswordModal.tempPassword}
+            onClose={() => setTempPasswordModal(null)}
             isDark={isDark}
           />
         )}

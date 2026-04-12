@@ -55,7 +55,8 @@ export default function FilterSelect({
           borderColor: triggerBorder,
           color: activeColor || (isDark ? "rgba(255,255,255,0.7)" : "#334155"),
           boxShadow: isDark ? "none" : "0 1px 3px rgba(0,0,0,0.05)",
-          minWidth: "160px",
+          minWidth: "140px",
+          maxWidth: "100%",
         }}
       >
         {/* Leading icon */}

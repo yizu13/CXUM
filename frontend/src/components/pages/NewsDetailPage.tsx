@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useSettings } from "../../hooks/context/SettingsContext";
+import { useSEO } from "../../hooks/useSEO";
 import NavBar from "../layout/NavBar";
 import Footer from "../layout/Footer";
 import Iconify from "../modularUI/IconsMock";
@@ -28,7 +29,7 @@ function RelatedCard({
       onHoverEnd={() => setHovered(false)}
       whileHover={{ y: -4 }}
       className={`flex flex-col rounded-2xl overflow-hidden cursor-pointer ${
-        isDark ? "bg-white/[0.03]" : "bg-white"
+        isDark ? "bg-white/3" : "bg-white"
       }`}
       style={{
         boxShadow: isDark
@@ -119,6 +120,15 @@ export default function NewsDetailPage() {
   const { item: news, loading, notFound } = useNoticia(slug ?? "");
   const { items: allNews } = useNoticias();
 
+  // Dynamic SEO for news article
+  useSEO(news ? {
+    title: `${news.title} | Cuadernos X un Mañana`,
+    description: news.description,
+    keywords: `${news.category}, noticias CXUM, ${news.author}, actividades educativas RD`,
+    ogImage: news.image,
+    canonical: `https://d1ykljkzezf4zd.cloudfront.net/Noticias/${news.slug}`
+  } : undefined);
+
   // Noticias relacionadas: misma categoría, excluyendo la actual (máx 3)
   const related = allNews.filter(
     (n) => n.slug !== slug && n.category === news?.category
@@ -206,8 +216,34 @@ export default function NewsDetailPage() {
     <>
       <NavBar />
 
-      <main className={`min-h-screen ${bg} pt-28 pb-28 px-5 md:px-12 lg:px-20`}>
+      <main className={`min-h-screen ${bg} pt-24 sm:pt-28 pb-20 sm:pb-28 px-4 sm:px-5 md:px-12 lg:px-20`}>
         <div className="max-w-4xl mx-auto flex flex-col gap-10">
+
+          {/* NewsArticle Schema */}
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "NewsArticle",
+              "headline": news.title,
+              "description": news.description,
+              "image": news.image,
+              "datePublished": news.date,
+              "author": {
+                "@type": "Person",
+                "name": news.author
+              },
+              "publisher": {
+                "@type": "Organization",
+                "name": "Cuadernos X un Mañana",
+                "logo": {
+                  "@type": "ImageObject",
+                  "url": "https://d1ykljkzezf4zd.cloudfront.net/cxum.png"
+                }
+              },
+              "articleSection": news.category,
+              "inLanguage": "es-DO"
+            })}
+          </script>
 
           {/* ── Breadcrumb / Back ── */}
           <motion.button
