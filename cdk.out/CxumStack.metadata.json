@@ -1,58 +1,38 @@
 {
-  "/CxumStack/CentrosTable": [
+  "/CxumStack/Group-administradores": [
     {
-      "type": "aws:cdk:hasPhysicalName",
-      "data": {
-        "Ref": "CentrosTable883DAA72"
-      }
+      "type": "aws:cdk:logicalId",
+      "data": "Groupadministradores"
     }
   ],
-  "/CxumStack/NoticiasTable": [
+  "/CxumStack/Group-colaborador": [
     {
-      "type": "aws:cdk:hasPhysicalName",
-      "data": {
-        "Ref": "NoticiasTable429A8F57"
-      }
+      "type": "aws:cdk:logicalId",
+      "data": "Groupcolaborador"
     }
   ],
-  "/CxumStack/SolicitudesTable": [
+  "/CxumStack/Group-escritor": [
     {
-      "type": "aws:cdk:hasPhysicalName",
-      "data": {
-        "Ref": "SolicitudesTable712AEA38"
-      }
+      "type": "aws:cdk:logicalId",
+      "data": "Groupescritor"
     }
   ],
-  "/CxumStack/ContactosTable": [
+  "/CxumStack/Group-voluntario": [
     {
-      "type": "aws:cdk:hasPhysicalName",
-      "data": {
-        "Ref": "ContactosTableCDABD28B"
-      }
+      "type": "aws:cdk:logicalId",
+      "data": "Groupvoluntario"
     }
   ],
-  "/CxumStack/InviteTokensTable": [
+  "/CxumStack/UserPoolId": [
     {
-      "type": "aws:cdk:hasPhysicalName",
-      "data": {
-        "Ref": "InviteTokensTableC8335281"
-      }
+      "type": "aws:cdk:logicalId",
+      "data": "UserPoolId"
     }
   ],
-  "/CxumStack/ActivityTable": [
+  "/CxumStack/UserPoolClientId": [
     {
-      "type": "aws:cdk:hasPhysicalName",
-      "data": {
-        "Ref": "ActivityTable0B58B12C"
-      }
-    }
-  ],
-  "/CxumStack/ProfilesTable": [
-    {
-      "type": "aws:cdk:hasPhysicalName",
-      "data": {
-        "Ref": "ProfilesTable3B48B4C6"
-      }
+      "type": "aws:cdk:logicalId",
+      "data": "UserPoolClientId"
     }
   ],
   "/CxumStack/ApiUrl": [
@@ -103,46 +83,16 @@
       "data": "CheckBootstrapVersion"
     }
   ],
-  "/CxumStack/CentrosTable/Resource": [
+  "/CxumStack/CxumUserPool/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "CentrosTable883DAA72"
+      "data": "CxumUserPool8AB7B167"
     }
   ],
-  "/CxumStack/NoticiasTable/Resource": [
+  "/CxumStack/CxumUserPoolClient/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "NoticiasTable429A8F57"
-    }
-  ],
-  "/CxumStack/SolicitudesTable/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "SolicitudesTable712AEA38"
-    }
-  ],
-  "/CxumStack/ContactosTable/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "ContactosTableCDABD28B"
-    }
-  ],
-  "/CxumStack/InviteTokensTable/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "InviteTokensTableC8335281"
-    }
-  ],
-  "/CxumStack/ActivityTable/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "ActivityTable0B58B12C"
-    }
-  ],
-  "/CxumStack/ProfilesTable/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "ProfilesTable3B48B4C6"
+      "data": "CxumUserPoolClient3271F560"
     }
   ],
   "/CxumStack/ImagesBucket/Resource": [
@@ -161,6 +111,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "FrontendDistributionE6EAF405"
+    }
+  ],
+  "/CxumStack/CxumAuthorizerAdmin/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumAuthorizerAdmin9C222ED0"
     }
   ],
   "/CxumStack/AuthorizerMultiRole/Resource": [
@@ -197,6 +153,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ModifyUserRole79B56623"
+    }
+  ],
+  "/CxumStack/ListUsers/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ListUsers7B09702E"
     }
   ],
   "/CxumStack/GetSolicitudes/Resource": [
@@ -307,6 +269,12 @@
       "data": "FrontendBucketPolicy1DFF75D9"
     }
   ],
+  "/CxumStack/CxumAuthorizerAdmin/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumAuthorizerAdminServiceRole9C3D67CF"
+    }
+  ],
   "/CxumStack/AuthorizerMultiRole/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -341,6 +309,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ModifyUserRoleServiceRole8FC7F1CA"
+    }
+  ],
+  "/CxumStack/ListUsers/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ListUsersServiceRoleFD318DCC"
     }
   ],
   "/CxumStack/GetSolicitudes/ServiceRole/Resource": [
@@ -745,10 +719,10 @@
       "data": "CxumBackendDELETEadminmediaF9AAF81D"
     }
   ],
-  "/CxumStack/FrontendDistribution/Origin1/S3Origin/Resource": [
+  "/CxumStack/FrontendDistribution/Origin1/S3OriginAccessControl/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "FrontendDistributionOrigin1S3OriginC94250A2"
+      "data": "FrontendDistributionOrigin1S3OriginAccessControl51A3EFC6"
     }
   ],
   "/CxumStack/GetCentros/ServiceRole/DefaultPolicy/Resource": [
@@ -779,6 +753,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ModifyUserRoleServiceRoleDefaultPolicyD3AD079B"
+    }
+  ],
+  "/CxumStack/ListUsers/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ListUsersServiceRoleDefaultPolicyFE133EA9"
     }
   ],
   "/CxumStack/GetSolicitudes/ServiceRole/DefaultPolicy/Resource": [

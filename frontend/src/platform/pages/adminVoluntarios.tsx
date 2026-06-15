@@ -377,14 +377,14 @@ function VoluntarioModal({
             className="w-11 h-11 rounded-2xl flex items-center justify-center font-black text-white text-lg shrink-0"
             style={{ background: `${roleColor}25`, border: `1px solid ${roleColor}40` }}
           >
-            {v.name.charAt(0)}
+            {v?.name?.charAt(0)}
           </div>
           <div className="flex-1 min-w-0">
             <p className="font-black text-base truncate" style={{ color: isDark ? "#fff" : "#0f172a" }}>
-              {v.name}
+              {v?.name}
             </p>
             <p className="text-xs truncate" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "#64748b" }}>
-              {v.email}
+              {v?.email}
             </p>
           </div>
           <AdminButton
