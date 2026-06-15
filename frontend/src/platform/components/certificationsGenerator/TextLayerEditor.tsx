@@ -2,6 +2,7 @@ import Iconify from "../../../components/modularUI/IconsMock";
 import AdminButton from "../AdminButton";
 import { parseTemplate } from "./ast";
 import CertificatePreview from "./CertificatePreview";
+import TypographyControls from "./TypographyControls";
 import type { CertificateTemplate, DataRow, TextAreaDefinition, ThemeAwareProps } from "./types";
 import { cardStyle, FIELD_CLASS, inputStyle, mutedText, strongText, subtleBorder, TOOL_BUTTON_CLASS } from "./ui";
 
@@ -11,6 +12,7 @@ interface TextLayerEditorProps extends ThemeAwareProps {
   selectedArea: TextAreaDefinition | null;
   selectedAreaId: string | null;
   variables: string[];
+  systemVariables: string[];
   sampleData: DataRow;
   onSelectArea: (areaId: string | null) => void;
   onUpdateArea: (areaId: string, patch: Partial<TextAreaDefinition>) => void;
@@ -19,14 +21,13 @@ interface TextLayerEditorProps extends ThemeAwareProps {
   onNext: () => void;
 }
 
-const FONT_SIZES = [18, 24, 30, 36, 44, 56, 72];
-
 export default function TextLayerEditor({
   template,
   areas,
   selectedArea,
   selectedAreaId,
   variables,
+  systemVariables,
   sampleData,
   onSelectArea,
   onUpdateArea,
@@ -91,7 +92,26 @@ export default function TextLayerEditor({
                 />
               </label>
             ))}
-            {variables.length === 0 && (
+            {systemVariables.length > 0 && (
+              <div className="rounded-xl border p-3" style={{ borderColor: subtleBorder(isDark), background: isDark ? "rgba(255,255,255,0.02)" : "#f8fafc" }}>
+                <p className="mb-2 text-xs font-black" style={{ color: mutedText(isDark) }}>
+                  Variables autogeneradas
+                </p>
+                <div className="space-y-2">
+                  {systemVariables.map((variable) => (
+                    <div key={variable}>
+                      <p className="text-[11px] font-black" style={{ color: "#f59e0b" }}>
+                        {`{{${variable}}}`}
+                      </p>
+                      <p className="truncate text-xs font-medium" style={{ color: strongText(isDark) }}>
+                        {sampleData[variable]}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {variables.length === 0 && systemVariables.length === 0 && (
               <p className="text-xs font-medium" style={{ color: mutedText(isDark) }}>
                 Agrega variables en formato {"{{nombre}}"} para habilitar el preview personalizado.
               </p>
@@ -121,7 +141,7 @@ export default function TextLayerEditor({
         </div>
 
         {selectedArea ? (
-          <div className="mb-5 grid gap-4 lg:grid-cols-[1fr_260px]">
+          <div className="mb-5 grid gap-4 lg:grid-cols-[1fr_340px]">
             <div>
               <label className="mb-2 block text-xs font-black" style={{ color: mutedText(isDark) }}>
                 Texto de la capa
@@ -155,44 +175,13 @@ export default function TextLayerEditor({
               )}
             </div>
 
-            <div className="space-y-3">
+            <aside className="space-y-3">
               <label className="block">
                 <span className="mb-1 block text-xs font-black" style={{ color: mutedText(isDark) }}>
                   Etiqueta
                 </span>
                 <input value={selectedArea.label} onChange={(event) => patchSelected({ label: event.target.value })} className={FIELD_CLASS} style={inputStyle(isDark)} />
               </label>
-
-              <div className="grid grid-cols-2 gap-2">
-                <label className="block">
-                  <span className="mb-1 block text-xs font-black" style={{ color: mutedText(isDark) }}>
-                    Tamano
-                  </span>
-                  <select value={selectedArea.fontSize} onChange={(event) => patchSelected({ fontSize: Number(event.target.value) })} className={FIELD_CLASS} style={inputStyle(isDark)}>
-                    {FONT_SIZES.map((size) => (
-                      <option key={size} value={size}>{size}px</option>
-                    ))}
-                  </select>
-                </label>
-                <label className="block">
-                  <span className="mb-1 block text-xs font-black" style={{ color: mutedText(isDark) }}>
-                    Color
-                  </span>
-                  <input type="color" value={selectedArea.fill} onChange={(event) => patchSelected({ fill: event.target.value })} className="h-10 w-full rounded-xl border p-1" style={inputStyle(isDark)} />
-                </label>
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { value: "bold", icon: "solar:text-bold-bold" },
-                  { value: "italic", icon: "solar:text-italic-bold" },
-                  { value: "normal", icon: "solar:text-bold" },
-                ].map((item) => (
-                  <button key={item.value} type="button" className={TOOL_BUTTON_CLASS} onClick={() => patchSelected({ fontStyle: item.value as TextAreaDefinition["fontStyle"] })} style={{ borderColor: subtleBorder(isDark), color: selectedArea.fontStyle === item.value ? "#f59e0b" : mutedText(isDark) }}>
-                    <Iconify Size={16} IconString={item.icon} Style={{ color: "currentColor" }} />
-                  </button>
-                ))}
-              </div>
 
               <div className="flex flex-wrap gap-2">
                 {[
@@ -205,7 +194,9 @@ export default function TextLayerEditor({
                   </button>
                 ))}
               </div>
-            </div>
+
+              <TypographyControls area={selectedArea} onChange={patchSelected} isDark={isDark} />
+            </aside>
           </div>
         ) : (
           <div className="mb-5 rounded-2xl border p-6 text-center text-sm font-black" style={{ borderColor: subtleBorder(isDark), color: mutedText(isDark) }}>

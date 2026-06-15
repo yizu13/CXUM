@@ -16,6 +16,7 @@ export interface CertificateTemplate {
 
 export interface TextAreaDefinition {
   id: string;
+  areaKind?: "text" | "qr" | "certificateId";
   label: string;
   x: number;
   y: number;
@@ -25,11 +26,24 @@ export interface TextAreaDefinition {
   text: string;
   fontFamily: string;
   fontSize: number;
+  isBold?: boolean;
+  isItalic?: boolean;
+  isUnderline?: boolean;
+  isStrikethrough?: boolean;
   fontStyle: "normal" | "bold" | "italic" | "bold italic";
   align: "left" | "center" | "right";
   fill: string;
+  opacity?: number;
   lineHeight: number;
   letterSpacing: number;
+  textTransform?: "none" | "uppercase" | "capitalize";
+  stroke?: string;
+  strokeWidth?: number;
+  shadowColor?: string;
+  shadowBlur?: number;
+  shadowOffsetX?: number;
+  shadowOffsetY?: number;
+  typographyPreset?: string;
 }
 
 export type TemplateToken =
@@ -61,8 +75,20 @@ export interface CertificateGeneration {
   bucketPrefix: string;
   downloadUrl?: string;
   downloadKey?: string;
+  hasDigitalCertificates?: boolean;
+  digitalCount?: number;
   status: "uploading" | "ready" | "failed";
   error?: string;
+}
+
+export interface CertificateDesignFlow {
+  id: string;
+  templateId: string;
+  templateName: string;
+  templateFileName: string;
+  areas: TextAreaDefinition[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface GeneratorDraft {

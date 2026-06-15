@@ -23,6 +23,14 @@
       "data": "Groupvoluntario"
     }
   ],
+  "/CxumStack/CertificatesIndexTable": [
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "CertificatesIndexTable2F8513FC"
+      }
+    }
+  ],
   "/CxumStack/UserPoolId": [
     {
       "type": "aws:cdk:logicalId",
@@ -99,6 +107,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CxumUserPoolClient3271F560"
+    }
+  ],
+  "/CxumStack/CertificatesIndexTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CertificatesIndexTable2F8513FC"
     }
   ],
   "/CxumStack/ImagesBucket/Resource": [
@@ -635,6 +649,18 @@
       "data": "CxumBackendPOSTcontacto583DE80D"
     }
   ],
+  "/CxumStack/CxumBackend/GET--certificates--{certificateId}/CertificatePublicViewInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETcertificatescertificateIdCertificatePublicViewIntPermissionD9FE5750"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--certificates--{certificateId}/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETcertificatescertificateIdE78A37DE"
+    }
+  ],
   "/CxumStack/CxumBackend/GET--admin--activity/GetActivityInt-Permission": [
     {
       "type": "aws:cdk:logicalId",
@@ -1071,6 +1097,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CxumBackendPOSTcontactoSubmitContactIntE4B89E6F"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--certificates--{certificateId}/CertificatePublicViewInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETcertificatescertificateIdCertificatePublicViewIntD915AF73"
     }
   ],
   "/CxumStack/CxumBackend/GET--admin--activity/GetActivityInt/Resource": [

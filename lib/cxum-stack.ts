@@ -73,6 +73,19 @@ export class CxumStack extends cdk.Stack {
     const activityTable = dynamodb.Table.fromTableName(this, "ActivityTable", "cxum-activity");
     const profilesTable = dynamodb.Table.fromTableName(this, "ProfilesTable", "cxum-user-profiles");
 
+    const certificatesIndexTable = new dynamodb.Table(this, "CertificatesIndexTable", {
+      tableName: "cxum-certificates-index",
+      partitionKey: { name: "certificateId", type: dynamodb.AttributeType.STRING },
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    certificatesIndexTable.addGlobalSecondaryIndex({
+      indexName: "generationId-index",
+      partitionKey: { name: "generationId", type: dynamodb.AttributeType.STRING },
+      projectionType: dynamodb.ProjectionType.ALL,
+    });
+
     // ─── S3 Buckets ───────────────────────────────────────────────────────────
     const imagesBucket = new s3.Bucket(this, "ImagesBucket", {
       bucketName: `cxum-images-${this.account}`,
@@ -178,6 +191,7 @@ export class CxumStack extends cdk.Stack {
           INVITE_TOKENS_TABLE: inviteTokensTable.tableName,
           ACTIVITY_TABLE: activityTable.tableName,
           PROFILES_TABLE: profilesTable.tableName,
+          CERTIFICATES_INDEX_TABLE: certificatesIndexTable.tableName,
           IMAGES_BUCKET: imagesBucket.bucketName,
           CERTIFICATES_BUCKET: certificatesBucket.bucketName,
           ...extraEnv,
@@ -219,6 +233,7 @@ export class CxumStack extends cdk.Stack {
 
     certificatesBucket.grantReadWrite(certificatesFn);
     certificatesBucket.grantDelete(certificatesFn);
+    certificatesIndexTable.grantReadWriteData(certificatesFn);
 
     // ─── Permisos DynamoDB ────────────────────────────────────────────────────
     centrosTable.grantReadData(getCentrosFn);
@@ -430,6 +445,12 @@ export class CxumStack extends cdk.Stack {
       path: "/contacto",
       methods: [apigwv2.HttpMethod.POST],
       integration: new integrations.HttpLambdaIntegration("SubmitContactInt", submitContactFn),
+    });
+
+    httpApi.addRoutes({
+      path: "/certificates/{certificateId}",
+      methods: [apigwv2.HttpMethod.GET],
+      integration: new integrations.HttpLambdaIntegration("CertificatePublicViewInt", certificatesFn),
     });
 
     httpApi.addRoutes({

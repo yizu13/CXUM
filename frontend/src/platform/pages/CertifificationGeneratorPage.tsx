@@ -56,6 +56,7 @@ export default function CertifificationGeneratorPage() {
           selectedAreaId={draft.selectedAreaId}
           sampleData={draft.sampleData}
           onAddArea={generator.addArea}
+          onAddQrAreaPair={generator.addQrAreaPair}
           onSelectArea={generator.selectArea}
           onUpdateArea={generator.updateArea}
           onRemoveArea={generator.removeArea}
@@ -71,6 +72,7 @@ export default function CertifificationGeneratorPage() {
           selectedArea={generator.selectedArea}
           selectedAreaId={draft.selectedAreaId}
           variables={variables}
+          systemVariables={generator.systemVariables}
           sampleData={draft.sampleData}
           onSelectArea={generator.selectArea}
           onUpdateArea={generator.updateArea}
@@ -88,7 +90,9 @@ export default function CertifificationGeneratorPage() {
           variables={variables}
           dataSet={draft.dataSet}
           exporting={generator.exporting}
+          savedDesignAt={generator.savedDesignAt}
           onDataSet={generator.setDataSet}
+          onSaveDesign={generator.saveCurrentDesignFlow}
           onBack={() => generator.setStep("text")}
           onExport={generator.runExport}
           isDark={isDark}
