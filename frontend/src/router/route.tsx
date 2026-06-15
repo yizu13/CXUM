@@ -20,6 +20,7 @@ import AdminCentrosPage    from "../platform/pages/adminCentros";
 import AdminNoticiasPage   from "../platform/pages/adminNoticias";
 import AdminVoluntariosPage from "../platform/pages/adminVoluntarios";
 import AdminMediaPage      from "../platform/pages/adminMedia";
+import CertifificationGeneratorPage from "../platform/pages/CertifificationGeneratorPage";
 
 // Layout & guards
 import AdminLayout    from "../platform/components/AdminLayout";
@@ -94,6 +95,16 @@ export default function AppRouter() {
               element={
                 <ProtectedRoute>
                   <AdminMediaPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Certificados masivos */}
+            <Route
+              path="certificados"
+              element={
+                <ProtectedRoute>
+                  <CertifificationGeneratorPage />
                 </ProtectedRoute>
               }
             />
