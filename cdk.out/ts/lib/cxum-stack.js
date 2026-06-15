@@ -44,60 +44,63 @@ const s3 = __importStar(require("aws-cdk-lib/aws-s3"));
 const cloudfront = __importStar(require("aws-cdk-lib/aws-cloudfront"));
 const origins = __importStar(require("aws-cdk-lib/aws-cloudfront-origins"));
 const iam = __importStar(require("aws-cdk-lib/aws-iam"));
+const cognito = __importStar(require("aws-cdk-lib/aws-cognito"));
 const path = __importStar(require("path"));
-const COGNITO_USER_POOL_ID = "us-east-2_jjcAqBdVn";
-const COGNITO_APP_CLIENT_ID = "18n7rhj63h6modf5ol9m637ism";
 const REGION = "us-east-2";
 class CxumStack extends cdk.Stack {
     constructor(scope, id, props) {
         super(scope, id, props);
+        // ─── Cognito User Pool ────────────────────────────────────────────────────
+        const userPool = new cognito.UserPool(this, "CxumUserPool", {
+            userPoolName: "cxum-user-pool",
+            selfSignUpEnabled: false, // solo por invitación
+            signInAliases: { email: true },
+            autoVerify: { email: true },
+            standardAttributes: {
+                email: { required: true, mutable: true },
+                fullname: { required: false, mutable: true },
+            },
+            passwordPolicy: {
+                minLength: 8,
+                requireLowercase: true,
+                requireUppercase: true,
+                requireDigits: true,
+                requireSymbols: false,
+            },
+            accountRecovery: cognito.AccountRecovery.EMAIL_ONLY,
+            removalPolicy: cdk.RemovalPolicy.RETAIN,
+        });
+        const userPoolClient = new cognito.UserPoolClient(this, "CxumUserPoolClient", {
+            userPool,
+            userPoolClientName: "cxum-app-client",
+            authFlows: {
+                userPassword: true,
+                userSrp: true,
+                adminUserPassword: true,
+            },
+            generateSecret: false,
+        });
+        // Grupos de roles
+        for (const groupName of ["administradores", "colaborador", "escritor", "voluntario"]) {
+            new cognito.CfnUserPoolGroup(this, `Group-${groupName}`, {
+                userPoolId: userPool.userPoolId,
+                groupName,
+            });
+        }
+        const COGNITO_USER_POOL_ID = userPool.userPoolId;
+        const COGNITO_APP_CLIENT_ID = userPoolClient.userPoolClientId;
         // ─── DynamoDB Tables ──────────────────────────────────────────────────────
-        const centrosTable = new dynamodb.Table(this, "CentrosTable", {
-            tableName: "cxum-centros",
-            partitionKey: { name: "id", type: dynamodb.AttributeType.STRING },
-            billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
-            removalPolicy: cdk.RemovalPolicy.RETAIN,
-        });
-        const noticiasTable = new dynamodb.Table(this, "NoticiasTable", {
-            tableName: "cxum-noticias",
-            partitionKey: { name: "id", type: dynamodb.AttributeType.STRING },
-            billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
-            removalPolicy: cdk.RemovalPolicy.RETAIN,
-        });
-        const solicitudesTable = new dynamodb.Table(this, "SolicitudesTable", {
-            tableName: "cxum-solicitudes",
-            partitionKey: { name: "id", type: dynamodb.AttributeType.STRING },
-            billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
-            removalPolicy: cdk.RemovalPolicy.RETAIN,
-        });
-        const contactosTable = new dynamodb.Table(this, "ContactosTable", {
-            tableName: "cxum-contactos",
-            partitionKey: { name: "id", type: dynamodb.AttributeType.STRING },
-            billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
-            removalPolicy: cdk.RemovalPolicy.RETAIN,
-        });
-        const inviteTokensTable = new dynamodb.Table(this, "InviteTokensTable", {
-            tableName: "cxum-invite-tokens",
-            partitionKey: { name: "token", type: dynamodb.AttributeType.STRING },
-            billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
-            removalPolicy: cdk.RemovalPolicy.RETAIN,
-            // TTL nativo de DynamoDB — limpia tokens expirados automáticamente
-            timeToLiveAttribute: "expiresAtEpoch",
-        });
-        const activityTable = new dynamodb.Table(this, "ActivityTable", {
-            tableName: "cxum-activity",
-            partitionKey: { name: "pk", type: dynamodb.AttributeType.STRING },
-            sortKey: { name: "createdAt", type: dynamodb.AttributeType.STRING },
-            billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
-            removalPolicy: cdk.RemovalPolicy.RETAIN,
-        });
-        const profilesTable = new dynamodb.Table(this, "ProfilesTable", {
-            tableName: "cxum-user-profiles",
-            partitionKey: { name: "username", type: dynamodb.AttributeType.STRING },
-            billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
-            removalPolicy: cdk.RemovalPolicy.RETAIN,
-        });
-        // ─── S3 Bucket para imágenes ─────────────────────────────────────────────
+        // NOTE: These tables already exist in AWS (survived a failed stack rollback).
+        // They are imported here so CDK manages permissions without trying to recreate them.
+        // To revert to managed definitions, replace fromTableName() calls with new dynamodb.Table().
+        const centrosTable = dynamodb.Table.fromTableName(this, "CentrosTable", "cxum-centros");
+        const noticiasTable = dynamodb.Table.fromTableName(this, "NoticiasTable", "cxum-noticias");
+        const solicitudesTable = dynamodb.Table.fromTableName(this, "SolicitudesTable", "cxum-solicitudes");
+        const contactosTable = dynamodb.Table.fromTableName(this, "ContactosTable", "cxum-contactos");
+        const inviteTokensTable = dynamodb.Table.fromTableName(this, "InviteTokensTable", "cxum-invite-tokens");
+        const activityTable = dynamodb.Table.fromTableName(this, "ActivityTable", "cxum-activity");
+        const profilesTable = dynamodb.Table.fromTableName(this, "ProfilesTable", "cxum-user-profiles");
+        // ─── S3 Buckets ───────────────────────────────────────────────────────────
         const imagesBucket = new s3.Bucket(this, "ImagesBucket", {
             bucketName: `cxum-images-${this.account}`,
             publicReadAccess: true,
@@ -116,7 +119,26 @@ class CxumStack extends cdk.Stack {
             ],
             removalPolicy: cdk.RemovalPolicy.RETAIN,
         });
-        // ─── S3 Bucket para el frontend ──────────────────────────────────────────
+        const certificatesBucket = new s3.Bucket(this, "CertificatesBucket", {
+            bucketName: `cxum-certificates-${this.account}`,
+            publicReadAccess: false,
+            blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+            cors: [
+                {
+                    allowedMethods: [
+                        s3.HttpMethods.GET,
+                        s3.HttpMethods.PUT,
+                        s3.HttpMethods.POST,
+                        s3.HttpMethods.DELETE,
+                    ],
+                    allowedOrigins: ["*"],
+                    allowedHeaders: ["*"],
+                    exposedHeaders: ["ETag"],
+                },
+            ],
+            removalPolicy: cdk.RemovalPolicy.RETAIN,
+            autoDeleteObjects: false,
+        });
         const frontendBucket = new s3.Bucket(this, "FrontendBucket", {
             bucketName: `cxum-frontend-${this.account}`,
             publicReadAccess: false,
@@ -127,7 +149,7 @@ class CxumStack extends cdk.Stack {
         // ─── CloudFront Distribution ─────────────────────────────────────────────
         const distribution = new cloudfront.Distribution(this, "FrontendDistribution", {
             defaultBehavior: {
-                origin: new origins.S3Origin(frontendBucket),
+                origin: origins.S3BucketOrigin.withOriginAccessControl(frontendBucket),
                 viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
                 allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
                 cachedMethods: cloudfront.CachedMethods.CACHE_GET_HEAD_OPTIONS,
@@ -160,8 +182,6 @@ class CxumStack extends cdk.Stack {
         //   distribution,
         //   distributionPaths: ["/*"],
         // });
-        // ─── Lambdas existentes (importadas) ──────────────────────────────────────
-        const authorizerAdminFn = lambda.Function.fromFunctionName(this, "CxumAuthorizerAdmin", "AuthorizerAdminCXUM");
         // ─── Helper: crear lambda con env comunes ─────────────────────────────────
         const makeFn = (id, name, dir, extraEnv = {}) => new lambda.Function(this, id, {
             functionName: name,
@@ -180,9 +200,12 @@ class CxumStack extends cdk.Stack {
                 ACTIVITY_TABLE: activityTable.tableName,
                 PROFILES_TABLE: profilesTable.tableName,
                 IMAGES_BUCKET: imagesBucket.bucketName,
+                CERTIFICATES_BUCKET: certificatesBucket.bucketName,
                 ...extraEnv,
             },
         });
+        // ─── Authorizer admin ─────────────────────────────────────────────────────
+        const authorizerAdminFn = makeFn("CxumAuthorizerAdmin", "AuthorizerAdminCXUM", "authorizer");
         // ─── Authorizer multi-rol (nuevo) ─────────────────────────────────────────
         const authorizerMultiRoleFn = makeFn("AuthorizerMultiRole", "AuthorizerMultiRoleCXUM", "authorizerMultiRole");
         // ─── Lambdas nuevas ───────────────────────────────────────────────────────
@@ -191,8 +214,7 @@ class CxumStack extends cdk.Stack {
         const getNoticiasFn = makeFn("GetNoticias", "getNoticiasCXUM", "getNoticias");
         const mutateNoticiaFn = makeFn("MutateNoticia", "mutateNoticiaCXUM", "mutateNoticia");
         const modifyUserRoleFn = makeFn("ModifyUserRole", "modifyUserRoleCXUM", "modifyUserRole");
-        // listUsers ya existe — la importamos y actualizamos su código manualmente vía consola o CLI
-        const listUsersFn = lambda.Function.fromFunctionName(this, "ListUsersCXUM", "listUsersCXUM");
+        const listUsersFn = makeFn("ListUsers", "listUsersCXUM", "listUsers");
         const getSolicitudesFn = makeFn("GetSolicitudes", "getSolicitudesCXUM", "getSolicitudes");
         const mutateSolicitudFn = makeFn("MutateSolicitud", "mutateSolicitudCXUM", "mutateSolicitud");
         const submitVolunteerFn = makeFn("SubmitVolunteer", "submitVolunteerCXUM", "submitVolunteer");
@@ -204,11 +226,15 @@ class CxumStack extends cdk.Stack {
         const consumeInviteTokenFn = makeFn("ConsumeInviteToken", "consumeInviteTokenCXUM", "consumeInviteToken");
         const uploadImageFn = makeFn("UploadImage", "uploadImageCXUM", "uploadImage");
         const listImagesFn = makeFn("ListImages", "listImagesCXUM", "listImages");
+        const certificatesFn = makeFn("Certificates", "certificatesCXUM", "certificates");
+        const getTempPasswordFn = makeFn("GetTempPassword", "getTempPasswordCXUM", "getTempPassword");
         // ─── Permisos S3 ──────────────────────────────────────────────────────────
         imagesBucket.grantPut(uploadImageFn);
         imagesBucket.grantRead(listImagesFn);
         imagesBucket.grantDelete(listImagesFn);
         imagesBucket.grantPublicAccess();
+        certificatesBucket.grantReadWrite(certificatesFn);
+        certificatesBucket.grantDelete(certificatesFn);
         // ─── Permisos DynamoDB ────────────────────────────────────────────────────
         centrosTable.grantReadData(getCentrosFn);
         centrosTable.grantWriteData(mutateCentroFn);
@@ -222,10 +248,18 @@ class CxumStack extends cdk.Stack {
         solicitudesTable.grantWriteData(submitVolunteerFn);
         contactosTable.grantWriteData(submitContactFn);
         // ─── Permisos Cognito ─────────────────────────────────────────────────────
-        const cognitoArn = `arn:aws:cognito-idp:${REGION}:${this.account}:userpool/${COGNITO_USER_POOL_ID}`;
-        // Profiles — modifyUserRole escribe
-        // listUsers lee profiles y Cognito — permisos gestionados manualmente en consola AWS
+        const cognitoArn = userPool.userPoolArn;
+        // Profiles — modifyUserRole escribe, listUsers lee
+        profilesTable.grantReadData(listUsersFn);
         profilesTable.grantReadWriteData(modifyUserRoleFn);
+        // listUsers necesita listar usuarios y grupos de Cognito
+        listUsersFn.addToRolePolicy(new iam.PolicyStatement({
+            actions: [
+                "cognito-idp:ListUsers",
+                "cognito-idp:AdminListGroupsForUser",
+            ],
+            resources: [cognitoArn],
+        }));
         inviteTokensTable.grantReadWriteData(generateInviteTokenFn);
         inviteTokensTable.grantReadWriteData(validateInviteTokenFn);
         inviteTokensTable.grantReadWriteData(consumeInviteTokenFn);
@@ -249,6 +283,13 @@ class CxumStack extends cdk.Stack {
             actions: [
                 "cognito-idp:AdminCreateUser",
                 "cognito-idp:AdminAddUserToGroup",
+            ],
+            resources: [cognitoArn],
+        }));
+        getTempPasswordFn.addToRolePolicy(new iam.PolicyStatement({
+            actions: [
+                "cognito-idp:AdminGetUser",
+                "cognito-idp:AdminSetUserPassword",
             ],
             resources: [cognitoArn],
         }));
@@ -381,6 +422,13 @@ class CxumStack extends cdk.Stack {
             integration: new integrations.HttpLambdaIntegration("InviteUserInt", inviteUserFn),
             authorizer: multiRoleAuthorizer,
         });
+        // Obtener contraseña temporal de un usuario
+        httpApi.addRoutes({
+            path: "/admin/users/{username}/temp-password",
+            methods: [apigwv2.HttpMethod.GET],
+            integration: new integrations.HttpLambdaIntegration("GetTempPasswordInt", getTempPasswordFn),
+            authorizer: multiRoleAuthorizer,
+        });
         // ─── Invite tokens ────────────────────────────────────────────────────────
         // Generar token (requiere estar autenticado)
         httpApi.addRoutes({
@@ -415,7 +463,63 @@ class CxumStack extends cdk.Stack {
             integration: new integrations.HttpLambdaIntegration("ListImagesInt", listImagesFn),
             authorizer: multiRoleAuthorizer,
         });
-        // ─── Outputs ──────────────────────────────────────────────────────────────
+        // â”€â”€â”€ Certificados masivos â€” plantillas y generaciones en bucket privado â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        httpApi.addRoutes({
+            path: "/admin/certificates/templates/upload-url",
+            methods: [apigwv2.HttpMethod.POST],
+            integration: new integrations.HttpLambdaIntegration("CertificateTemplateUploadUrlInt", certificatesFn),
+            authorizer: multiRoleAuthorizer,
+        });
+        httpApi.addRoutes({
+            path: "/admin/certificates/templates",
+            methods: [apigwv2.HttpMethod.GET],
+            integration: new integrations.HttpLambdaIntegration("CertificateTemplatesListInt", certificatesFn),
+            authorizer: multiRoleAuthorizer,
+        });
+        httpApi.addRoutes({
+            path: "/admin/certificates/templates/{templateId}",
+            methods: [apigwv2.HttpMethod.DELETE],
+            integration: new integrations.HttpLambdaIntegration("CertificateTemplateDeleteInt", certificatesFn),
+            authorizer: multiRoleAuthorizer,
+        });
+        httpApi.addRoutes({
+            path: "/admin/certificates/generations/upload-urls",
+            methods: [apigwv2.HttpMethod.POST],
+            integration: new integrations.HttpLambdaIntegration("CertificateGenerationUploadUrlsInt", certificatesFn),
+            authorizer: multiRoleAuthorizer,
+        });
+        httpApi.addRoutes({
+            path: "/admin/certificates/generations",
+            methods: [apigwv2.HttpMethod.GET],
+            integration: new integrations.HttpLambdaIntegration("CertificateGenerationsListInt", certificatesFn),
+            authorizer: multiRoleAuthorizer,
+        });
+        httpApi.addRoutes({
+            path: "/admin/certificates/generations/{generationId}",
+            methods: [apigwv2.HttpMethod.GET, apigwv2.HttpMethod.PUT, apigwv2.HttpMethod.DELETE],
+            integration: new integrations.HttpLambdaIntegration("CertificateGenerationDetailInt", certificatesFn),
+            authorizer: multiRoleAuthorizer,
+        });
+        httpApi.addRoutes({
+            path: "/admin/certificates/download",
+            methods: [apigwv2.HttpMethod.GET],
+            integration: new integrations.HttpLambdaIntegration("CertificateDownloadInt", certificatesFn),
+            authorizer: multiRoleAuthorizer,
+        });
+        httpApi.addRoutes({
+            path: "/admin/certificates/files",
+            methods: [apigwv2.HttpMethod.DELETE],
+            integration: new integrations.HttpLambdaIntegration("CertificateFileDeleteInt", certificatesFn),
+            authorizer: multiRoleAuthorizer,
+        });
+        new cdk.CfnOutput(this, "UserPoolId", {
+            value: userPool.userPoolId,
+            description: "Cognito User Pool ID — actualizar VITE_COGNITO_USER_POOL_ID en frontend/.env",
+        });
+        new cdk.CfnOutput(this, "UserPoolClientId", {
+            value: userPoolClient.userPoolClientId,
+            description: "Cognito App Client ID — actualizar VITE_COGNITO_CLIENT_ID en frontend/.env",
+        });
         new cdk.CfnOutput(this, "ApiUrl", {
             value: httpApi.apiEndpoint,
             description: "URL base del HTTP API Gateway — actualizar VITE_API_URL en frontend/.env",
@@ -427,6 +531,10 @@ class CxumStack extends cdk.Stack {
         new cdk.CfnOutput(this, "ImagesBucketUrl", {
             value: `https://${imagesBucket.bucketName}.s3.amazonaws.com`,
             description: "URL base del bucket S3 para imágenes",
+        });
+        new cdk.CfnOutput(this, "CertificatesBucketName", {
+            value: certificatesBucket.bucketName,
+            description: "Nombre del bucket S3 privado para certificados",
         });
         new cdk.CfnOutput(this, "FrontendBucketName", {
             value: frontendBucket.bucketName,

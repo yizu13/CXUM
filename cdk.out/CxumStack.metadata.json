@@ -53,6 +53,12 @@
       "data": "ImagesBucketUrl"
     }
   ],
+  "/CxumStack/CertificatesBucketName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CertificatesBucketName"
+    }
+  ],
   "/CxumStack/FrontendBucketName": [
     {
       "type": "aws:cdk:logicalId",
@@ -99,6 +105,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ImagesBucket1E86AFB2"
+    }
+  ],
+  "/CxumStack/CertificatesBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CertificatesBucketE5F004DB"
     }
   ],
   "/CxumStack/FrontendBucket/Resource": [
@@ -225,6 +237,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ListImages72A1738D"
+    }
+  ],
+  "/CxumStack/Certificates/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Certificates2374895F"
     }
   ],
   "/CxumStack/GetTempPassword/Resource": [
@@ -381,6 +399,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ListImagesServiceRole66A5B4CE"
+    }
+  ],
+  "/CxumStack/Certificates/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CertificatesServiceRole0810B1A2"
     }
   ],
   "/CxumStack/GetTempPassword/ServiceRole/Resource": [
@@ -719,6 +743,126 @@
       "data": "CxumBackendDELETEadminmediaF9AAF81D"
     }
   ],
+  "/CxumStack/CxumBackend/POST--admin--certificates--templates--upload-url/CertificateTemplateUploadUrlInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTadmincertificatestemplatesuploadurlCertificateTemplateUploadUrlIntPermissionF8517CE2"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--admin--certificates--templates--upload-url/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTadmincertificatestemplatesuploadurlB273B4BC"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--certificates--templates/CertificateTemplatesListInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadmincertificatestemplatesCertificateTemplatesListIntPermission4B7F15EA"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--certificates--templates/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadmincertificatestemplatesE840D0F3"
+    }
+  ],
+  "/CxumStack/CxumBackend/DELETE--admin--certificates--templates--{templateId}/CertificateTemplateDeleteInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendDELETEadmincertificatestemplatestemplateIdCertificateTemplateDeleteIntPermissionA1A2DC9A"
+    }
+  ],
+  "/CxumStack/CxumBackend/DELETE--admin--certificates--templates--{templateId}/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendDELETEadmincertificatestemplatestemplateId976C6AEA"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--admin--certificates--generations--upload-urls/CertificateGenerationUploadUrlsInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTadmincertificatesgenerationsuploadurlsCertificateGenerationUploadUrlsIntPermissionD52ADE4C"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--admin--certificates--generations--upload-urls/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTadmincertificatesgenerationsuploadurls7D0935CF"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--certificates--generations/CertificateGenerationsListInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadmincertificatesgenerationsCertificateGenerationsListIntPermission7A5488E0"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--certificates--generations/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadmincertificatesgenerations626242F8"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--certificates--generations--{generationId}/CertificateGenerationDetailInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadmincertificatesgenerationsgenerationIdCertificateGenerationDetailIntPermission65D58126"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--certificates--generations--{generationId}/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadmincertificatesgenerationsgenerationIdC120B3B8"
+    }
+  ],
+  "/CxumStack/CxumBackend/PUT--admin--certificates--generations--{generationId}/CertificateGenerationDetailInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPUTadmincertificatesgenerationsgenerationIdCertificateGenerationDetailIntPermissionAF540185"
+    }
+  ],
+  "/CxumStack/CxumBackend/PUT--admin--certificates--generations--{generationId}/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPUTadmincertificatesgenerationsgenerationIdDCDC611B"
+    }
+  ],
+  "/CxumStack/CxumBackend/DELETE--admin--certificates--generations--{generationId}/CertificateGenerationDetailInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendDELETEadmincertificatesgenerationsgenerationIdCertificateGenerationDetailIntPermissionBC1744D0"
+    }
+  ],
+  "/CxumStack/CxumBackend/DELETE--admin--certificates--generations--{generationId}/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendDELETEadmincertificatesgenerationsgenerationIdE7B0400A"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--certificates--download/CertificateDownloadInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadmincertificatesdownloadCertificateDownloadIntPermission815FC18F"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--certificates--download/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadmincertificatesdownloadCA8A8CE3"
+    }
+  ],
+  "/CxumStack/CxumBackend/DELETE--admin--certificates--files/CertificateFileDeleteInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendDELETEadmincertificatesfilesCertificateFileDeleteIntPermission8DF70D20"
+    }
+  ],
+  "/CxumStack/CxumBackend/DELETE--admin--certificates--files/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendDELETEadmincertificatesfiles532AE18E"
+    }
+  ],
   "/CxumStack/FrontendDistribution/Origin1/S3OriginAccessControl/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -825,6 +969,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ListImagesServiceRoleDefaultPolicy467C90F1"
+    }
+  ],
+  "/CxumStack/Certificates/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CertificatesServiceRoleDefaultPolicy1702F0E2"
     }
   ],
   "/CxumStack/GetTempPassword/ServiceRole/DefaultPolicy/Resource": [
@@ -969,6 +1119,54 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CxumBackendGETadminmediaListImagesInt584D91D1"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--admin--certificates--templates--upload-url/CertificateTemplateUploadUrlInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTadmincertificatestemplatesuploadurlCertificateTemplateUploadUrlInt7A6D41BD"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--certificates--templates/CertificateTemplatesListInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadmincertificatestemplatesCertificateTemplatesListIntDCFB0CDB"
+    }
+  ],
+  "/CxumStack/CxumBackend/DELETE--admin--certificates--templates--{templateId}/CertificateTemplateDeleteInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendDELETEadmincertificatestemplatestemplateIdCertificateTemplateDeleteIntD1756713"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--admin--certificates--generations--upload-urls/CertificateGenerationUploadUrlsInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTadmincertificatesgenerationsuploadurlsCertificateGenerationUploadUrlsInt4A621C31"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--certificates--generations/CertificateGenerationsListInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadmincertificatesgenerationsCertificateGenerationsListIntD3A03F3C"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--certificates--generations--{generationId}/CertificateGenerationDetailInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadmincertificatesgenerationsgenerationIdCertificateGenerationDetailIntBF6721EA"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--certificates--download/CertificateDownloadInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadmincertificatesdownloadCertificateDownloadInt1A1E5AF3"
+    }
+  ],
+  "/CxumStack/CxumBackend/DELETE--admin--certificates--files/CertificateFileDeleteInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendDELETEadmincertificatesfilesCertificateFileDeleteInt7CD524A8"
     }
   ]
 }

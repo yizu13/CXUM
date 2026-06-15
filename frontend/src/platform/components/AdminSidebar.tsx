@@ -46,6 +46,12 @@ const NAV_ITEMS: NavItem[] = [
     iconActive: "solar:gallery-bold-duotone",
   },
   {
+    label: "Certificados",
+    path: "/plataforma/admin/certificados",
+    icon: "solar:diploma-linear",
+    iconActive: "solar:diploma-bold-duotone",
+  },
+  {
     label: "Voluntarios",
     path: "/plataforma/admin/voluntarios",
     icon: "solar:users-group-two-rounded-linear",

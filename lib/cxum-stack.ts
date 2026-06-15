@@ -93,6 +93,27 @@ export class CxumStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
 
+    const certificatesBucket = new s3.Bucket(this, "CertificatesBucket", {
+      bucketName: `cxum-certificates-${this.account}`,
+      publicReadAccess: false,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      cors: [
+        {
+          allowedMethods: [
+            s3.HttpMethods.GET,
+            s3.HttpMethods.PUT,
+            s3.HttpMethods.POST,
+            s3.HttpMethods.DELETE,
+          ],
+          allowedOrigins: ["*"],
+          allowedHeaders: ["*"],
+          exposedHeaders: ["ETag"],
+        },
+      ],
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+      autoDeleteObjects: false,
+    });
+
     const frontendBucket = new s3.Bucket(this, "FrontendBucket", {
       bucketName: `cxum-frontend-${this.account}`,
       publicReadAccess: false,
@@ -158,6 +179,7 @@ export class CxumStack extends cdk.Stack {
           ACTIVITY_TABLE: activityTable.tableName,
           PROFILES_TABLE: profilesTable.tableName,
           IMAGES_BUCKET: imagesBucket.bucketName,
+          CERTIFICATES_BUCKET: certificatesBucket.bucketName,
           ...extraEnv,
         },
       });
@@ -186,6 +208,7 @@ export class CxumStack extends cdk.Stack {
     const consumeInviteTokenFn  = makeFn("ConsumeInviteToken",  "consumeInviteTokenCXUM",  "consumeInviteToken");
     const uploadImageFn         = makeFn("UploadImage",         "uploadImageCXUM",         "uploadImage");
     const listImagesFn          = makeFn("ListImages",          "listImagesCXUM",          "listImages");
+    const certificatesFn        = makeFn("Certificates",        "certificatesCXUM",        "certificates");
     const getTempPasswordFn     = makeFn("GetTempPassword",     "getTempPasswordCXUM",     "getTempPassword");
 
     // ─── Permisos S3 ──────────────────────────────────────────────────────────
@@ -193,6 +216,9 @@ export class CxumStack extends cdk.Stack {
     imagesBucket.grantRead(listImagesFn);
     imagesBucket.grantDelete(listImagesFn);
     imagesBucket.grantPublicAccess();
+
+    certificatesBucket.grantReadWrite(certificatesFn);
+    certificatesBucket.grantDelete(certificatesFn);
 
     // ─── Permisos DynamoDB ────────────────────────────────────────────────────
     centrosTable.grantReadData(getCentrosFn);
@@ -467,6 +493,63 @@ export class CxumStack extends cdk.Stack {
       authorizer: multiRoleAuthorizer,
     });
 
+    // â”€â”€â”€ Certificados masivos â€” plantillas y generaciones en bucket privado â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    httpApi.addRoutes({
+      path: "/admin/certificates/templates/upload-url",
+      methods: [apigwv2.HttpMethod.POST],
+      integration: new integrations.HttpLambdaIntegration("CertificateTemplateUploadUrlInt", certificatesFn),
+      authorizer: multiRoleAuthorizer,
+    });
+
+    httpApi.addRoutes({
+      path: "/admin/certificates/templates",
+      methods: [apigwv2.HttpMethod.GET],
+      integration: new integrations.HttpLambdaIntegration("CertificateTemplatesListInt", certificatesFn),
+      authorizer: multiRoleAuthorizer,
+    });
+
+    httpApi.addRoutes({
+      path: "/admin/certificates/templates/{templateId}",
+      methods: [apigwv2.HttpMethod.DELETE],
+      integration: new integrations.HttpLambdaIntegration("CertificateTemplateDeleteInt", certificatesFn),
+      authorizer: multiRoleAuthorizer,
+    });
+
+    httpApi.addRoutes({
+      path: "/admin/certificates/generations/upload-urls",
+      methods: [apigwv2.HttpMethod.POST],
+      integration: new integrations.HttpLambdaIntegration("CertificateGenerationUploadUrlsInt", certificatesFn),
+      authorizer: multiRoleAuthorizer,
+    });
+
+    httpApi.addRoutes({
+      path: "/admin/certificates/generations",
+      methods: [apigwv2.HttpMethod.GET],
+      integration: new integrations.HttpLambdaIntegration("CertificateGenerationsListInt", certificatesFn),
+      authorizer: multiRoleAuthorizer,
+    });
+
+    httpApi.addRoutes({
+      path: "/admin/certificates/generations/{generationId}",
+      methods: [apigwv2.HttpMethod.GET, apigwv2.HttpMethod.PUT, apigwv2.HttpMethod.DELETE],
+      integration: new integrations.HttpLambdaIntegration("CertificateGenerationDetailInt", certificatesFn),
+      authorizer: multiRoleAuthorizer,
+    });
+
+    httpApi.addRoutes({
+      path: "/admin/certificates/download",
+      methods: [apigwv2.HttpMethod.GET],
+      integration: new integrations.HttpLambdaIntegration("CertificateDownloadInt", certificatesFn),
+      authorizer: multiRoleAuthorizer,
+    });
+
+    httpApi.addRoutes({
+      path: "/admin/certificates/files",
+      methods: [apigwv2.HttpMethod.DELETE],
+      integration: new integrations.HttpLambdaIntegration("CertificateFileDeleteInt", certificatesFn),
+      authorizer: multiRoleAuthorizer,
+    });
+
     new cdk.CfnOutput(this, "UserPoolId", {
       value: userPool.userPoolId,
       description: "Cognito User Pool ID — actualizar VITE_COGNITO_USER_POOL_ID en frontend/.env",
@@ -490,6 +573,11 @@ export class CxumStack extends cdk.Stack {
     new cdk.CfnOutput(this, "ImagesBucketUrl", {
       value: `https://${imagesBucket.bucketName}.s3.amazonaws.com`,
       description: "URL base del bucket S3 para imágenes",
+    });
+
+    new cdk.CfnOutput(this, "CertificatesBucketName", {
+      value: certificatesBucket.bucketName,
+      description: "Nombre del bucket S3 privado para certificados",
     });
 
     new cdk.CfnOutput(this, "FrontendBucketName", {
