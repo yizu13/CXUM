@@ -143,6 +143,48 @@
     "aws:cdk:path": "CxumStack/Group-voluntario"
    }
   },
+  "CertificatesIndexTable2F8513FC": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "certificateId",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "generationId",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "GlobalSecondaryIndexes": [
+     {
+      "IndexName": "generationId-index",
+      "KeySchema": [
+       {
+        "AttributeName": "generationId",
+        "KeyType": "HASH"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "certificateId",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": "cxum-certificates-index"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CertificatesIndexTable/Resource"
+   }
+  },
   "ImagesBucket1E86AFB2": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
@@ -465,6 +507,9 @@
       "INVITE_TOKENS_TABLE": "cxum-invite-tokens",
       "ACTIVITY_TABLE": "cxum-activity",
       "PROFILES_TABLE": "cxum-user-profiles",
+      "CERTIFICATES_INDEX_TABLE": {
+       "Ref": "CertificatesIndexTable2F8513FC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -550,6 +595,9 @@
       "INVITE_TOKENS_TABLE": "cxum-invite-tokens",
       "ACTIVITY_TABLE": "cxum-activity",
       "PROFILES_TABLE": "cxum-user-profiles",
+      "CERTIFICATES_INDEX_TABLE": {
+       "Ref": "CertificatesIndexTable2F8513FC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -700,6 +748,9 @@
       "INVITE_TOKENS_TABLE": "cxum-invite-tokens",
       "ACTIVITY_TABLE": "cxum-activity",
       "PROFILES_TABLE": "cxum-user-profiles",
+      "CERTIFICATES_INDEX_TABLE": {
+       "Ref": "CertificatesIndexTable2F8513FC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -899,6 +950,9 @@
       "INVITE_TOKENS_TABLE": "cxum-invite-tokens",
       "ACTIVITY_TABLE": "cxum-activity",
       "PROFILES_TABLE": "cxum-user-profiles",
+      "CERTIFICATES_INDEX_TABLE": {
+       "Ref": "CertificatesIndexTable2F8513FC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -1050,6 +1104,9 @@
       "INVITE_TOKENS_TABLE": "cxum-invite-tokens",
       "ACTIVITY_TABLE": "cxum-activity",
       "PROFILES_TABLE": "cxum-user-profiles",
+      "CERTIFICATES_INDEX_TABLE": {
+       "Ref": "CertificatesIndexTable2F8513FC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -1249,6 +1306,9 @@
       "INVITE_TOKENS_TABLE": "cxum-invite-tokens",
       "ACTIVITY_TABLE": "cxum-activity",
       "PROFILES_TABLE": "cxum-user-profiles",
+      "CERTIFICATES_INDEX_TABLE": {
+       "Ref": "CertificatesIndexTable2F8513FC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -1444,6 +1504,9 @@
       "INVITE_TOKENS_TABLE": "cxum-invite-tokens",
       "ACTIVITY_TABLE": "cxum-activity",
       "PROFILES_TABLE": "cxum-user-profiles",
+      "CERTIFICATES_INDEX_TABLE": {
+       "Ref": "CertificatesIndexTable2F8513FC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -1608,6 +1671,9 @@
       "INVITE_TOKENS_TABLE": "cxum-invite-tokens",
       "ACTIVITY_TABLE": "cxum-activity",
       "PROFILES_TABLE": "cxum-user-profiles",
+      "CERTIFICATES_INDEX_TABLE": {
+       "Ref": "CertificatesIndexTable2F8513FC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -1759,6 +1825,9 @@
       "INVITE_TOKENS_TABLE": "cxum-invite-tokens",
       "ACTIVITY_TABLE": "cxum-activity",
       "PROFILES_TABLE": "cxum-user-profiles",
+      "CERTIFICATES_INDEX_TABLE": {
+       "Ref": "CertificatesIndexTable2F8513FC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -1984,6 +2053,9 @@
       "INVITE_TOKENS_TABLE": "cxum-invite-tokens",
       "ACTIVITY_TABLE": "cxum-activity",
       "PROFILES_TABLE": "cxum-user-profiles",
+      "CERTIFICATES_INDEX_TABLE": {
+       "Ref": "CertificatesIndexTable2F8513FC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -2113,6 +2185,9 @@
       "INVITE_TOKENS_TABLE": "cxum-invite-tokens",
       "ACTIVITY_TABLE": "cxum-activity",
       "PROFILES_TABLE": "cxum-user-profiles",
+      "CERTIFICATES_INDEX_TABLE": {
+       "Ref": "CertificatesIndexTable2F8513FC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -2242,6 +2317,9 @@
       "INVITE_TOKENS_TABLE": "cxum-invite-tokens",
       "ACTIVITY_TABLE": "cxum-activity",
       "PROFILES_TABLE": "cxum-user-profiles",
+      "CERTIFICATES_INDEX_TABLE": {
+       "Ref": "CertificatesIndexTable2F8513FC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -2384,6 +2462,9 @@
       "INVITE_TOKENS_TABLE": "cxum-invite-tokens",
       "ACTIVITY_TABLE": "cxum-activity",
       "PROFILES_TABLE": "cxum-user-profiles",
+      "CERTIFICATES_INDEX_TABLE": {
+       "Ref": "CertificatesIndexTable2F8513FC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -2535,6 +2616,9 @@
       "INVITE_TOKENS_TABLE": "cxum-invite-tokens",
       "ACTIVITY_TABLE": "cxum-activity",
       "PROFILES_TABLE": "cxum-user-profiles",
+      "CERTIFICATES_INDEX_TABLE": {
+       "Ref": "CertificatesIndexTable2F8513FC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -2690,6 +2774,9 @@
       "INVITE_TOKENS_TABLE": "cxum-invite-tokens",
       "ACTIVITY_TABLE": "cxum-activity",
       "PROFILES_TABLE": "cxum-user-profiles",
+      "CERTIFICATES_INDEX_TABLE": {
+       "Ref": "CertificatesIndexTable2F8513FC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -2845,6 +2932,9 @@
       "INVITE_TOKENS_TABLE": "cxum-invite-tokens",
       "ACTIVITY_TABLE": "cxum-activity",
       "PROFILES_TABLE": "cxum-user-profiles",
+      "CERTIFICATES_INDEX_TABLE": {
+       "Ref": "CertificatesIndexTable2F8513FC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -3000,6 +3090,9 @@
       "INVITE_TOKENS_TABLE": "cxum-invite-tokens",
       "ACTIVITY_TABLE": "cxum-activity",
       "PROFILES_TABLE": "cxum-user-profiles",
+      "CERTIFICATES_INDEX_TABLE": {
+       "Ref": "CertificatesIndexTable2F8513FC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -3130,6 +3223,9 @@
       "INVITE_TOKENS_TABLE": "cxum-invite-tokens",
       "ACTIVITY_TABLE": "cxum-activity",
       "PROFILES_TABLE": "cxum-user-profiles",
+      "CERTIFICATES_INDEX_TABLE": {
+       "Ref": "CertificatesIndexTable2F8513FC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -3283,6 +3379,9 @@
       "INVITE_TOKENS_TABLE": "cxum-invite-tokens",
       "ACTIVITY_TABLE": "cxum-activity",
       "PROFILES_TABLE": "cxum-user-profiles",
+      "CERTIFICATES_INDEX_TABLE": {
+       "Ref": "CertificatesIndexTable2F8513FC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -3406,6 +3505,72 @@
          ]
         ]
        }
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CertificatesIndexTable2F8513FC",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "CertificatesIndexTable2F8513FC",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CertificatesIndexTable2F8513FC",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "CertificatesIndexTable2F8513FC",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -3426,7 +3591,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-773079261320-us-east-2",
-     "S3Key": "65c7afb738deed7aacd92c3a5541b210f202440b239f9717b10511f231d7bbbc.zip"
+     "S3Key": "223ce13c01e0b16eccf718633b22e194126d226ae4165235e90665886705fadb.zip"
     },
     "Environment": {
      "Variables": {
@@ -3443,6 +3608,9 @@
       "INVITE_TOKENS_TABLE": "cxum-invite-tokens",
       "ACTIVITY_TABLE": "cxum-activity",
       "PROFILES_TABLE": "cxum-user-profiles",
+      "CERTIFICATES_INDEX_TABLE": {
+       "Ref": "CertificatesIndexTable2F8513FC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -3468,7 +3636,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "CxumStack/Certificates/Resource",
-    "aws:asset:path": "asset.65c7afb738deed7aacd92c3a5541b210f202440b239f9717b10511f231d7bbbc",
+    "aws:asset:path": "asset.223ce13c01e0b16eccf718633b22e194126d226ae4165235e90665886705fadb",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -3561,6 +3729,9 @@
       "INVITE_TOKENS_TABLE": "cxum-invite-tokens",
       "ACTIVITY_TABLE": "cxum-activity",
       "PROFILES_TABLE": "cxum-user-profiles",
+      "CERTIFICATES_INDEX_TABLE": {
+       "Ref": "CertificatesIndexTable2F8513FC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -5045,6 +5216,81 @@
     "aws:cdk:path": "CxumStack/CxumBackend/POST--contacto/Resource"
    }
   },
+  "CxumBackendGETcertificatescertificateIdCertificatePublicViewIntD915AF73": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "Certificates2374895F",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--certificates--{certificateId}/CertificatePublicViewInt/Resource"
+   }
+  },
+  "CxumBackendGETcertificatescertificateIdCertificatePublicViewIntPermissionD9FE5750": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "Certificates2374895F",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:773079261320:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/certificates/{certificateId}"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--certificates--{certificateId}/CertificatePublicViewInt-Permission"
+   }
+  },
+  "CxumBackendGETcertificatescertificateIdE78A37DE": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "GET /certificates/{certificateId}",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendGETcertificatescertificateIdCertificatePublicViewIntD915AF73"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--certificates--{certificateId}/Resource"
+   }
+  },
   "CxumBackendGETadminactivityGetActivityInt071AB15C": {
    "Type": "AWS::ApiGatewayV2::Integration",
    "Properties": {
@@ -6467,7 +6713,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/3VQyW7CMBD9lt6Ni4BKvYZUXU5F0J7RxDHpgGNHnjGIWvn3yg6bWvX0lpl5epqJnMwe5fgODjRS9W5ksJJxxaB2Ag60jso1FtnJ+EnaL5wzotzYCz+T0qC2fDv667x4F7pe1EcLrasr+QGV0XMgLWgq4zyonc77JzbAwhlUx6t90oNIx71QxoV6451lGZ+Q2GMVGJ0Vq+m7xwZtoZQmKp1lP9T/x7497oWBtqpBxudgVY4rN/aWL7RvkSjvIrQyLp3RaZDx2ntgvaDpGog0kywSCOiwAdYHOO4nMr4yd0WH6SBBkiuGJgcOJFlLF3hgb5Z14+Fc5pe87hWBv5zHb+1z9EX1vcg1UjbaJn8lcBe4F9bVWm7pfj+ZyQc5vtsS4sgHy9hquRzwBxFW3zQ2AgAA"
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/3WQy07DMBBFv4W9a6q0SGzTIB4rqhTWleO4YdrEE3nGrYqVf0d2+hKI1T13PL6ecSaz+aOc3qkDTXS9m7RQybBipXdCHWgdNDYWGGX4JOOWiK0oNvbCZyhaMJZvj/5WXhz6fhD10aoO60qGD1W1ZqHIiESxN8EgaCbDwuudSQEnGmWJLejjtXzyo4lhg9At+nrj0LIMT0DsoPIMaMVq9u6gAZtrbYgKtOzGff4p314eRKu6qlYyPHurU1yxsbe8NK4DotQLqpOhxHGppNe5R4pLrhWRYZJ5FKF6aBSbgzruMxlemfu8h3ghSrQrVk0KHCGWSvQ80ptl0zh1HuaXvfblnr/QwbdxKfrihkGUhtA7bUSaJz4Ctknf47n3PAiLtZFbut9nc/kgp3dbApg4bxk6I8tRfwDctancUAIAAA=="
    },
    "Metadata": {
     "aws:cdk:path": "CxumStack/CDKMetadata/Default"

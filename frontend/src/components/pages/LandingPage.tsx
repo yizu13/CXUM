@@ -1,5 +1,7 @@
+import { useSearchParams } from "react-router-dom";
 import { useAnimation } from "../../hooks/context/AnimationContext";
 import { useSEO } from "../../hooks/useSEO";
+import PublicCertificatePage from "./PublicCertificatePage";
 import NavBar from "../layout/NavBar";
 import Hero from "../Sections/Hero";
 import OurImpact from "../Sections/OurImpact";
@@ -15,7 +17,12 @@ import Footer from "../layout/Footer";
 
 export default function LandingPage() {
   const { navReady } = useAnimation();
+  const [searchParams] = useSearchParams();
   useSEO();
+
+  if (searchParams.has("certificateId") || searchParams.has("guid") || searchParams.has("id")) {
+    return <PublicCertificatePage />;
+  }
   
   return (
     <>

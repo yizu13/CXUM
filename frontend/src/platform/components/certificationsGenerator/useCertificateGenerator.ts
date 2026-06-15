@@ -7,16 +7,18 @@ import {
   listCertificateGenerations,
   uploadCertificateObject,
 } from "../../APIs/certificates";
-import { buildSampleData, extractVariablesFromTexts } from "./ast";
+import { buildSampleData, extractVariablesFromTexts, isSystemVariable } from "./ast";
 import { exportCertificatesZip } from "./certificateExport";
 import {
   clearDraft,
   deleteGeneration,
   deleteTemplate,
+  getDesignFlow,
   loadDraft,
   loadGenerations,
   loadTemplates,
   makeId,
+  saveDesignFlow,
   saveDraft,
   saveGeneration,
   saveTemplate,
@@ -38,11 +40,24 @@ const DEFAULT_AREA: Omit<TextAreaDefinition, "id" | "label" | "x" | "y"> = {
   text: "Otorgado a {{nombre}}",
   fontFamily: "Helvetica",
   fontSize: 34,
+  isBold: true,
+  isItalic: false,
+  isUnderline: false,
+  isStrikethrough: false,
   fontStyle: "bold",
   align: "center",
   fill: "#111827",
+  opacity: 1,
   lineHeight: 1.18,
   letterSpacing: 0,
+  textTransform: "none",
+  stroke: "#111827",
+  strokeWidth: 0,
+  shadowColor: "#000000",
+  shadowBlur: 0,
+  shadowOffsetX: 0,
+  shadowOffsetY: 0,
+  typographyPreset: "modern-corporate",
 };
 
 const EMPTY_DRAFT: GeneratorDraft = {
@@ -53,6 +68,8 @@ const EMPTY_DRAFT: GeneratorDraft = {
   dataSet: null,
 };
 
+const DEFAULT_CERTIFICATE_PUBLIC_BASE_URL = "https://cuadernosxunmanana.org/?certificateId=";
+
 export function useCertificateGenerator() {
   const restored = loadDraft();
   const [step, setStep] = useState<CertificateStep>("template");
@@ -60,10 +77,21 @@ export function useCertificateGenerator() {
   const [generations, setGenerations] = useState<CertificateGeneration[]>(() => loadGenerations());
   const [draft, setDraft] = useState<GeneratorDraft>(restored ?? EMPTY_DRAFT);
   const [exporting, setExporting] = useState(false);
+  const [savedDesignAt, setSavedDesignAt] = useState<string | null>(null);
 
-  const variables = useMemo(
+  const allVariables = useMemo(
     () => extractVariablesFromTexts(draft.areas.map((area) => area.text)),
     [draft.areas],
+  );
+
+  const variables = useMemo(
+    () => allVariables.filter((variable) => !isSystemVariable(variable)),
+    [allVariables],
+  );
+
+  const systemVariables = useMemo(
+    () => allVariables.filter(isSystemVariable),
+    [allVariables],
   );
 
   const selectedArea = useMemo(
@@ -82,6 +110,8 @@ export function useCertificateGenerator() {
           records: generation.records,
           bucketPrefix: generation.bucketPrefix,
           downloadKey: generation.downloadKey,
+          hasDigitalCertificates: generation.hasDigitalCertificates,
+          digitalCount: generation.digitalCount,
           status: generation.status,
           error: generation.error,
         })));
@@ -92,11 +122,11 @@ export function useCertificateGenerator() {
   }, []);
 
   useEffect(() => {
-    const nextSample = buildSampleData(variables, draft.sampleData);
+    const nextSample = buildSampleData(allVariables, draft.sampleData);
     if (JSON.stringify(nextSample) !== JSON.stringify(draft.sampleData)) {
       setDraft((current) => ({ ...current, sampleData: nextSample }));
     }
-  }, [draft.sampleData, variables]);
+  }, [allVariables, draft.sampleData]);
 
   useEffect(() => {
     saveDraft(draft);
@@ -110,7 +140,15 @@ export function useCertificateGenerator() {
       );
       if (!accepted) return;
     }
-    setDraft({ ...EMPTY_DRAFT, template });
+    const savedFlow = getDesignFlow(template.id);
+    const restoredAreas = savedFlow?.areas ?? [];
+    setDraft({
+      ...EMPTY_DRAFT,
+      template,
+      areas: restoredAreas,
+      selectedAreaId: restoredAreas[0]?.id ?? null,
+    });
+    setSavedDesignAt(savedFlow?.updatedAt ?? null);
     setStep("areas");
   };
 
@@ -122,7 +160,10 @@ export function useCertificateGenerator() {
 
   const removeTemplate = (templateId: string) => {
     setTemplates(deleteTemplate(templateId));
-    if (draft.template?.id === templateId) setDraft(EMPTY_DRAFT);
+    if (draft.template?.id === templateId) {
+      setDraft(EMPTY_DRAFT);
+      setSavedDesignAt(null);
+    }
   };
 
   const addArea = () => {
@@ -131,6 +172,7 @@ export function useCertificateGenerator() {
     const area: TextAreaDefinition = {
       ...DEFAULT_AREA,
       id: makeId("area"),
+      areaKind: "text",
       label: `Area ${areaNumber}`,
       x: Math.max(24, draft.template.width / 2 - DEFAULT_AREA.width / 2),
       y: Math.max(24, draft.template.height / 2 - DEFAULT_AREA.height / 2),
@@ -139,6 +181,54 @@ export function useCertificateGenerator() {
       ...current,
       areas: [...current.areas, area],
       selectedAreaId: area.id,
+    }));
+  };
+
+  const addQrAreaPair = () => {
+    if (!draft.template) return;
+    const size = Math.min(150, Math.max(92, draft.template.width * 0.12));
+    const rightMargin = 56;
+    const bottomMargin = 72;
+    const qrX = Math.max(24, draft.template.width - size - rightMargin);
+    const qrY = Math.max(24, draft.template.height - size - bottomMargin);
+    const qrArea: TextAreaDefinition = {
+      ...DEFAULT_AREA,
+      id: makeId("qr"),
+      areaKind: "qr",
+      label: "Codigo QR",
+      x: qrX,
+      y: qrY,
+      width: size,
+      height: size,
+      text: "",
+      fontSize: 12,
+      fill: "#111827",
+      typographyPreset: "",
+    };
+    const idArea: TextAreaDefinition = {
+      ...DEFAULT_AREA,
+      id: makeId("cid"),
+      areaKind: "certificateId",
+      label: "ID unico",
+      x: Math.max(24, qrX - 90),
+      y: qrY + size + 10,
+      width: size + 180,
+      height: 28,
+      text: "{{certificateId}}",
+      fontFamily: "'Courier New', Consolas, monospace",
+      fontSize: 15,
+      isBold: true,
+      fontStyle: "bold",
+      align: "center",
+      fill: "#334155",
+      letterSpacing: 0.8,
+      typographyPreset: "folio-code",
+    };
+
+    setDraft((current) => ({
+      ...current,
+      areas: [...current.areas, qrArea, idArea],
+      selectedAreaId: qrArea.id,
     }));
   };
 
@@ -169,6 +259,12 @@ export function useCertificateGenerator() {
     setDraft((current) => ({ ...current, dataSet }));
   };
 
+  const saveCurrentDesignFlow = () => {
+    if (!draft.template) return;
+    const flow = saveDesignFlow(draft.template, draft.areas);
+    setSavedDesignAt(flow.updatedAt);
+  };
+
   const runExport = async () => {
     if (!draft.template || !draft.dataSet || draft.dataSet.errors.length > 0) return;
     setExporting(true);
@@ -177,7 +273,13 @@ export function useCertificateGenerator() {
         template: draft.template,
         areas: draft.areas,
         rows: draft.dataSet.rows,
+        publicCertificateBaseUrl: getPublicCertificateBaseUrl(),
       });
+      const digitalUploadInputs = exported.digitalCertificates.map((certificate) => ({
+        fileName: certificate.fileName,
+        contentType: "application/pdf",
+        fileSize: certificate.blob.size,
+      }));
       const uploadPlan = await getGenerationUploadUrls({
         templateId: draft.template.id,
         templateName: draft.template.name,
@@ -189,20 +291,33 @@ export function useCertificateGenerator() {
             contentType: "application/zip",
             fileSize: exported.zipBlob.size,
           },
+          ...digitalUploadInputs,
         ],
       });
       const zipUpload = uploadPlan.uploadUrls[0];
       await uploadCertificateObject(exported.zipBlob, zipUpload.uploadUrl, "application/zip");
+      const digitalUploads = uploadPlan.uploadUrls.slice(1);
+      await Promise.all(exported.digitalCertificates.map((certificate, index) => {
+        const upload = digitalUploads[index];
+        return uploadCertificateObject(certificate.blob, upload.uploadUrl, "application/pdf");
+      }));
       const completed = await completeCertificateGeneration(uploadPlan.generation.id, {
         bucketPrefix: uploadPlan.generation.bucketPrefix,
         records: draft.dataSet.rows.length,
         downloadKey: zipUpload.key,
+        certificates: exported.digitalCertificates.map((certificate, index) => ({
+          certificateId: certificate.certificateId,
+          key: digitalUploads[index]?.key ?? "",
+          fileName: certificate.fileName,
+        })).filter((certificate) => certificate.key),
         status: "ready",
       });
       const generation: CertificateGeneration = {
         ...exported.generation,
         bucketPrefix: completed.generation.bucketPrefix,
         downloadKey: completed.generation.downloadKey,
+        hasDigitalCertificates: exported.digitalCertificates.length > 0,
+        digitalCount: exported.digitalCertificates.length,
         status: completed.generation.status,
       };
       setGenerations(saveGeneration(generation));
@@ -250,6 +365,7 @@ export function useCertificateGenerator() {
   const resetAll = () => {
     clearDraft();
     setDraft(EMPTY_DRAFT);
+    setSavedDesignAt(null);
     setStep("template");
   };
 
@@ -260,20 +376,33 @@ export function useCertificateGenerator() {
     templates,
     generations,
     variables,
+    systemVariables,
     selectedArea,
     exporting,
     selectTemplate,
     addTemplate,
     removeTemplate,
     addArea,
+    addQrAreaPair,
     updateArea,
     removeArea,
     selectArea,
     updateSampleData,
     setDataSet,
+    saveCurrentDesignFlow,
+    savedDesignAt,
     runExport,
     removeGeneration,
     downloadGeneration,
     resetAll,
   };
+}
+
+function getPublicCertificateBaseUrl(): string {
+  const configuredBase = import.meta.env.VITE_CERTIFICATE_PUBLIC_BASE_URL;
+  if (configuredBase) return configuredBase.replace(/\/$/, "");
+  if (window.location.hostname.endsWith("cuadernosxunmanana.org")) {
+    return `${window.location.origin.replace(/\/$/, "")}/?certificateId=`;
+  }
+  return DEFAULT_CERTIFICATE_PUBLIC_BASE_URL;
 }

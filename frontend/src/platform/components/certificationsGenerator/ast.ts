@@ -1,6 +1,7 @@
 import type { DataRow, TextAst, TemplateToken } from "./types";
 
 const VARIABLE_NAME = /^[A-Za-z_][A-Za-z0-9_]*$/;
+const SYSTEM_VARIABLES = new Set(["certificateId", "certificateUrl"]);
 
 export function tokenizeTemplate(input: string): TemplateToken[] {
   const tokens: TemplateToken[] = [];
@@ -68,6 +69,10 @@ export function extractVariablesFromTexts(texts: string[]): string[] {
   return Array.from(all).sort((a, b) => a.localeCompare(b));
 }
 
+export function isSystemVariable(variable: string): boolean {
+  return SYSTEM_VARIABLES.has(variable);
+}
+
 export function buildSampleData(variables: string[], current: DataRow): DataRow {
   return variables.reduce<DataRow>((sample, variable) => {
     sample[variable] = current[variable] ?? sampleValueFor(variable);
@@ -77,6 +82,8 @@ export function buildSampleData(variables: string[], current: DataRow): DataRow 
 
 function sampleValueFor(variable: string): string {
   const normalized = variable.toLowerCase();
+  if (variable === "certificateId") return "8f4c9e4e-5f9a-4a1b-8e9f-3c2d7b6a1f90";
+  if (variable === "certificateUrl") return "https://cuadernosxunmanana.org/?certificateId=8f4c9e4e-5f9a-4a1b-8e9f-3c2d7b6a1f90";
   if (normalized.includes("nombre")) return "Ana Martinez";
   if (normalized.includes("curso")) return "Liderazgo Comunitario";
   if (normalized.includes("fecha")) return "15 de junio de 2026";

@@ -5,6 +5,7 @@ import Iconify from "../../../components/modularUI/IconsMock";
 import AdminButton from "../AdminButton";
 import { parseTemplate, renderTemplate } from "./ast";
 import type { CertificateTemplate, DataRow, TextAreaDefinition, ThemeAwareProps } from "./types";
+import { applyTextTransform, fontStyleFor, normalizeAreaStyle } from "./typography";
 import { cardStyle, mutedText, strongText, subtleBorder } from "./ui";
 
 interface AreaDesignerProps extends ThemeAwareProps {
@@ -13,6 +14,7 @@ interface AreaDesignerProps extends ThemeAwareProps {
   selectedAreaId: string | null;
   sampleData: DataRow;
   onAddArea: () => void;
+  onAddQrAreaPair: () => void;
   onSelectArea: (areaId: string | null) => void;
   onUpdateArea: (areaId: string, patch: Partial<TextAreaDefinition>) => void;
   onRemoveArea: (areaId: string) => void;
@@ -25,6 +27,7 @@ export default function AreaDesigner({
   selectedAreaId,
   sampleData,
   onAddArea,
+  onAddQrAreaPair,
   onSelectArea,
   onUpdateArea,
   onRemoveArea,
@@ -78,6 +81,9 @@ export default function AreaDesigner({
           <div className="flex gap-2">
             <AdminButton variant="ghost" icon="solar:add-square-bold-duotone" onClick={onAddArea}>
               Area
+            </AdminButton>
+            <AdminButton variant="ghost" icon="solar:qr-code-bold-duotone" onClick={onAddQrAreaPair}>
+              QR + ID
             </AdminButton>
             <AdminButton variant="primary" iconRight="solar:alt-arrow-right-linear" disabled={areas.length === 0} onClick={onNext}>
               Editar texto
@@ -142,24 +148,55 @@ export default function AreaDesigner({
                   />
                 );
               })}
-              {areas.map((area) => (
-                <Text
-                  key={`${area.id}-text`}
-                  x={area.x}
-                  y={area.y + 6}
-                  width={area.width}
-                  height={area.height}
-                  rotation={area.rotation}
-                  text={renderTemplate(parseTemplate(area.text), sampleData)}
-                  fontSize={Math.min(area.fontSize, 38)}
-                  fontFamily={area.fontFamily}
-                  fontStyle={area.fontStyle}
-                  fill={area.fill}
-                  align={area.align}
-                  lineHeight={area.lineHeight}
-                  listening={false}
-                />
-              ))}
+              {areas.map((area) => {
+                if (area.areaKind === "qr") {
+                  return (
+                    <Text
+                      key={`${area.id}-text`}
+                      x={area.x}
+                      y={area.y + area.height / 2 - 10}
+                      width={area.width}
+                      height={24}
+                      rotation={area.rotation}
+                      text="QR"
+                      fontSize={20}
+                      fontStyle="bold"
+                      fill="#0f172a"
+                      align="center"
+                      listening={false}
+                    />
+                  );
+                }
+                const normalized = normalizeAreaStyle(area);
+                const text = applyTextTransform(renderTemplate(parseTemplate(area.text), sampleData), normalized.textTransform);
+                return (
+                  <Text
+                    key={`${area.id}-text`}
+                    x={area.x}
+                    y={area.y + 6}
+                    width={area.width}
+                    height={area.height}
+                    rotation={area.rotation}
+                    text={text}
+                    fontSize={Math.min(area.fontSize, 38)}
+                    fontFamily={area.fontFamily}
+                    fontStyle={fontStyleFor(area)}
+                    fill={area.fill}
+                    opacity={normalized.opacity}
+                    align={area.align}
+                    lineHeight={area.lineHeight}
+                    letterSpacing={area.letterSpacing}
+                    textDecoration={[normalized.isUnderline ? "underline" : "", normalized.isStrikethrough ? "line-through" : ""].filter(Boolean).join(" ")}
+                    stroke={normalized.stroke}
+                    strokeWidth={normalized.strokeWidth}
+                    shadowColor={normalized.shadowColor}
+                    shadowBlur={normalized.shadowBlur}
+                    shadowOffsetX={normalized.shadowOffsetX}
+                    shadowOffsetY={normalized.shadowOffsetY}
+                    listening={false}
+                  />
+                );
+              })}
               <Transformer ref={transformerRef} rotateEnabled enabledAnchors={["top-left", "top-right", "bottom-left", "bottom-right", "middle-left", "middle-right"]} />
             </Layer>
           </Stage>
@@ -181,13 +218,13 @@ export default function AreaDesigner({
                 background: selectedAreaId === area.id ? "rgba(245,158,11,0.1)" : "transparent",
               }}
             >
-              <Iconify Size={18} IconString="solar:text-square-bold-duotone" Style={{ color: "#f59e0b" }} />
+              <Iconify Size={18} IconString={area.areaKind === "qr" ? "solar:qr-code-bold-duotone" : area.areaKind === "certificateId" ? "solar:hashtag-square-bold-duotone" : "solar:text-square-bold-duotone"} Style={{ color: "#f59e0b" }} />
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-xs font-black" style={{ color: strongText(isDark) }}>
                   {area.label}
                 </span>
                 <span className="block truncate text-[11px]" style={{ color: mutedText(isDark) }}>
-                  {area.width.toFixed(0)} x {area.height.toFixed(0)}
+                  {area.areaKind === "qr" ? "Version digital" : `${area.width.toFixed(0)} x ${area.height.toFixed(0)}`}
                 </span>
               </span>
               <button

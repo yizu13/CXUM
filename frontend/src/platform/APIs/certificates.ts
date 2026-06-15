@@ -23,6 +23,8 @@ export interface CertificateStoredGeneration {
   status: "uploading" | "ready" | "failed";
   expectedFiles?: number;
   downloadKey?: string;
+  hasDigitalCertificates?: boolean;
+  digitalCount?: number;
   completedAt?: string;
   error?: string;
 }
@@ -104,6 +106,7 @@ export async function completeCertificateGeneration(
     bucketPrefix: string;
     records: number;
     downloadKey?: string;
+    certificates?: Array<{ certificateId: string; key: string; fileName?: string }>;
     status?: "ready" | "failed";
     error?: string;
   },

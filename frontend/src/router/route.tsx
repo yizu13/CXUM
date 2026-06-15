@@ -4,6 +4,7 @@ import ContactPage from "../components/pages/ContactPage";
 import VolunteersPage from "../components/pages/VolunteersPage";
 import NewsPage from "../components/pages/NewsPage";
 import NewsDetailPage from "../components/pages/NewsDetailPage";
+import PublicCertificatePage from "../components/pages/PublicCertificatePage";
 import NotFoundPage from "../components/pages/NotFoundPage";
 import ScrollToTop from "../hooks/ScrollToTop";
 
@@ -39,6 +40,8 @@ export default function AppRouter() {
           <Route path="/Voluntarios" element={<VolunteersPage />} />
           <Route path="/Noticias"    element={<NewsPage />} />
           <Route path="/Noticias/:slug" element={<NewsDetailPage />} />
+          <Route path="/certificates" element={<PublicCertificatePage />} />
+          <Route path="/certificates/:certificateId" element={<PublicCertificatePage />} />
 
           {/* ── Plataforma / Auth ── */}
           <Route path="/plataforma/login"              element={<LoginPage />} />

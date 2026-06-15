@@ -45,6 +45,11 @@ export default function GenerationsPanel({ generations, onDelete, onDownload, is
                   <p className="mt-1 text-[11px]" style={{ color: mutedText(isDark) }}>
                     {new Date(generation.createdAt).toLocaleString("es-DO")} · {generation.records} certificados
                   </p>
+                  {generation.hasDigitalCertificates && (
+                    <p className="mt-1 text-[11px] font-black" style={{ color: "#22c55e" }}>
+                      {generation.digitalCount ?? generation.records} versiones digitales con QR
+                    </p>
+                  )}
                   {generation.error && <p className="mt-1 text-xs font-bold text-red-500">{generation.error}</p>}
                 </div>
                 <div className="flex gap-2">

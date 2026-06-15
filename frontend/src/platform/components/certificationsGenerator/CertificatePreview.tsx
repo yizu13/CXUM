@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { parseTemplate, renderTemplate } from "./ast";
 import type { CertificateTemplate, DataRow, TextAreaDefinition, ThemeAwareProps } from "./types";
+import { applyTextTransform, cssTextStyle } from "./typography";
 import { mutedText, subtleBorder } from "./ui";
 
 interface CertificatePreviewProps extends ThemeAwareProps {
@@ -33,31 +34,48 @@ export default function CertificatePreview({ template, areas, data, isDark }: Ce
         }}
       >
         <img src={template.previewUrl} alt={template.name} className="absolute inset-0 h-full w-full object-fill" />
-        {areas.map((area) => (
-          <div
-            key={area.id}
-            className="absolute whitespace-pre-wrap"
-            style={{
-              left: area.x * scale,
-              top: area.y * scale,
-              width: area.width * scale,
-              height: area.height * scale,
-              transform: `rotate(${area.rotation}deg)`,
-              transformOrigin: "top left",
-              color: area.fill,
-              fontFamily: area.fontFamily,
-              fontSize: area.fontSize * scale,
-              fontWeight: area.fontStyle.includes("bold") ? 800 : 400,
-              fontStyle: area.fontStyle.includes("italic") ? "italic" : "normal",
-              textAlign: area.align,
-              lineHeight: area.lineHeight,
-              letterSpacing: area.letterSpacing,
-              overflow: "hidden",
-            }}
-          >
-            {renderTemplate(parseTemplate(area.text), data)}
-          </div>
-        ))}
+        {areas.map((area) => {
+          if (area.areaKind === "qr") {
+            return (
+              <div
+                key={area.id}
+                className="absolute flex items-center justify-center border text-[10px] font-black"
+                style={{
+                  left: area.x * scale,
+                  top: area.y * scale,
+                  width: area.width * scale,
+                  height: area.height * scale,
+                  transform: `rotate(${area.rotation}deg)`,
+                  transformOrigin: "top left",
+                  borderColor: "rgba(15,23,42,0.35)",
+                  background: "repeating-linear-gradient(45deg,#fff,#fff 6px,#e2e8f0 6px,#e2e8f0 12px)",
+                  color: "#0f172a",
+                }}
+              >
+                QR
+              </div>
+            );
+          }
+          const text = applyTextTransform(renderTemplate(parseTemplate(area.text), data), area.textTransform);
+          return (
+            <div
+              key={area.id}
+              className="absolute whitespace-pre-wrap"
+              style={{
+                left: area.x * scale,
+                top: area.y * scale,
+                width: area.width * scale,
+                height: area.height * scale,
+                transform: `rotate(${area.rotation}deg)`,
+                transformOrigin: "top left",
+                overflow: "hidden",
+                ...cssTextStyle(area, scale),
+              }}
+            >
+              {text}
+            </div>
+          );
+        })}
         {areas.length === 0 && (
           <div className="absolute inset-0 flex items-center justify-center text-xs font-black" style={{ color: mutedText(isDark) }}>
             Sin areas de texto

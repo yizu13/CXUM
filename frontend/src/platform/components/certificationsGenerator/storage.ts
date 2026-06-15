@@ -1,8 +1,9 @@
-import type { CertificateGeneration, CertificateTemplate, GeneratorDraft } from "./types";
+import type { CertificateDesignFlow, CertificateGeneration, CertificateTemplate, GeneratorDraft, TextAreaDefinition } from "./types";
 
 const TEMPLATES_KEY = "cxum.certificateTemplates";
 const GENERATIONS_KEY = "cxum.certificateGenerations";
 const DRAFT_KEY = "cxum.certificateDraft";
+const DESIGNS_KEY = "cxum.certificateDesignFlows";
 
 function readJson<T>(key: string, fallback: T): T {
   try {
@@ -45,6 +46,42 @@ export function saveTemplate(template: CertificateTemplate): CertificateTemplate
 export function deleteTemplate(templateId: string): CertificateTemplate[] {
   const next = loadTemplates().filter((item) => item.id !== templateId);
   writeJson(TEMPLATES_KEY, next);
+  deleteDesignFlow(templateId);
+  return next;
+}
+
+export function loadDesignFlows(): CertificateDesignFlow[] {
+  return readJson<CertificateDesignFlow[]>(DESIGNS_KEY, []);
+}
+
+export function getDesignFlow(templateId: string): CertificateDesignFlow | null {
+  return loadDesignFlows().find((item) => item.templateId === templateId) ?? null;
+}
+
+export function saveDesignFlow(
+  template: CertificateTemplate,
+  areas: TextAreaDefinition[],
+): CertificateDesignFlow {
+  const current = loadDesignFlows();
+  const existing = current.find((item) => item.templateId === template.id);
+  const now = new Date().toISOString();
+  const flow: CertificateDesignFlow = {
+    id: existing?.id ?? makeId("flow"),
+    templateId: template.id,
+    templateName: template.name,
+    templateFileName: template.fileName,
+    areas: areas.map((area) => ({ ...area })),
+    createdAt: existing?.createdAt ?? now,
+    updatedAt: now,
+  };
+  const next = [flow, ...current.filter((item) => item.templateId !== template.id)].slice(0, 50);
+  writeJson(DESIGNS_KEY, next);
+  return flow;
+}
+
+export function deleteDesignFlow(templateId: string): CertificateDesignFlow[] {
+  const next = loadDesignFlows().filter((item) => item.templateId !== templateId);
+  writeJson(DESIGNS_KEY, next);
   return next;
 }
 
