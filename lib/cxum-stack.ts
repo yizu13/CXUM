@@ -86,6 +86,13 @@ export class CxumStack extends cdk.Stack {
       projectionType: dynamodb.ProjectionType.ALL,
     });
 
+    const certificateDesignsTable = new dynamodb.Table(this, "CertificateDesignsTable", {
+      tableName: "cxum-certificate-designs",
+      partitionKey: { name: "templateId", type: dynamodb.AttributeType.STRING },
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
     // ─── S3 Buckets ───────────────────────────────────────────────────────────
     const imagesBucket = new s3.Bucket(this, "ImagesBucket", {
       bucketName: `cxum-images-${this.account}`,
@@ -192,6 +199,7 @@ export class CxumStack extends cdk.Stack {
           ACTIVITY_TABLE: activityTable.tableName,
           PROFILES_TABLE: profilesTable.tableName,
           CERTIFICATES_INDEX_TABLE: certificatesIndexTable.tableName,
+          CERTIFICATE_DESIGNS_TABLE: certificateDesignsTable.tableName,
           IMAGES_BUCKET: imagesBucket.bucketName,
           CERTIFICATES_BUCKET: certificatesBucket.bucketName,
           ...extraEnv,
@@ -234,6 +242,7 @@ export class CxumStack extends cdk.Stack {
     certificatesBucket.grantReadWrite(certificatesFn);
     certificatesBucket.grantDelete(certificatesFn);
     certificatesIndexTable.grantReadWriteData(certificatesFn);
+    certificateDesignsTable.grantReadWriteData(certificatesFn);
 
     // ─── Permisos DynamoDB ────────────────────────────────────────────────────
     centrosTable.grantReadData(getCentrosFn);
@@ -533,6 +542,13 @@ export class CxumStack extends cdk.Stack {
       path: "/admin/certificates/templates/{templateId}",
       methods: [apigwv2.HttpMethod.DELETE],
       integration: new integrations.HttpLambdaIntegration("CertificateTemplateDeleteInt", certificatesFn),
+      authorizer: multiRoleAuthorizer,
+    });
+
+    httpApi.addRoutes({
+      path: "/admin/certificates/designs/{templateId}",
+      methods: [apigwv2.HttpMethod.GET, apigwv2.HttpMethod.PUT, apigwv2.HttpMethod.DELETE],
+      integration: new integrations.HttpLambdaIntegration("CertificateDesignFlowInt", certificatesFn),
       authorizer: multiRoleAuthorizer,
     });
 

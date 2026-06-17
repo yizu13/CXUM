@@ -90,6 +90,7 @@ export default function CertifificationGeneratorPage() {
           variables={variables}
           dataSet={draft.dataSet}
           exporting={generator.exporting}
+          savingDesign={generator.savingDesignFlow}
           savedDesignAt={generator.savedDesignAt}
           onDataSet={generator.setDataSet}
           onSaveDesign={generator.saveCurrentDesignFlow}

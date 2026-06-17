@@ -185,6 +185,30 @@
     "aws:cdk:path": "CxumStack/CertificatesIndexTable/Resource"
    }
   },
+  "CertificateDesignsTableD292DEDC": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "templateId",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "templateId",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": "cxum-certificate-designs"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CertificateDesignsTable/Resource"
+   }
+  },
   "ImagesBucket1E86AFB2": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
@@ -510,6 +534,9 @@
       "CERTIFICATES_INDEX_TABLE": {
        "Ref": "CertificatesIndexTable2F8513FC"
       },
+      "CERTIFICATE_DESIGNS_TABLE": {
+       "Ref": "CertificateDesignsTableD292DEDC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -597,6 +624,9 @@
       "PROFILES_TABLE": "cxum-user-profiles",
       "CERTIFICATES_INDEX_TABLE": {
        "Ref": "CertificatesIndexTable2F8513FC"
+      },
+      "CERTIFICATE_DESIGNS_TABLE": {
+       "Ref": "CertificateDesignsTableD292DEDC"
       },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
@@ -750,6 +780,9 @@
       "PROFILES_TABLE": "cxum-user-profiles",
       "CERTIFICATES_INDEX_TABLE": {
        "Ref": "CertificatesIndexTable2F8513FC"
+      },
+      "CERTIFICATE_DESIGNS_TABLE": {
+       "Ref": "CertificateDesignsTableD292DEDC"
       },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
@@ -953,6 +986,9 @@
       "CERTIFICATES_INDEX_TABLE": {
        "Ref": "CertificatesIndexTable2F8513FC"
       },
+      "CERTIFICATE_DESIGNS_TABLE": {
+       "Ref": "CertificateDesignsTableD292DEDC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -1106,6 +1142,9 @@
       "PROFILES_TABLE": "cxum-user-profiles",
       "CERTIFICATES_INDEX_TABLE": {
        "Ref": "CertificatesIndexTable2F8513FC"
+      },
+      "CERTIFICATE_DESIGNS_TABLE": {
+       "Ref": "CertificateDesignsTableD292DEDC"
       },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
@@ -1309,6 +1348,9 @@
       "CERTIFICATES_INDEX_TABLE": {
        "Ref": "CertificatesIndexTable2F8513FC"
       },
+      "CERTIFICATE_DESIGNS_TABLE": {
+       "Ref": "CertificateDesignsTableD292DEDC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -1507,6 +1549,9 @@
       "CERTIFICATES_INDEX_TABLE": {
        "Ref": "CertificatesIndexTable2F8513FC"
       },
+      "CERTIFICATE_DESIGNS_TABLE": {
+       "Ref": "CertificateDesignsTableD292DEDC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -1674,6 +1719,9 @@
       "CERTIFICATES_INDEX_TABLE": {
        "Ref": "CertificatesIndexTable2F8513FC"
       },
+      "CERTIFICATE_DESIGNS_TABLE": {
+       "Ref": "CertificateDesignsTableD292DEDC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -1827,6 +1875,9 @@
       "PROFILES_TABLE": "cxum-user-profiles",
       "CERTIFICATES_INDEX_TABLE": {
        "Ref": "CertificatesIndexTable2F8513FC"
+      },
+      "CERTIFICATE_DESIGNS_TABLE": {
+       "Ref": "CertificateDesignsTableD292DEDC"
       },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
@@ -2056,6 +2107,9 @@
       "CERTIFICATES_INDEX_TABLE": {
        "Ref": "CertificatesIndexTable2F8513FC"
       },
+      "CERTIFICATE_DESIGNS_TABLE": {
+       "Ref": "CertificateDesignsTableD292DEDC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -2188,6 +2242,9 @@
       "CERTIFICATES_INDEX_TABLE": {
        "Ref": "CertificatesIndexTable2F8513FC"
       },
+      "CERTIFICATE_DESIGNS_TABLE": {
+       "Ref": "CertificateDesignsTableD292DEDC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -2319,6 +2376,9 @@
       "PROFILES_TABLE": "cxum-user-profiles",
       "CERTIFICATES_INDEX_TABLE": {
        "Ref": "CertificatesIndexTable2F8513FC"
+      },
+      "CERTIFICATE_DESIGNS_TABLE": {
+       "Ref": "CertificateDesignsTableD292DEDC"
       },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
@@ -2464,6 +2524,9 @@
       "PROFILES_TABLE": "cxum-user-profiles",
       "CERTIFICATES_INDEX_TABLE": {
        "Ref": "CertificatesIndexTable2F8513FC"
+      },
+      "CERTIFICATE_DESIGNS_TABLE": {
+       "Ref": "CertificateDesignsTableD292DEDC"
       },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
@@ -2618,6 +2681,9 @@
       "PROFILES_TABLE": "cxum-user-profiles",
       "CERTIFICATES_INDEX_TABLE": {
        "Ref": "CertificatesIndexTable2F8513FC"
+      },
+      "CERTIFICATE_DESIGNS_TABLE": {
+       "Ref": "CertificateDesignsTableD292DEDC"
       },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
@@ -2777,6 +2843,9 @@
       "CERTIFICATES_INDEX_TABLE": {
        "Ref": "CertificatesIndexTable2F8513FC"
       },
+      "CERTIFICATE_DESIGNS_TABLE": {
+       "Ref": "CertificateDesignsTableD292DEDC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -2934,6 +3003,9 @@
       "PROFILES_TABLE": "cxum-user-profiles",
       "CERTIFICATES_INDEX_TABLE": {
        "Ref": "CertificatesIndexTable2F8513FC"
+      },
+      "CERTIFICATE_DESIGNS_TABLE": {
+       "Ref": "CertificateDesignsTableD292DEDC"
       },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
@@ -3093,6 +3165,9 @@
       "CERTIFICATES_INDEX_TABLE": {
        "Ref": "CertificatesIndexTable2F8513FC"
       },
+      "CERTIFICATE_DESIGNS_TABLE": {
+       "Ref": "CertificateDesignsTableD292DEDC"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -3225,6 +3300,9 @@
       "PROFILES_TABLE": "cxum-user-profiles",
       "CERTIFICATES_INDEX_TABLE": {
        "Ref": "CertificatesIndexTable2F8513FC"
+      },
+      "CERTIFICATE_DESIGNS_TABLE": {
+       "Ref": "CertificateDesignsTableD292DEDC"
       },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
@@ -3381,6 +3459,9 @@
       "PROFILES_TABLE": "cxum-user-profiles",
       "CERTIFICATES_INDEX_TABLE": {
        "Ref": "CertificatesIndexTable2F8513FC"
+      },
+      "CERTIFICATE_DESIGNS_TABLE": {
+       "Ref": "CertificateDesignsTableD292DEDC"
       },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
@@ -3571,6 +3652,44 @@
          ]
         }
        ]
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CertificateDesignsTableD292DEDC",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CertificateDesignsTableD292DEDC",
+          "Arn"
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -3591,7 +3710,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-773079261320-us-east-2",
-     "S3Key": "223ce13c01e0b16eccf718633b22e194126d226ae4165235e90665886705fadb.zip"
+     "S3Key": "52cd08016f8c7e1ff8126a1f8600eea2dbac3f15a87492dad80b9de41151a8e3.zip"
     },
     "Environment": {
      "Variables": {
@@ -3610,6 +3729,9 @@
       "PROFILES_TABLE": "cxum-user-profiles",
       "CERTIFICATES_INDEX_TABLE": {
        "Ref": "CertificatesIndexTable2F8513FC"
+      },
+      "CERTIFICATE_DESIGNS_TABLE": {
+       "Ref": "CertificateDesignsTableD292DEDC"
       },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
@@ -3636,7 +3758,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "CxumStack/Certificates/Resource",
-    "aws:asset:path": "asset.223ce13c01e0b16eccf718633b22e194126d226ae4165235e90665886705fadb",
+    "aws:asset:path": "asset.52cd08016f8c7e1ff8126a1f8600eea2dbac3f15a87492dad80b9de41151a8e3",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -3731,6 +3853,9 @@
       "PROFILES_TABLE": "cxum-user-profiles",
       "CERTIFICATES_INDEX_TABLE": {
        "Ref": "CertificatesIndexTable2F8513FC"
+      },
+      "CERTIFICATE_DESIGNS_TABLE": {
+       "Ref": "CertificateDesignsTableD292DEDC"
       },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
@@ -6200,6 +6325,202 @@
    },
    "Metadata": {
     "aws:cdk:path": "CxumStack/CxumBackend/DELETE--admin--certificates--templates--{templateId}/Resource"
+   }
+  },
+  "CxumBackendGETadmincertificatesdesignstemplateIdCertificateDesignFlowInt0981B0F1": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "Certificates2374895F",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--certificates--designs--{templateId}/CertificateDesignFlowInt/Resource"
+   }
+  },
+  "CxumBackendGETadmincertificatesdesignstemplateIdCertificateDesignFlowIntPermissionD1EF2776": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "Certificates2374895F",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:773079261320:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/admin/certificates/designs/{templateId}"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--certificates--designs--{templateId}/CertificateDesignFlowInt-Permission"
+   }
+  },
+  "CxumBackendGETadmincertificatesdesignstemplateIdD132A685": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "CxumBackendMultiRoleAuthorizer01F621D0"
+    },
+    "RouteKey": "GET /admin/certificates/designs/{templateId}",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendGETadmincertificatesdesignstemplateIdCertificateDesignFlowInt0981B0F1"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--certificates--designs--{templateId}/Resource"
+   }
+  },
+  "CxumBackendPUTadmincertificatesdesignstemplateIdCertificateDesignFlowIntPermissionD884C359": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "Certificates2374895F",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:773079261320:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/admin/certificates/designs/{templateId}"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/PUT--admin--certificates--designs--{templateId}/CertificateDesignFlowInt-Permission"
+   }
+  },
+  "CxumBackendPUTadmincertificatesdesignstemplateId3995544E": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "CxumBackendMultiRoleAuthorizer01F621D0"
+    },
+    "RouteKey": "PUT /admin/certificates/designs/{templateId}",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendGETadmincertificatesdesignstemplateIdCertificateDesignFlowInt0981B0F1"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/PUT--admin--certificates--designs--{templateId}/Resource"
+   }
+  },
+  "CxumBackendDELETEadmincertificatesdesignstemplateIdCertificateDesignFlowIntPermissionD0A06B78": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "Certificates2374895F",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:773079261320:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/admin/certificates/designs/{templateId}"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/DELETE--admin--certificates--designs--{templateId}/CertificateDesignFlowInt-Permission"
+   }
+  },
+  "CxumBackendDELETEadmincertificatesdesignstemplateId825F5DCF": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "CxumBackendMultiRoleAuthorizer01F621D0"
+    },
+    "RouteKey": "DELETE /admin/certificates/designs/{templateId}",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendGETadmincertificatesdesignstemplateIdCertificateDesignFlowInt0981B0F1"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/DELETE--admin--certificates--designs--{templateId}/Resource"
    }
   },
   "CxumBackendPOSTadmincertificatesgenerationsuploadurlsCertificateGenerationUploadUrlsInt4A621C31": {

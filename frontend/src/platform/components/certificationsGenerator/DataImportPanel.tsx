@@ -12,9 +12,10 @@ interface DataImportPanelProps extends ThemeAwareProps {
   variables: string[];
   dataSet: ParsedDataSet | null;
   exporting: boolean;
+  savingDesign: boolean;
   savedDesignAt: string | null;
   onDataSet: (dataSet: ParsedDataSet | null) => void;
-  onSaveDesign: () => void;
+  onSaveDesign: () => void | Promise<void>;
   onBack: () => void;
   onExport: () => void;
 }
@@ -25,6 +26,7 @@ export default function DataImportPanel({
   variables,
   dataSet,
   exporting,
+  savingDesign,
   savedDesignAt,
   onDataSet,
   onSaveDesign,
@@ -233,8 +235,10 @@ export default function DataImportPanel({
           <AdminButton
             variant="success"
             icon="solar:diskette-bold-duotone"
-            onClick={onSaveDesign}
-            disabled={areas.length === 0}
+            onClick={() => void onSaveDesign()}
+            disabled={areas.length === 0 || savingDesign}
+            loading={savingDesign}
+            loadingText="Guardando..."
             fullWidth
           >
             Guardar modificaciones
@@ -245,7 +249,7 @@ export default function DataImportPanel({
         </div>
         {savedDesignAt && (
           <p className="text-center text-[11px] font-bold" style={{ color: mutedText(isDark) }}>
-            Modificaciones guardadas {new Date(savedDesignAt).toLocaleString()}.
+            Modificaciones guardadas en DynamoDB {new Date(savedDesignAt).toLocaleString()}.
           </p>
         )}
       </section>

@@ -2,9 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import {
   completeCertificateGeneration,
   deleteCertificateGeneration,
+  deleteCertificateDesignFlow,
   getCertificateDownloadUrl,
+  getCertificateDesignFlow,
   getGenerationUploadUrls,
   listCertificateGenerations,
+  saveCertificateDesignFlow,
   uploadCertificateObject,
 } from "../../APIs/certificates";
 import { buildSampleData, extractVariablesFromTexts, isSystemVariable } from "./ast";
@@ -13,12 +16,10 @@ import {
   clearDraft,
   deleteGeneration,
   deleteTemplate,
-  getDesignFlow,
   loadDraft,
   loadGenerations,
   loadTemplates,
   makeId,
-  saveDesignFlow,
   saveDraft,
   saveGeneration,
   saveTemplate,
@@ -78,6 +79,7 @@ export function useCertificateGenerator() {
   const [draft, setDraft] = useState<GeneratorDraft>(restored ?? EMPTY_DRAFT);
   const [exporting, setExporting] = useState(false);
   const [savedDesignAt, setSavedDesignAt] = useState<string | null>(null);
+  const [savingDesignFlow, setSavingDesignFlow] = useState(false);
 
   const allVariables = useMemo(
     () => extractVariablesFromTexts(draft.areas.map((area) => area.text)),
@@ -132,7 +134,7 @@ export function useCertificateGenerator() {
     saveDraft(draft);
   }, [draft]);
 
-  const selectTemplate = (template: CertificateTemplate) => {
+  const selectTemplate = async (template: CertificateTemplate) => {
     const hasProgress = Boolean(draft.template && (draft.areas.length > 0 || draft.dataSet));
     if (hasProgress) {
       const accepted = window.confirm(
@@ -140,26 +142,44 @@ export function useCertificateGenerator() {
       );
       if (!accepted) return;
     }
-    const savedFlow = getDesignFlow(template.id);
-    const restoredAreas = savedFlow?.areas ?? [];
     setDraft({
       ...EMPTY_DRAFT,
       template,
-      areas: restoredAreas,
-      selectedAreaId: restoredAreas[0]?.id ?? null,
     });
-    setSavedDesignAt(savedFlow?.updatedAt ?? null);
+    setSavedDesignAt(null);
     setStep("areas");
+
+    try {
+      const { design } = await getCertificateDesignFlow(template.id);
+      setDraft((current) => {
+        if (current.template?.id !== template.id) return current;
+        return {
+          ...current,
+          areas: design.areas,
+          selectedAreaId: design.areas[0]?.id ?? null,
+        };
+      });
+      setSavedDesignAt(design.updatedAt);
+    } catch (error) {
+      if (error instanceof Error && !error.message.includes("404")) {
+        console.warn("No se pudo cargar el diseno de la plantilla desde DynamoDB", error);
+      }
+    }
   };
 
   const addTemplate = (template: CertificateTemplate) => {
     const next = saveTemplate(template);
     setTemplates(next);
-    selectTemplate(template);
+    void selectTemplate(template);
   };
 
-  const removeTemplate = (templateId: string) => {
+  const removeTemplate = async (templateId: string) => {
     setTemplates(deleteTemplate(templateId));
+    try {
+      await deleteCertificateDesignFlow(templateId);
+    } catch (error) {
+      console.warn("No se pudo eliminar el diseno remoto de la plantilla", error);
+    }
     if (draft.template?.id === templateId) {
       setDraft(EMPTY_DRAFT);
       setSavedDesignAt(null);
@@ -259,10 +279,22 @@ export function useCertificateGenerator() {
     setDraft((current) => ({ ...current, dataSet }));
   };
 
-  const saveCurrentDesignFlow = () => {
+  const saveCurrentDesignFlow = async () => {
     if (!draft.template) return;
-    const flow = saveDesignFlow(draft.template, draft.areas);
-    setSavedDesignAt(flow.updatedAt);
+    setSavingDesignFlow(true);
+    try {
+      const { design } = await saveCertificateDesignFlow({
+        templateId: draft.template.id,
+        templateName: draft.template.name,
+        templateFileName: draft.template.fileName,
+        areas: draft.areas,
+      });
+      setSavedDesignAt(design.updatedAt);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "No se pudieron guardar las modificaciones en DynamoDB.");
+    } finally {
+      setSavingDesignFlow(false);
+    }
   };
 
   const runExport = async () => {
@@ -275,7 +307,7 @@ export function useCertificateGenerator() {
         rows: draft.dataSet.rows,
         publicCertificateBaseUrl: getPublicCertificateBaseUrl(),
       });
-      const digitalUploadInputs = exported.digitalCertificates.map((certificate) => ({
+      const certificateUploadInputs = exported.certificateFiles.map((certificate) => ({
         fileName: certificate.fileName,
         contentType: "application/pdf",
         fileSize: certificate.blob.size,
@@ -291,25 +323,25 @@ export function useCertificateGenerator() {
             contentType: "application/zip",
             fileSize: exported.zipBlob.size,
           },
-          ...digitalUploadInputs,
+          ...certificateUploadInputs,
         ],
       });
       const zipUpload = uploadPlan.uploadUrls[0];
       await uploadCertificateObject(exported.zipBlob, zipUpload.uploadUrl, "application/zip");
-      const digitalUploads = uploadPlan.uploadUrls.slice(1);
-      await Promise.all(exported.digitalCertificates.map((certificate, index) => {
-        const upload = digitalUploads[index];
+      const certificateUploads = uploadPlan.uploadUrls.slice(1);
+      await Promise.all(exported.certificateFiles.map((certificate, index) => {
+        const upload = certificateUploads[index];
         return uploadCertificateObject(certificate.blob, upload.uploadUrl, "application/pdf");
       }));
       const completed = await completeCertificateGeneration(uploadPlan.generation.id, {
         bucketPrefix: uploadPlan.generation.bucketPrefix,
         records: draft.dataSet.rows.length,
         downloadKey: zipUpload.key,
-        certificates: exported.digitalCertificates.map((certificate, index) => ({
+        certificates: exported.certificateFiles.map((certificate, index) => ({
           certificateId: certificate.certificateId,
-          key: digitalUploads[index]?.key ?? "",
+          key: certificateUploads[index]?.key ?? "",
           fileName: certificate.fileName,
-        })).filter((certificate) => certificate.key),
+        })).filter((certificate) => certificate.key && certificate.certificateId),
         status: "ready",
       });
       const generation: CertificateGeneration = {
@@ -379,6 +411,7 @@ export function useCertificateGenerator() {
     systemVariables,
     selectedArea,
     exporting,
+    savingDesignFlow,
     selectTemplate,
     addTemplate,
     removeTemplate,
