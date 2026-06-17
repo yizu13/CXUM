@@ -22,6 +22,7 @@ export interface CertificateZipExport {
   generation: CertificateGeneration;
   zipBlob: Blob;
   zipFileName: string;
+  certificateFiles: DigitalCertificateFile[];
   digitalCertificates: DigitalCertificateFile[];
 }
 
@@ -43,6 +44,7 @@ export async function exportCertificatesZip({
   const dateSlug = new Date().toISOString().replace(/[:.]/g, "-");
   const bucketPrefix = `certificados/${templateSlug}/${generationId}-${dateSlug}`;
   const hasQr = areas.some((area) => area.areaKind === "qr");
+  const certificateFiles: DigitalCertificateFile[] = [];
   const digitalCertificates: DigitalCertificateFile[] = [];
 
   await Promise.all(
@@ -56,12 +58,14 @@ export async function exportCertificatesZip({
       const personName = sanitizeFileName(row.nombre ?? row.name ?? `registro-${index + 1}`);
       const fileName = `${String(index + 1).padStart(3, "0")}-${personName}.pdf`;
       zip.file(`${bucketPrefix}/${fileName}`, bytes);
+      const certificateFile = {
+        certificateId,
+        fileName,
+        blob: new Blob([toArrayBuffer(bytes)], { type: "application/pdf" }),
+      };
+      certificateFiles.push(certificateFile);
       if (hasQr) {
-        digitalCertificates.push({
-          certificateId,
-          fileName,
-          blob: new Blob([toArrayBuffer(bytes)], { type: "application/pdf" }),
-        });
+        digitalCertificates.push(certificateFile);
       }
     }),
   );
@@ -83,6 +87,7 @@ export async function exportCertificatesZip({
     digitalCount: digitalCertificates.length,
     status: "ready",
     },
+    certificateFiles,
     digitalCertificates,
   };
 }
