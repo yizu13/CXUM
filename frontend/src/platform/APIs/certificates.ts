@@ -1,4 +1,5 @@
 import { apiFetch } from "./api";
+import type { TextAreaDefinition } from "../components/certificationsGenerator/types";
 
 export interface CertificateStoredTemplate {
   id: string;
@@ -34,6 +35,18 @@ export interface CertificateStoredFile {
   size?: number;
   lastModified?: string;
   fileName?: string;
+}
+
+export interface CertificateStoredDesignFlow {
+  id: string;
+  templateId: string;
+  templateName: string;
+  templateFileName: string;
+  areas: TextAreaDefinition[];
+  createdAt: string;
+  createdBy?: string;
+  updatedAt: string;
+  updatedBy?: string;
 }
 
 export interface UploadUrlFileInput {
@@ -80,6 +93,38 @@ export async function deleteCertificateTemplate(templateId: string, bucketPrefix
       method: "DELETE",
       body: JSON.stringify({ bucketPrefix }),
     },
+  );
+}
+
+export async function getCertificateDesignFlow(templateId: string) {
+  return apiFetch<{ design: CertificateStoredDesignFlow }>(
+    `/admin/certificates/designs/${encodeURIComponent(templateId)}`,
+  );
+}
+
+export async function saveCertificateDesignFlow(input: {
+  templateId: string;
+  templateName: string;
+  templateFileName: string;
+  areas: TextAreaDefinition[];
+}) {
+  return apiFetch<{ design: CertificateStoredDesignFlow }>(
+    `/admin/certificates/designs/${encodeURIComponent(input.templateId)}`,
+    {
+      method: "PUT",
+      body: JSON.stringify({
+        templateName: input.templateName,
+        templateFileName: input.templateFileName,
+        areas: input.areas,
+      }),
+    },
+  );
+}
+
+export async function deleteCertificateDesignFlow(templateId: string) {
+  return apiFetch<{ message: string; templateId: string }>(
+    `/admin/certificates/designs/${encodeURIComponent(templateId)}`,
+    { method: "DELETE" },
   );
 }
 
