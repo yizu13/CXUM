@@ -3,10 +3,18 @@ import { motion } from "motion/react";
 import { useSettings } from "../../hooks/context/SettingsContext";
 import { STATS } from "../../types/EnumsOurImpact";
 import StatCard from "../modularUI/StatsCards";
+import { useLanguage } from "../../i18n/LanguageContext";
 
 export default function OurImpact() {
   const { theme } = useSettings();
+  const { t } = useLanguage();
   const isDark = theme === "dark";
+  const impact = t("impact");
+  const translatedStats = STATS.map((stat, index) => ({
+    ...stat,
+    label: impact.stats[index].label,
+    description: impact.stats[index].description,
+  }));
 
   const sectionRef = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
@@ -62,7 +70,7 @@ export default function OurImpact() {
             initial="hidden"
             animate={inView ? "visible" : "exit"}
           >
-            Nuestro <span style={{ color: "#f59e0b" }}>impacto</span> en acción
+            {impact.titleStart} <span style={{ color: "#f59e0b" }}>{impact.titleHighlight}</span> {impact.titleEnd}
           </motion.h2>
 
           <motion.p
@@ -74,12 +82,7 @@ export default function OurImpact() {
             initial="hidden"
             animate={inView ? "visible" : "exit"}
           >
-            Cuadernos{" "}
-            <span className={isDark ? "text-white/70" : "text-slate-700"}>
-              X
-            </span>{" "}
-            Un Mañana recolecta, recicla y dona materiales educativos para que
-            ningún niño se quede sin aprender.
+            {impact.description}
           </motion.p>
 
           <motion.div
@@ -95,7 +98,7 @@ export default function OurImpact() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {STATS.map((stat, i) => (
+          {translatedStats.map((stat, i) => (
             <StatCard
               key={stat.label}
               stat={stat}

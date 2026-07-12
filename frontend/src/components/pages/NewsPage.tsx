@@ -8,6 +8,7 @@ import Footer from "../layout/Footer";
 import Iconify from "../modularUI/IconsMock";
 import type { NewsItem } from "../../types/newsSection";
 import { useNoticias } from "../../hooks/useNoticias";
+import { useLanguage } from "../../i18n/LanguageContext";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 // ALL_CATEGORIES se calcula dinámicamente desde los datos de la API
@@ -16,6 +17,9 @@ import { useNoticias } from "../../hooks/useNoticias";
 function HeroCard({ news }: { news: NewsItem; isDark: boolean }) {
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
+  const { t } = useLanguage();
+  const common = t("common");
+  const newsText = t("news");
 
   return (
     <motion.article
@@ -53,7 +57,7 @@ function HeroCard({ news }: { news: NewsItem; isDark: boolean }) {
           className="text-xs font-black px-3 py-1.5 rounded-full uppercase tracking-widest"
           style={{ background: "#f59e0b", color: "#fff" }}
         >
-          Destacado
+          {newsText.featured}
         </span>
         <span
           className="text-xs font-bold px-3 py-1.5 rounded-full"
@@ -73,7 +77,7 @@ function HeroCard({ news }: { news: NewsItem; isDark: boolean }) {
           <span>·</span>
           <span className="flex items-center gap-1">
             <Iconify Size={13} IconString="solar:clock-circle-bold-duotone" />
-            {news.readTime} min lectura
+            {news.readTime} {common.minRead}
           </span>
         </div>
 
@@ -96,7 +100,7 @@ function HeroCard({ news }: { news: NewsItem; isDark: boolean }) {
             animate={{ x: hovered ? 3 : 0 }}
             transition={{ duration: 0.2 }}
           >
-            Leer noticia <Iconify Size={14} IconString="solar:arrow-right-line-duotone" />
+            {common.readNews} <Iconify Size={14} IconString="solar:arrow-right-line-duotone" />
           </motion.span>
         </div>
       </div>
@@ -108,6 +112,8 @@ function HeroCard({ news }: { news: NewsItem; isDark: boolean }) {
 function SideCard({ news, index, isDark }: { news: NewsItem; index: number; isDark: boolean }) {
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
+  const { t } = useLanguage();
+  const common = t("common");
 
   return (
     <motion.article
@@ -166,7 +172,7 @@ function SideCard({ news, index, isDark }: { news: NewsItem; index: number; isDa
             style={{ color: isDark ? "rgba(255,255,255,0.3)" : "#94a3b8" }}
           >
             <Iconify Size={10} IconString="solar:clock-circle-bold-duotone" />
-            {news.readTime} min
+            {news.readTime} {common.min}
           </span>
         </div>
       </div>
@@ -178,6 +184,8 @@ function SideCard({ news, index, isDark }: { news: NewsItem; index: number; isDa
 function GridCard({ news, index, isDark }: { news: NewsItem; index: number; isDark: boolean }) {
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
+  const { t } = useLanguage();
+  const common = t("common");
 
   return (
     <motion.article
@@ -230,7 +238,7 @@ function GridCard({ news, index, isDark }: { news: NewsItem; index: number; isDa
           <span>·</span>
           <span className="flex items-center gap-1">
             <Iconify Size={12} IconString="solar:clock-circle-bold-duotone" />
-            {news.readTime} min
+            {news.readTime} {common.min}
           </span>
         </div>
 
@@ -266,7 +274,7 @@ function GridCard({ news, index, isDark }: { news: NewsItem; index: number; isDa
             animate={{ x: hovered ? 3 : 0 }}
             transition={{ duration: 0.2 }}
           >
-            Leer más <Iconify Size={12} IconString="solar:arrow-right-line-duotone" />
+            {common.readMore} <Iconify Size={12} IconString="solar:arrow-right-line-duotone" />
           </motion.span>
         </div>
       </div>
@@ -276,7 +284,10 @@ function GridCard({ news, index, isDark }: { news: NewsItem; index: number; isDa
 
 export default function NewsPage() {
   const { theme } = useSettings();
+  const { t } = useLanguage();
   const isDark = theme === "dark";
+  const common = t("common");
+  const newsText = t("news");
   const { items: NEWS_BY_DATE, loading } = useNoticias();
   useSEO();
 
@@ -285,7 +296,7 @@ export default function NewsPage() {
   const [activeCategory, setActiveCategory] = useState("Todas");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const ALL_CATEGORIES = ["Todas", ...Array.from(new Set(NEWS_BY_DATE.map((n) => n.category)))];
+  const ALL_CATEGORIES = [newsText.allCategory, ...Array.from(new Set(NEWS_BY_DATE.map((n) => n.category)))];
 
   useEffect(() => {
     const timer = setTimeout(() => setInView(true), 80);
@@ -293,7 +304,7 @@ export default function NewsPage() {
   }, []);
 
   const filtered = NEWS_BY_DATE.filter((n) => {
-    const matchCat = activeCategory === "Todas" || n.category === activeCategory;
+    const matchCat = activeCategory === "Todas" || activeCategory === newsText.allCategory || n.category === activeCategory;
     const q = searchQuery.toLowerCase();
     const matchSearch =
       !q ||
@@ -336,7 +347,7 @@ export default function NewsPage() {
               className="text-xs font-bold tracking-[0.25em] uppercase"
               style={{ color: "#f59e0b" }}
             >
-              Sala de Prensa
+              {newsText.pageEyebrow}
             </motion.span>
 
             <motion.h1
@@ -344,13 +355,13 @@ export default function NewsPage() {
               className={`font-black leading-tight tracking-tight ${textPrimary}`}
               style={{ fontSize: "clamp(2.4rem, 6vw, 4rem)" }}
             >
-              Todas las{" "}
+              {newsText.titleStart}{" "}
               <span style={{
                 background: "linear-gradient(135deg, #f59e0b, #fb923c)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
               }}>
-                Noticias
+                {newsText.titleHighlight}
               </span>
             </motion.h1>
 
@@ -358,8 +369,7 @@ export default function NewsPage() {
               variants={fadeUp(0.14)} initial="hidden" animate={inView ? "visible" : "hidden"}
               className={`max-w-md text-base leading-relaxed ${textSecondary}`}
             >
-              Mantente al día con el impacto real de nuestra comunidad,
-              de más reciente a más antiguo.
+              {newsText.subtitle}
             </motion.p>
 
             <motion.div
@@ -390,7 +400,7 @@ export default function NewsPage() {
               />
               <input
                 type="text"
-                placeholder="Buscar noticias…"
+                placeholder={newsText.searchPlaceholder}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className={`w-full pl-11 pr-4 py-3 rounded-2xl border text-sm font-medium outline-none
@@ -433,7 +443,7 @@ export default function NewsPage() {
           <AnimatePresence mode="wait">
             {loading ? (
               <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-center py-24">
-                <p className={`text-sm font-medium ${isDark ? "text-white/30" : "text-slate-400"}`}>Cargando noticias...</p>
+                <p className={`text-sm font-medium ${isDark ? "text-white/30" : "text-slate-400"}`}>{common.loadingNews}</p>
               </motion.div>
             ) : filtered.length === 0 ? (
               <motion.div
@@ -444,13 +454,13 @@ export default function NewsPage() {
                 className="flex flex-col items-center gap-4 py-24"
               >
                 <Iconify IconString="solar:document-text-bold-duotone" Size={52} Style={{ color: isDark ? "rgba(255,255,255,0.15)" : "#cbd5e1" }} />
-                <p className={`text-base font-semibold ${textSecondary}`}>No se encontraron noticias</p>
+                <p className={`text-base font-semibold ${textSecondary}`}>{newsText.noResults}</p>
                 <button
-                  onClick={() => { setActiveCategory("Todas"); setSearchQuery(""); }}
+                  onClick={() => { setActiveCategory(newsText.allCategory); setSearchQuery(""); }}
                   className="text-sm font-bold underline cursor-pointer bg-transparent border-none"
                   style={{ color: "#f59e0b" }}
                 >
-                  Limpiar filtros
+                  {common.clearFilters}
                 </button>
               </motion.div>
             ) : (
@@ -472,7 +482,7 @@ export default function NewsPage() {
                         className="text-[10px] font-black tracking-[0.2em] uppercase mb-3 px-2 mt-2 lg:mt-0"
                         style={{ color: isDark ? "rgba(255,255,255,0.3)" : "#94a3b8" }}
                       >
-                        Más noticias recientes
+                        {newsText.recentMore}
                       </p>
                       {sideNews.map((n, i) => (
                         <SideCard key={n.id} news={n} index={i} isDark={isDark} />
@@ -488,7 +498,7 @@ export default function NewsPage() {
                       className="text-[10px] font-black tracking-[0.2em] uppercase shrink-0"
                       style={{ color: isDark ? "rgba(255,255,255,0.25)" : "#94a3b8" }}
                     >
-                      Archivo
+                      {common.archive}
                     </span>
                     <div className={`flex-1 h-px ${isDark ? "bg-white/6" : "bg-black/5"}`} />
                   </div>
@@ -512,12 +522,12 @@ export default function NewsPage() {
               animate={inView ? { opacity: 1 } : { opacity: 0 }}
               transition={{ delay: 0.8 }}
             >
-              Mostrando{" "}
+              {newsText.showing}{" "}
               <span className="font-bold" style={{ color: "#f59e0b" }}>
                 {filtered.length}
               </span>{" "}
-              {filtered.length === 1 ? "noticia" : "noticias"}
-              {activeCategory !== "Todas" && ` en "${activeCategory}"`}
+              {filtered.length === 1 ? newsText.single : newsText.plural}
+              {activeCategory !== "Todas" && activeCategory !== newsText.allCategory && ` ${newsText.inCategory} "${activeCategory}"`}
             </motion.p>
           )}
 

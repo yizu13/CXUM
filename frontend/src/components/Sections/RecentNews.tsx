@@ -5,10 +5,14 @@ import { useSettings } from "../../hooks/context/SettingsContext";
 import Iconify from "../modularUI/IconsMock";
 import NewsCard from "../modularUI/NewsCard";
 import { useNoticias } from "../../hooks/useNoticias";
+import { useLanguage } from "../../i18n/LanguageContext";
 
 export default function RecentNews() {
   const { theme } = useSettings();
+  const { t } = useLanguage();
   const isDark = theme === "dark";
+  const recentNewsText = t("recentNews");
+  const common = t("common");
   const navigate = useNavigate();
   const { items, loading } = useNoticias();
   const recent = items.slice(0, 3);
@@ -67,8 +71,8 @@ export default function RecentNews() {
             initial="hidden"
             animate={inView ? "visible" : "exit"}
           >
-            Historias que{" "}
-            <span style={{ color: "#f59e0b" }}>Inspiran</span>
+            {recentNewsText.titleStart}{" "}
+            <span style={{ color: "#f59e0b" }}>{recentNewsText.titleHighlight}</span>
           </motion.h2>
 
           <motion.p
@@ -80,8 +84,7 @@ export default function RecentNews() {
             initial="hidden"
             animate={inView ? "visible" : "exit"}
           >
-            Conoce el impacto real de nuestro trabajo y las historias de
-            transformación.
+            {recentNewsText.description}
           </motion.p>
 
           <motion.div
@@ -96,7 +99,7 @@ export default function RecentNews() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {loading ? (
-            <p className="col-span-3 text-center text-sm py-8" style={{ color: isDark ? "rgba(255,255,255,0.3)" : "#94a3b8" }}>Cargando noticias...</p>
+            <p className="col-span-3 text-center text-sm py-8" style={{ color: isDark ? "rgba(255,255,255,0.3)" : "#94a3b8" }}>{common.loadingNews}</p>
           ) : recent.map((news, i) => (
             <NewsCard key={news.id} news={news} index={i} inView={inView} isDark={isDark} />
           ))}
@@ -113,7 +116,7 @@ export default function RecentNews() {
             className="group flex items-center gap-2 text-sm font-semibold cursor-pointer bg-transparent border-none outline-none"
             style={{ color: "#f59e0b" }}
           >
-            Ver todas las noticias
+            {recentNewsText.viewAll}
             <motion.span
               className="inline-flex"
               animate={{ x: 0 }}

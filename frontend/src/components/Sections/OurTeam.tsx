@@ -7,6 +7,7 @@ import AngelicaRoa from "../../assets/AngelicaRoa.png";
 import jomi from "../../assets/jomi.png";
 import DarlynContreras from "../../assets/DarlynConteras.png";
 import pendiente from "../../assets/pendiente.png";
+import { useLanguage } from "../../i18n/LanguageContext";
 
 const TEAM_MEMBERS = [
   {
@@ -57,8 +58,14 @@ const titleVariants = {
 
 export default function OurTeam() {
   const { theme } = useSettings();
+  const { t } = useLanguage();
   const isDark = theme === "dark";
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const team = t("team");
+  const teamMembers = TEAM_MEMBERS.map((member, index) => ({
+    ...member,
+    role: team.roles[index],
+  }));
 
   return (
     <section
@@ -87,9 +94,9 @@ export default function OurTeam() {
           initial="hidden"
           whileInView="visible"
         >
-          Las personas <span className="text-orange-500">detrás</span>
+          {team.titleStart} <span className="text-orange-500">{team.titleHighlight}</span>
           <br />
-          del cambio
+          {team.titleEnd}
         </motion.h2>
       </div>
 
@@ -106,7 +113,7 @@ export default function OurTeam() {
             visible: { transition: { staggerChildren: 0.1 } },
           }}
         >
-          {TEAM_MEMBERS.map((member, index) => {
+          {teamMembers.map((member, index) => {
             const isHovered = hoveredIndex === index;
             const someoneHovered = hoveredIndex !== null;
 
@@ -210,7 +217,7 @@ export default function OurTeam() {
 
       {/* Mobile: grid de tarjetas */}
       <div className="md:hidden relative z-10 grid grid-cols-2 gap-4 max-w-lg mx-auto">
-        {TEAM_MEMBERS.map((member, index) => (
+        {teamMembers.map((member, index) => (
           <motion.div
             key={index}
             initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}

@@ -3,6 +3,7 @@ import type { FieldValues, Path } from "react-hook-form";
 import { useState, useRef, useEffect, useId } from "react";
 import { useSettings } from "../../hooks/context/SettingsContext";
 import Iconify from "../modularUI/IconsMock";
+import { useLanguage } from "../../i18n/LanguageContext";
 
 interface SelectOption {
   value: string;
@@ -30,7 +31,9 @@ export default function RHFSelect<T extends FieldValues>({
 }: RHFSelectProps<T>) {
   const { control } = useFormContext<T>();
   const { theme } = useSettings();
+  const { t } = useLanguage();
   const isDark = theme === "dark";
+  const formUi = t("formUi");
   const id = useId();
 
   const [query, setQuery] = useState("");
@@ -150,7 +153,7 @@ export default function RHFSelect<T extends FieldValues>({
                   {selected && (
                     <span
                       role="button"
-                      aria-label="Limpiar"
+                      aria-label={formUi.clear}
                       onClick={(e) => { e.stopPropagation(); field.onChange(""); setQuery(""); }}
                       className="flex items-center justify-center w-4 h-4 rounded-full transition-all"
                       style={{ color: isDark ? "rgba(255,255,255,0.3)" : "#94a3b8" }}
@@ -194,7 +197,7 @@ export default function RHFSelect<T extends FieldValues>({
                         value={query}
                         onChange={(e) => { setQuery(e.target.value); setHighlighted(0); }}
                         onKeyDown={handleKey}
-                        placeholder="Buscar…"
+                        placeholder={formUi.search}
                         className={[
                           "w-full pl-8 pr-3 py-2 rounded-lg text-xs font-medium outline-none border transition-all",
                           isDark
@@ -242,7 +245,7 @@ export default function RHFSelect<T extends FieldValues>({
                     </style>
                     {filtered.length === 0 ? (
                       <li className={`px-3 py-3 text-xs text-center ${isDark ? "text-white/30" : "text-slate-400"}`}>
-                        Sin resultados para «{query}»
+                        {formUi.noResultsFor} «{query}»
                       </li>
                     ) : (
                       filtered.map((opt, idx) => {
@@ -270,7 +273,7 @@ export default function RHFSelect<T extends FieldValues>({
 
                   <div className={`px-3 py-2 border-t text-[10px] flex items-center gap-1.5 ${isDark ? "border-white/4 text-white/20" : "border-black/4 text-slate-300"}`}>
                     <Iconify IconString="solar:keyboard-bold-duotone" Size={10} />
-                    <span>↑↓ navegar &nbsp;·&nbsp; Enter seleccionar &nbsp;·&nbsp; Esc cerrar</span>
+                    <span>{formUi.keyboardHint}</span>
                   </div>
                 </div>
               )}

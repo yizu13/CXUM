@@ -5,6 +5,7 @@ import { useAnimation } from "../../hooks/context/AnimationContext";
 import ourWork1 from "../../assets/ourWork1.jpg";
 import ourWork2 from "../../assets/ourWork2.jpg";
 import ourWork3 from "../../assets/ourWork3.jpeg";
+import { useLanguage } from "../../i18n/LanguageContext";
 
 const SLIDES = [
   {
@@ -36,7 +37,9 @@ function mod(n: number, m: number) {
 export default function OurWork() {
   const { theme } = useSettings();
   const { navReady } = useAnimation();
+  const { t } = useLanguage();
   const isDark = theme === "dark";
+  const slidesText = t("ourWork").slides;
 
   const [active, setActive] = useState(0);
   const [direction, setDirection] = useState<1 | -1>(1);
@@ -113,6 +116,7 @@ export default function OurWork() {
   };
 
   const accentColor = SLIDES[active].accent;
+  const activeSlide = { ...SLIDES[active], ...slidesText[active] };
 
   return (
     <motion.div
@@ -142,7 +146,7 @@ export default function OurWork() {
           >
             <img
               src={SLIDES[active].src}
-              alt={SLIDES[active].label}
+              alt={activeSlide.label}
               className="w-full h-full object-cover"
               draggable={false}
             />
@@ -190,7 +194,7 @@ export default function OurWork() {
                       transition: "-webkit-text-stroke 0.4s ease",
                     }}
                   >
-                    {slide.label}
+                    {slidesText[i].label}
                   </span>
 
                   <motion.span
@@ -202,7 +206,7 @@ export default function OurWork() {
                     }}
                     transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
                   >
-                    {slide.label}
+                    {slidesText[i].label}
                   </motion.span>
 
                   <AnimatePresence>
@@ -232,7 +236,7 @@ export default function OurWork() {
                 exit={{ opacity: 0, y: -10, filter: "blur(4px)" }}
                 transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
               >
-                {SLIDES[active].sub}
+                {activeSlide.sub}
               </motion.p>
             </AnimatePresence>
           </div>

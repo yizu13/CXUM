@@ -1,12 +1,13 @@
 import { motion } from "framer-motion";
 import { useSettings } from "../../hooks/context/SettingsContext";
-import imageWithOutBackground from "../../assets/QuiénesSomos.png"
+import imageWithOutBackground from "../../assets/QuiénesSomos.png";
+import { useLanguage } from "../../i18n/LanguageContext";
 
 const textVariants = {
-  hidden: { 
-    opacity: 0, 
-    y: 30, 
-    filter: "blur(10px)" 
+  hidden: {
+    opacity: 0,
+    y: 30,
+    filter: "blur(10px)",
   },
   visible: (i: number) => ({
     opacity: 1,
@@ -22,20 +23,22 @@ const textVariants = {
 
 export default function WhoWeAre() {
   const { theme } = useSettings();
+  const { t } = useLanguage();
   const isDark = theme === "dark";
+  const whoWeAre = t("whoWeAre");
 
   return (
-    <section 
-    id="Quiénessomos"
+    <section
+      id="Quiénessomos"
       className={`relative flex flex-col md:flex-row items-center justify-between w-full min-h-[80vh] px-6 sm:px-8 py-16 sm:py-20 gap-10 sm:gap-12 overflow-hidden transition-colors duration-500 ${
         isDark ? "bg-[#05070b]" : "bg-[#f4f4ef]"
       }`}
     >
-      <motion.div 
+      <motion.div
         className="relative flex justify-center items-center w-full md:w-1/2"
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: false, amount: 0.3 }} 
+        viewport={{ once: false, amount: 0.3 }}
         variants={textVariants}
         custom={0}
       >
@@ -44,9 +47,9 @@ export default function WhoWeAre() {
             src={imageWithOutBackground}
             alt=""
             className="absolute bottom-1 left-1/2 rounded-full -translate-x-7/12 w-[220%] max-w-none"
-            style={{ 
-                maskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)',
-                WebkitMaskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)' 
+            style={{
+              maskImage: "linear-gradient(to bottom, black 80%, transparent 100%)",
+              WebkitMaskImage: "linear-gradient(to bottom, black 85%, transparent 100%)",
             }}
           />
         </div>
@@ -64,10 +67,10 @@ export default function WhoWeAre() {
           whileInView="visible"
           viewport={{ once: false, amount: 0.3 }}
         >
-          ¿Quiénes <span className="text-orange-500">somos?</span>
+          {whoWeAre.titleStart} <span className="text-orange-500">{whoWeAre.titleHighlight}</span>
         </motion.h1>
-        
-        <motion.p 
+
+        <motion.p
           className={`text-lg max-w-xl ${isDark ? "text-slate-400" : "text-slate-600"}`}
           variants={textVariants}
           custom={2}
@@ -75,7 +78,7 @@ export default function WhoWeAre() {
           whileInView="visible"
           viewport={{ once: false, amount: 0.3 }}
         >
-          En Cuadernos X Un Mañana recolectamos cuadernos usados al final de cada año escolar y les damos una segunda vida. Estas páginas rescatadas se convierten en nuevos cuadernos que donamos a estudiantes que no cuentan con los recursos para comprarlos.
+          {whoWeAre.description}
         </motion.p>
       </div>
     </section>

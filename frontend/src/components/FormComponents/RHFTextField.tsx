@@ -3,6 +3,7 @@ import type { FieldValues, Path } from "react-hook-form";
 import { useRef, useEffect, useState } from "react";
 import { useSettings } from "../../hooks/context/SettingsContext";
 import Iconify from "../modularUI/IconsMock";
+import { useLanguage } from "../../i18n/LanguageContext";
 
 // ─── Inputmask lazy-loaded (only when needed) ────────────────────────────────
 type MaskMode = "cedula" | "phone" | "phone-intl" | "none";
@@ -65,7 +66,9 @@ export default function RHFTextField<T extends FieldValues>({
 }: RHFTextFieldProps<T>) {
   const { control } = useFormContext<T>();
   const { theme } = useSettings();
+  const { t } = useLanguage();
   const isDark = theme === "dark";
+  const documentText = t("volunteerForm").document;
   const inputRef = useRef<HTMLInputElement>(null);
 
   // document toggle: false = cédula (masked), true = pasaporte (free)
@@ -144,7 +147,7 @@ export default function RHFTextField<T extends FieldValues>({
                   className={`${TOGGLE_BASE} ${!isPassport ? toggleActive : toggleInactive}`}
                 >
                   <Iconify IconString="solar:card-bold-duotone" Size={12} />
-                  Cédula
+                  {documentText.nationalId}
                 </button>
                 <button
                   type="button"
@@ -152,7 +155,7 @@ export default function RHFTextField<T extends FieldValues>({
                   className={`${TOGGLE_BASE} ${isPassport ? toggleActive : toggleInactive}`}
                 >
                   <Iconify IconString="solar:passport-bold-duotone" Size={12} />
-                  Pasaporte
+                  {documentText.passport}
                 </button>
               </div>
             )}
@@ -165,7 +168,7 @@ export default function RHFTextField<T extends FieldValues>({
                   className={`${TOGGLE_BASE} ${!isIntlPhone ? toggleActive : toggleInactive}`}
                 >
                   <Iconify IconString="solar:phone-bold-duotone" Size={12} />
-                  Convencional
+                  {documentText.conventional}
                 </button>
                 <button
                   type="button"
@@ -173,7 +176,7 @@ export default function RHFTextField<T extends FieldValues>({
                   className={`${TOGGLE_BASE} ${isIntlPhone ? toggleActive : toggleInactive}`}
                 >
                   <Iconify IconString="solar:global-bold-duotone" Size={12} />
-                  Internacional
+                  {documentText.international}
                 </button>
               </div>
             )}
