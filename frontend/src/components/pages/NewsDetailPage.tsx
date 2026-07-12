@@ -8,6 +8,7 @@ import Footer from "../layout/Footer";
 import Iconify from "../modularUI/IconsMock";
 import type { NewsItem } from "../../types/newsSection";
 import { useNoticia, useNoticias } from "../../hooks/useNoticias";
+import { useLanguage } from "../../i18n/LanguageContext";
 
 // ─── Related Card ─────────────────────────────────────────────────────────────
 function RelatedCard({
@@ -21,6 +22,8 @@ function RelatedCard({
 }) {
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
+  const { t } = useLanguage();
+  const common = t("common");
 
   return (
     <motion.article
@@ -76,7 +79,7 @@ function RelatedCard({
           animate={{ x: hovered ? 3 : 0 }}
           transition={{ duration: 0.2 }}
         >
-          Leer más <Iconify Size={11} IconString="solar:arrow-right-line-duotone" />
+          {common.readMore} <Iconify Size={11} IconString="solar:arrow-right-line-duotone" />
         </motion.span>
       </div>
     </motion.article>
@@ -112,7 +115,10 @@ export default function NewsDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { theme } = useSettings();
+  const { t } = useLanguage();
   const isDark = theme === "dark";
+  const common = t("common");
+  const newsText = t("news");
 
   const [inView, setInView] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
@@ -155,7 +161,7 @@ export default function NewsDetailPage() {
       <>
         <NavBar />
         <section className={`min-h-screen flex items-center justify-center ${isDark ? "bg-[#05070b]" : "bg-[#f8fafc]"}`}>
-          <p className={`text-sm font-medium ${isDark ? "text-white/30" : "text-slate-400"}`}>Cargando...</p>
+          <p className={`text-sm font-medium ${isDark ? "text-white/30" : "text-slate-400"}`}>{common.loading}</p>
         </section>
         <Footer />
       </>
@@ -178,10 +184,10 @@ export default function NewsDetailPage() {
             Style={{ color: isDark ? "rgba(255,255,255,0.12)" : "#cbd5e1" }}
           />
           <h2 className={`text-2xl font-black ${isDark ? "text-white" : "text-slate-900"}`}>
-            Noticia no encontrada
+            {newsText.notFoundTitle}
           </h2>
           <p className={`text-sm ${isDark ? "text-white/40" : "text-slate-500"}`}>
-            El artículo que buscas no existe o fue eliminado.
+            {newsText.notFoundText}
           </p>
           <button
             onClick={() => navigate("/Noticias")}
@@ -189,7 +195,7 @@ export default function NewsDetailPage() {
             style={{ background: "linear-gradient(135deg, #f59e0b, #fb923c)", color: "#fff" }}
           >
             <Iconify Size={14} IconString="solar:arrow-left-line-duotone" />
-            Volver a noticias
+            {newsText.backToNews}
           </button>
         </section>
         <Footer />
@@ -261,7 +267,7 @@ export default function NewsDetailPage() {
             >
               <Iconify Size={15} IconString="solar:arrow-left-line-duotone" />
             </motion.span>
-            <span className="group-hover:underline">Sala de Prensa</span>
+            <span className="group-hover:underline">{common.pressRoom}</span>
             <span style={{ color: isDark ? "rgba(255,255,255,0.2)" : "#cbd5e1" }}>/</span>
             <span
               className="truncate max-w-[180px] sm:max-w-xs"
@@ -288,7 +294,7 @@ export default function NewsDetailPage() {
               className="text-[10px] font-bold tracking-[0.2em] uppercase"
               style={{ color: isDark ? "rgba(255,255,255,0.3)" : "#94a3b8" }}
             >
-              Sala de Prensa · CXUM
+              {common.pressRoom} · CXUM
             </span>
           </motion.div>
 
@@ -313,7 +319,7 @@ export default function NewsDetailPage() {
             <StatPill icon="solar:calendar-bold-duotone" label={news.date} isDark={isDark} />
             <StatPill
               icon="solar:clock-circle-bold-duotone"
-              label={`${news.readTime} min de lectura`}
+              label={`${news.readTime} ${common.minutesRead}`}
               isDark={isDark}
             />
             <StatPill icon="solar:user-bold-duotone" label={news.author} isDark={isDark} />
@@ -376,7 +382,7 @@ export default function NewsDetailPage() {
                 <div dangerouslySetInnerHTML={{ __html: news.contenido }} />
               ) : (
                 <p className="text-center py-8" style={{ color: isDark ? "rgba(255,255,255,0.3)" : "#94a3b8" }}>
-                  No hay contenido disponible para esta noticia.
+                  {newsText.noContent}
                 </p>
               )}
             </div>
@@ -395,7 +401,7 @@ export default function NewsDetailPage() {
                 <div>
                   <p className={`text-sm font-bold ${textPrimary}`}>{news.author}</p>
                   <p className="text-[11px]" style={{ color: isDark ? "rgba(255,255,255,0.3)" : "#94a3b8" }}>
-                    Colaborador · Fundación CXUM
+                    {newsText.collaborator} · {newsText.foundation}
                   </p>
                 </div>
               </div>
@@ -409,7 +415,7 @@ export default function NewsDetailPage() {
                 }}
               >
                 <Iconify Size={13} IconString="solar:arrow-left-line-duotone" />
-                Todas las noticias
+                {newsText.allNews}
               </button>
             </div>
           </motion.article>
@@ -428,7 +434,7 @@ export default function NewsDetailPage() {
                   className="text-[10px] font-black tracking-[0.25em] uppercase shrink-0"
                   style={{ color: isDark ? "rgba(255,255,255,0.25)" : "#94a3b8" }}
                 >
-                  También te puede interesar
+                  {newsText.related}
                 </span>
                 <div className="h-px flex-1" style={{ background: divider }} />
               </div>

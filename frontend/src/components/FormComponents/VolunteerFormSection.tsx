@@ -21,6 +21,7 @@ import {
 
 
 import { submitVolunteer } from "../../platform/APIs/solicitudes";
+import { useLanguage } from "../../i18n/LanguageContext";
 
 async function submitVolunteerForm(data: VolunteerFormValues): Promise<void> {
   await submitVolunteer(data);
@@ -84,7 +85,13 @@ function Divider({ isDark }: { isDark: boolean }) {
 
 export default function VolunteerFormSection() {
   const { theme } = useSettings();
+  const { t } = useLanguage();
   const isDark = theme === "dark";
+  const volunteerText = t("volunteerForm");
+  const areaOptions = AREA_OPTIONS.map((option, index) => ({ ...option, label: volunteerText.options.areas[index] }));
+  const availabilityOptions = AVAILABILITY_OPTIONS.map((option, index) => ({ ...option, label: volunteerText.options.availability[index] }));
+  const educationOptions = EDUCATION_OPTIONS.map((option, index) => ({ ...option, label: volunteerText.options.education[index] }));
+  const referralOptions = REFERRAL_OPTIONS.map((option, index) => ({ ...option, label: volunteerText.options.referral[index] }));
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const methods = useForm<VolunteerFormValues>({
@@ -99,10 +106,10 @@ export default function VolunteerFormSection() {
   const onSubmit = async (data: VolunteerFormValues) => {
     try {
       await submitVolunteerForm(data);
-      enqueueSnackbar("¡Solicitud enviada! Nos pondremos en contacto contigo.", { variant: "success" });
+      enqueueSnackbar(volunteerText.success, { variant: "success" });
       reset();
     } catch {
-      enqueueSnackbar("Ocurrió un error al enviar la solicitud. Por favor intenta nuevamente.", { variant: "error" });
+      enqueueSnackbar(volunteerText.error, { variant: "error" });
     }
   };
 
@@ -116,20 +123,20 @@ export default function VolunteerFormSection() {
         <div className="flex flex-col gap-8">
 
           <div className="flex flex-col gap-3">
-            <SectionLabel icon="solar:user-bold-duotone" label="Información Personal" isDark={isDark} />
+            <SectionLabel icon="solar:user-bold-duotone" label={volunteerText.personalInfo} isDark={isDark} />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <RHFTextField<VolunteerFormValues>
                 name="firstName"
-                label="Nombre"
-                placeholder="Tu nombre"
+                label={volunteerText.firstName}
+                placeholder={volunteerText.firstNamePlaceholder}
                 required
                 autoComplete="given-name"
               />
               <RHFTextField<VolunteerFormValues>
                 name="lastName"
-                label="Apellido"
-                placeholder="Tu apellido"
+                label={volunteerText.lastName}
+                placeholder={volunteerText.lastNamePlaceholder}
                 required
                 autoComplete="family-name"
               />
@@ -138,13 +145,13 @@ export default function VolunteerFormSection() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <RHFTextField<VolunteerFormValues>
                 name="idDocument"
-                label="Documento de Identidad"
+                label={volunteerText.idDocument}
                 required
                 documentMode
               />
               <RHFDatePicker<VolunteerFormValues>
                 name="birthDate"
-                label="Fecha de Nacimiento"
+                label={volunteerText.birthDate}
                 required
                 maxDate={new Date()}
               />
@@ -152,8 +159,8 @@ export default function VolunteerFormSection() {
 
             <RHFTextField<VolunteerFormValues>
               name="address"
-              label="Dirección"
-              placeholder="Calle, sector, ciudad"
+              label={volunteerText.address}
+              placeholder={volunteerText.addressPlaceholder}
               autoComplete="street-address"
             />
           </div>
@@ -161,12 +168,12 @@ export default function VolunteerFormSection() {
           <Divider isDark={isDark} />
 
           <div className="flex flex-col gap-3">
-            <SectionLabel icon="solar:phone-bold-duotone" label="Datos de Contacto" isDark={isDark} />
+            <SectionLabel icon="solar:phone-bold-duotone" label={volunteerText.contactData} isDark={isDark} />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <RHFTextField<VolunteerFormValues>
                 name="email"
-                label="Correo Electrónico"
+                label={volunteerText.email}
                 placeholder="correo@ejemplo.com"
                 type="email"
                 required
@@ -174,7 +181,7 @@ export default function VolunteerFormSection() {
               />
               <RHFTextField<VolunteerFormValues>
                 name="phone"
-                label="Teléfono / WhatsApp"
+                label={volunteerText.phone}
                 type="tel"
                 required
                 autoComplete="tel"
@@ -184,34 +191,34 @@ export default function VolunteerFormSection() {
 
             <RHFTextField<VolunteerFormValues>
               name="socialMedia"
-              label="Redes Sociales"
-              placeholder="@tu_usuario (Instagram, Facebook, etc.)"
+              label={volunteerText.socialMedia}
+              placeholder={volunteerText.socialMediaPlaceholder}
             />
           </div>
 
           <Divider isDark={isDark} />
 
           <div className="flex flex-col gap-3">
-            <SectionLabel icon="solar:bag-bold-duotone" label="Perfil Profesional" isDark={isDark} />
+            <SectionLabel icon="solar:bag-bold-duotone" label={volunteerText.professionalProfile} isDark={isDark} />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <RHFTextField<VolunteerFormValues>
                 name="occupation"
-                label="Profesión / Ocupación"
-                placeholder="Estudiante, Ingeniero, Médico…"
+                label={volunteerText.occupation}
+                placeholder={volunteerText.occupationPlaceholder}
               />
               <RHFSelect<VolunteerFormValues>
                 name="educationLevel"
-                label="Nivel de Educación"
-                options={EDUCATION_OPTIONS}
-                placeholder="Selecciona tu nivel"
+                label={volunteerText.educationLevel}
+                options={educationOptions}
+                placeholder={volunteerText.educationPlaceholder}
               />
             </div>
 
             <RHFTextArea<VolunteerFormValues>
               name="skills"
-              label="Habilidades y Experiencia"
-              placeholder="Describe brevemente tus habilidades, experiencias previas en voluntariado o áreas de interés…"
+              label={volunteerText.skills}
+              placeholder={volunteerText.skillsPlaceholder}
               rows={4}
             />
           </div>
@@ -220,14 +227,14 @@ export default function VolunteerFormSection() {
 
           {/* ── 4. Áreas de Interés ── */}
           <div className="flex flex-col gap-3">
-            <SectionLabel icon="solar:star-bold-duotone" label="Áreas de Interés" isDark={isDark} />
+            <SectionLabel icon="solar:star-bold-duotone" label={volunteerText.interestAreas} isDark={isDark} />
             <p className={`text-xs ${textSecondary}`}>
-              Selecciona una o más áreas en las que te gustaría colaborar:
+              {volunteerText.interestHint}
             </p>
             <RHFChipGroup<VolunteerFormValues>
               name="areas"
               label=""
-              options={AREA_OPTIONS}
+              options={areaOptions}
               multiple
               required
             />
@@ -237,19 +244,19 @@ export default function VolunteerFormSection() {
 
           {/* ── 5. Disponibilidad ── */}
           <div className="flex flex-col gap-3">
-            <SectionLabel icon="solar:calendar-bold-duotone" label="Disponibilidad" isDark={isDark} />
+            <SectionLabel icon="solar:calendar-bold-duotone" label={volunteerText.availability} isDark={isDark} />
 
             <RHFChipGroup<VolunteerFormValues>
               name="availability"
-              label="¿Cuándo estás disponible?"
-              options={AVAILABILITY_OPTIONS}
+              label={volunteerText.availabilityQuestion}
+              options={availabilityOptions}
               required
             />
 
             <RHFTextField<VolunteerFormValues>
               name="weeklyHours"
-              label="¿Horas semanales disponibles?"
-              placeholder="Ej: 5 horas"
+              label={volunteerText.weeklyHours}
+              placeholder={volunteerText.weeklyHoursPlaceholder}
             />
           </div>
 
@@ -257,21 +264,21 @@ export default function VolunteerFormSection() {
 
           {/* ── 6. Motivación ── */}
           <div className="flex flex-col gap-3">
-            <SectionLabel icon="solar:heart-bold-duotone" label="Motivación" isDark={isDark} />
+            <SectionLabel icon="solar:heart-bold-duotone" label={volunteerText.motivation} isDark={isDark} />
 
             <RHFTextArea<VolunteerFormValues>
               name="motivation"
-              label="¿Por qué quieres ser voluntario en CXUM?"
-              placeholder="Cuéntanos qué te motiva, qué esperas aportar y qué esperas aprender…"
+              label={volunteerText.motivationQuestion}
+              placeholder={volunteerText.motivationPlaceholder}
               rows={4}
               required
             />
 
             <RHFSelect<VolunteerFormValues>
               name="referral"
-              label="¿Cómo te enteraste de CXUM?"
-              options={REFERRAL_OPTIONS}
-              placeholder="Selecciona una opción"
+              label={volunteerText.referral}
+              options={referralOptions}
+              placeholder={volunteerText.referralPlaceholder}
             />
           </div>
 
@@ -279,26 +286,26 @@ export default function VolunteerFormSection() {
 
           {/* ── 7. Contacto de Emergencia ── */}
           <div className="flex flex-col gap-3">
-            <SectionLabel icon="solar:shield-bold-duotone" label="Contacto de Emergencia" isDark={isDark} />
+            <SectionLabel icon="solar:shield-bold-duotone" label={volunteerText.emergencyContact} isDark={isDark} />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <RHFTextField<VolunteerFormValues>
                 name="emergencyName"
-                label="Nombre Completo"
-                placeholder="Nombre de contacto"
+                label={volunteerText.emergencyName}
+                placeholder={volunteerText.emergencyNamePlaceholder}
                 required
               />
               <RHFTextField<VolunteerFormValues>
                 name="emergencyRelation"
-                label="Relación"
-                placeholder="Madre, Padre, Hermano/a…"
+                label={volunteerText.emergencyRelation}
+                placeholder={volunteerText.emergencyRelationPlaceholder}
                 required
               />
             </div>
 
             <RHFTextField<VolunteerFormValues>
               name="emergencyPhone"
-              label="Teléfono de Emergencia"
+              label={volunteerText.emergencyPhone}
               type="tel"
               required
               phoneMode
@@ -310,9 +317,7 @@ export default function VolunteerFormSection() {
               name="acceptTerms"
               label={
                 <>
-                  Acepto{" "}
-                  y autorizo el uso de mis datos para fines relacionados con el
-                  voluntariado en CXUM.
+                  {volunteerText.terms}
                 </>
               }
             />
@@ -346,7 +351,7 @@ export default function VolunteerFormSection() {
                       <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.3)" strokeWidth="3" />
                       <path d="M12 2a10 10 0 0 1 10 10" stroke="#fff" strokeWidth="3" strokeLinecap="round" />
                     </svg>
-                    Enviando solicitud…
+                    {volunteerText.sending}
                   </motion.span>
                 ) : (
                   <motion.span
@@ -357,7 +362,7 @@ export default function VolunteerFormSection() {
                     className="flex items-center gap-2"
                   >
                     <Iconify IconString="solar:file-send-bold-duotone" Size={20} />
-                    Enviar Solicitud
+                    {volunteerText.submit}
                   </motion.span>
                 )}
               </AnimatePresence>
@@ -365,7 +370,7 @@ export default function VolunteerFormSection() {
 
             {!isSubmitting && (
               <p className={`text-center text-xs ${textSecondary}`}>
-                ¡Gracias por tu interés en ser parte de CXUM!
+                {volunteerText.thanks}
               </p>
             )}
           </div>

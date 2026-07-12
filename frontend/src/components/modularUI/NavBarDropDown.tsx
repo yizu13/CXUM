@@ -2,8 +2,20 @@ import { AnimatePresence, motion } from "framer-motion"
 import Iconify from "./IconsMock"
 import { InfoCards, type DropDownProps, type VariantCard1, type VariantCard2 } from "../../types/NavBarLinks"
 import { useLocation, useNavigate } from "react-router-dom";
+import { useLanguage } from "../../i18n/LanguageContext";
+
+const getCardTextIndex = (groupIndex: number, sectionIndex: number, cardIndex: number) =>
+    InfoCards.slice(0, groupIndex).reduce(
+        (total, group) => total + group.sections.reduce((sum, section) => sum + section.cards.length, 0),
+        0,
+    ) +
+    InfoCards[groupIndex].sections.slice(0, sectionIndex).reduce((sum, section) => sum + section.cards.length, 0) +
+    cardIndex;
 
 export default function NavBarDropDown({ show, cardWidth, setFlag, contentRef, activeIndex, glassStyles }: DropDownProps) {
+    const { t } = useLanguage();
+    const navCards = t("nav").cards;
+
     return (
         <AnimatePresence>
             {show && (
@@ -41,30 +53,34 @@ export default function NavBarDropDown({ show, cardWidth, setFlag, contentRef, a
                                     >
                                         {n.sections.map((h, l) => (
                                             <div key={l} className="w-auto flex-col p-5">
-                                                {h.cards.map((m, q) => (
-                                                    <div key={q}>
-                                                        {m.cardType === 1 && (
-                                                            <CardVariant1
-                                                                title={m.cardTitle}
-                                                                subTitle={m.CardSubtitle}
-                                                                IconString={m.IconsString}
-                                                                link={m.link}
-                                                                glassStyles={glassStyles}
-                                                                currentPath={m.path}
-                                                            />
-                                                        )}
-                                                        {m.cardType === 2 && (
-                                                            <CardVariant2
-                                                                title={m.cardTitle}
-                                                                link={m.link}
-                                                                glassStyles={glassStyles}
-                                                                IconString={m.IconsString}
-                                                                currentPath={m.path}
-                                                            />
-                                                        )}
-                                                        {m.cardType === 3 && <></>}
-                                                    </div>
-                                                ))}
+                                                {h.cards.map((m, q) => {
+                                                    const translated = navCards[getCardTextIndex(i, l, q)];
+
+                                                    return (
+                                                        <div key={q}>
+                                                            {m.cardType === 1 && (
+                                                                <CardVariant1
+                                                                    title={translated.title}
+                                                                    subTitle={translated.subtitle}
+                                                                    IconString={m.IconsString}
+                                                                    link={m.link}
+                                                                    glassStyles={glassStyles}
+                                                                    currentPath={m.path}
+                                                                />
+                                                            )}
+                                                            {m.cardType === 2 && (
+                                                                <CardVariant2
+                                                                    title={translated.title}
+                                                                    link={m.link}
+                                                                    glassStyles={glassStyles}
+                                                                    IconString={m.IconsString}
+                                                                    currentPath={m.path}
+                                                                />
+                                                            )}
+                                                            {m.cardType === 3 && <></>}
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
                                         ))}
                                     </motion.div>

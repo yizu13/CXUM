@@ -4,15 +4,18 @@ import { motion } from "motion/react";
 import { useSettings } from "../../hooks/context/SettingsContext";
 import { useAnimation } from "../../hooks/context/AnimationContext";
 import DefaultButton from "../modularUI/GeneralButton";
-import { AVATARS, palabrasRelacionadas, ROWS } from "../../types/EnumHero";
+import { AVATARS, ROWS } from "../../types/EnumHero";
 import FloatingAvatar from "../modularUI/FloatingAvatar";
 import { useNavigate } from "react-router-dom";
+import { useLanguage } from "../../i18n/LanguageContext";
 
 export default function Hero() {
   const { theme } = useSettings();
   const { navReady } = useAnimation();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const isDark = theme === "dark";
+  const hero = t("hero");
   const sectionRef = useRef<HTMLElement>(null);
   const [mouse, setMouse] = useState({ x: 0.5, y: 0.5 });
 
@@ -84,7 +87,7 @@ export default function Hero() {
               pauseOnHover={false}
               style={{ overflow: "hidden" }}
             >
-              {palabrasRelacionadas.map((word) => (
+              {hero.words.map((word) => (
                 <span
                   key={word}
                   className={`select-none font-black uppercase leading-none tracking-[-0.05em] ${wordColor}`}
@@ -137,12 +140,12 @@ export default function Hero() {
             initial="hidden"
             animate={navReady ? "visible" : "hidden"}
           >
-            Construyendo oportunidades,
+            {hero.titleLine1}
             <br />
             <span
               className={`cursor-default ${isDark ? "text-white/70" : "text-slate-950/70"}`}
             >
-              hoy para un mañana mejor
+              {hero.titleLine2}
             </span>
           </motion.h1>
 
@@ -155,8 +158,7 @@ export default function Hero() {
             initial="hidden"
             animate={navReady ? "visible" : "hidden"}
           >
-            Transformamos vidas a través del voluntariado, la educación y el
-            compromiso con el medio ambiente en República Dominicana.
+            {hero.description}
           </motion.p>
 
           <motion.div
@@ -167,11 +169,11 @@ export default function Hero() {
             animate={navReady ? "visible" : "hidden"}
           >
             <DefaultButton 
-              textString="Ser Centro de Acopio" 
+              textString={hero.collectionCta} 
               onClick={() => navigate("/Contacto")}
             />
             <DefaultButton 
-              textString="Quiero Ser Voluntario" 
+              textString={hero.volunteerCta} 
               inverted 
               onClick={() => navigate("/Voluntarios")}
             />

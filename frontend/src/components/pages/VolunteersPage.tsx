@@ -7,6 +7,7 @@ import Footer from "../layout/Footer";
 import Iconify from "../modularUI/IconsMock";
 import { VOLUNTEER_MEMBERS, type VolunteerMember } from "../../types/EnumsVolunteers";
 import { VolunteerFormSection } from "../FormComponents";
+import { useLanguage } from "../../i18n/LanguageContext";
 
 interface AvatarCardProps {
   member: VolunteerMember;
@@ -99,7 +100,9 @@ function AvatarCard({ member, isDark, textPrimary }: AvatarCardProps) {
 
 export default function VolunteersPage() {
   const { theme } = useSettings();
+  const { t } = useLanguage();
   const isDark = theme === "dark";
+  const volunteers = t("volunteers");
   useSEO();
 
   const sectionRef = useRef<HTMLElement>(null);
@@ -154,7 +157,7 @@ export default function VolunteersPage() {
                 className={`font-black leading-tight tracking-tight ${textPrimary}`}
                 style={{ fontSize: "clamp(2.2rem, 5.5vw, 4rem)" }}
               >
-                Estos ya forman{" "}
+                {volunteers.titleStart}{" "}
                 <span
                   style={{
                     background: "linear-gradient(135deg, #f59e0b, #fb923c)",
@@ -162,7 +165,7 @@ export default function VolunteersPage() {
                     WebkitTextFillColor: "transparent",
                   }}
                 >
-                  parte de nuestro equipo
+                  {volunteers.titleHighlight}
                 </span>
               </motion.h1>
 
@@ -170,8 +173,7 @@ export default function VolunteersPage() {
                 variants={fadeUp(0.16)} initial="hidden" animate={inView ? "visible" : "hidden"}
                 className={`max-w-lg text-base leading-relaxed ${textSecondary}`}
               >
-                Más de 200 personas comprometidas con el cambio. Cada uno aporta
-                su talento, tiempo y corazón para construir una mejor comunidad.
+                {volunteers.subtitle}
               </motion.p>
 
               <motion.div
@@ -198,7 +200,7 @@ export default function VolunteersPage() {
               whileTap={{ scale: 0.94 }}
             >
               <Iconify Size={22} IconString="duo-icons:folder-open" />
-              Quiero unirme ya
+              {volunteers.joinNow}
             </motion.button>
 
             <motion.div
@@ -242,7 +244,7 @@ export default function VolunteersPage() {
             >
               <div className={`flex items-center gap-3 text-sm font-semibold ${textSecondary}`}>
                 <div className={`h-px w-16 ${isDark ? "bg-white/10" : "bg-black/10"}`} />
-                ¿Quieres ser parte de él también?
+                {volunteers.wantJoin}
                 <div className={`h-px w-16 ${isDark ? "bg-white/10" : "bg-black/10"}`} />
               </div>
               <Iconify IconString="solar:arrow-down-bold-duotone" Size={28} Style={{ color: "#f59e0b" }} />
@@ -259,11 +261,10 @@ export default function VolunteersPage() {
                 className={`font-black leading-tight ${textPrimary}`}
                 style={{ fontSize: "clamp(1.8rem, 4vw, 3rem)" }}
               >
-                Regístrate como Voluntario
+                {volunteers.registerTitle}
               </h2>
               <p className={`max-w-md text-sm leading-relaxed ${textSecondary}`}>
-                Completa el formulario y un miembro del equipo se pondrá en contacto
-                contigo para coordinar tu incorporación.
+                {volunteers.registerSubtitle}
               </p>
             </div>}
             <VolunteerFormSection />

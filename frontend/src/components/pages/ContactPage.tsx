@@ -6,6 +6,7 @@ import NavBar from "../layout/NavBar";
 import Footer from "../layout/Footer";
 import Iconify from "../modularUI/IconsMock";
 import { ContactFormSection } from "../FormComponents";
+import { useLanguage } from "../../i18n/LanguageContext";
 
 const CONTACT_METHODS = [
   {
@@ -40,7 +41,18 @@ const SOCIAL_LINKS = [
 
 export default function ContactPage() {
   const { theme } = useSettings();
+  const { t } = useLanguage();
   const isDark = theme === "dark";
+  const contact = t("contact");
+  const contactMethods = CONTACT_METHODS.map((method, index) => {
+    const text = [
+      { label: contact.methods.phone, sub: "" },
+      { label: contact.methods.email, sub: contact.methods.emailSub },
+      { label: contact.methods.location, sub: contact.methods.country },
+    ][index];
+
+    return { ...method, ...text };
+  });
   useSEO();
 
   const sectionRef = useRef<HTMLElement>(null);
@@ -96,7 +108,7 @@ export default function ContactPage() {
               className={`font-black leading-tight tracking-tight ${textPrimary}`}
               style={{ fontSize: "clamp(2.4rem, 6vw, 4.2rem)" }}
             >
-              Contáctanos
+              {contact.title}
             </motion.h1>
 
             <motion.p
@@ -105,8 +117,7 @@ export default function ContactPage() {
               animate={inView ? "visible" : "hidden"}
               className={`max-w-md text-base leading-relaxed ${textSecondary}`}
             >
-              ¿Tienes preguntas, quieres ser voluntario o deseas apoyar nuestra
-              misión? Estamos aquí para escucharte.
+              {contact.subtitle}
             </motion.p>
 
             <motion.div
@@ -127,7 +138,7 @@ export default function ContactPage() {
                 animate={inView ? "visible" : "hidden"}
                 className="flex flex-col gap-5"
               >
-                {CONTACT_METHODS.map((method, i) => (
+                {contactMethods.map((method, i) => (
                   <motion.div
                     key={method.label}
                     variants={fadeUp(0.12 + i * 0.08)}
@@ -160,7 +171,7 @@ export default function ContactPage() {
                 className="flex flex-col gap-3"
               >
                 <span className={`text-xs font-semibold tracking-widest uppercase ${textSecondary}`}>
-                  Síguenos
+                  {contact.followUs}
                 </span>
                 <div className="flex gap-3 flex-wrap">
                   {SOCIAL_LINKS.map((s) => (

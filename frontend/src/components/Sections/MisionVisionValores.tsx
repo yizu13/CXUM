@@ -5,6 +5,7 @@ import Iconify from "../modularUI/IconsMock";
 import visionImage from "../../assets/VisionCard.jpg"
 import misionImage from "../../assets/misionCard.jpg"
 import globalExpantion from "../../assets/ExpansionGlobal.jpg"
+import { useLanguage } from "../../i18n/LanguageContext";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24, filter: "blur(10px)" },
@@ -30,7 +31,9 @@ const fadeUp = {
 
 export default function MisionVisionValores() {
   const { theme } = useSettings();
+  const { t } = useLanguage();
   const isDark = theme === "dark";
+  const mission = t("mission");
   const ref = useRef<HTMLDivElement | null>(null);
 
 
@@ -67,7 +70,7 @@ export default function MisionVisionValores() {
             initial="hidden"
             animate={section ? "visible" : "exit"}
           >
-            Nuestra <span className="text-orange-500">Visión</span> y Propósito
+            {mission.titleStart} <span className="text-orange-500">{mission.titleHighlight}</span> {mission.titleEnd}
           </motion.h2>
           <motion.p
             className={`max-w-sm text-sm leading-relaxed ${textSub}`}
@@ -76,7 +79,7 @@ export default function MisionVisionValores() {
             initial="hidden"
             animate={section ? "visible" : "exit"}
           >
-            No solo miramos el próximo año; miramos el próximo siglo de impacto educativo y ambiental.
+            {mission.intro}
           </motion.p>
         </div>
 
@@ -122,10 +125,10 @@ export default function MisionVisionValores() {
             <div className="relative z-10 flex flex-col gap-2">  
                          
               <h3 className={`text-xl md:text-2xl font-black ${textPrimary}`}>
-              Misión
+              {mission.cards.missionTitle}
               </h3>
               <p className={`text-sm leading-relaxed max-w-md ${textBody}`}>
-                Transformar la percepción del cuaderno usado, reconociéndolo como un objeto valioso, capaz de generar un impacto positivo en el medio ambiente, la educación y, por ende, en la economía del país.
+                {mission.cards.missionText}
               </p>
             </div>
             <img src={misionImage} className="absolute inset-0 w-full h-full object-cover opacity-40 z-0"/>
@@ -156,10 +159,10 @@ export default function MisionVisionValores() {
 
             <div className="flex flex-col gap-2">
               <h3 className="text-xl font-black text-white z-10">
-                Visión
+                {mission.cards.visionTitle}
               </h3>
               <p className="text-sm leading-relaxed text-white z-10">
-                Llevar el voluntariado y el mensaje de reutilización de cuadernos a todas las instituciones educativas, tanto públicas como privadas a nivel nacional, transformando la concientización ambiental en una cultura viva, sostenible y compartida a través del compromiso voluntario.
+                {mission.cards.visionText}
               </p>
             </div>
             <img src={visionImage} className=" absolute inset-0 w-full h-full object-cover z-0 opacity-20"/>
@@ -175,10 +178,10 @@ export default function MisionVisionValores() {
             <span className="text-2xl"><Iconify IconString="solar:leaf-bold-duotone" Size={32} Style={{color: "#ff6900"}}/></span>
             <div className="flex flex-col gap-1">
               <h2 className={` font-black ${textPrimary}`}>
-                Operaciones sin <span className="text-orange-500">huella de carbono</span> para 2030
+                {mission.cards.carbonTitleStart} <span className="text-orange-500">{mission.cards.carbonTitleHighlight}</span> {mission.cards.carbonTitleEnd}
               </h2>
               <p className={`text-xs leading-relaxed ${textBody}`}>
-                Transformamos toda nuestra logística hacia vehículos eléctricos y alimentamos nuestros centros de acopio con energía 100% renovable.
+                {mission.cards.carbonText}
               </p>
             </div>
           </motion.div>
@@ -202,10 +205,10 @@ export default function MisionVisionValores() {
             />
             
             <h3 className={`relative text-lg md:text-xl font-black z-10 ${textPrimary}`}>
-              Expansión <span className="text-orange-500">Nacional</span>
+              {mission.cards.expansionTitleStart} <span className="text-orange-500">{mission.cards.expansionTitleHighlight}</span>
             </h3>
             <p className={`relative text-xs leading-relaxed max-w-xs z-10 ${textBody}`}>
-              Impulsar el proyecto 100 X Un Mañana con la meta de alcanzar 100 centros educativos a través de un modelo integral que incluya capacitación, recolección y clasificación de cuadernos usados, promoviendo la educación ambiental, la reutilización de materiales escolares y el apoyo directo a estudiantes mediante la transformación de hojas aprovechables en nuevos cuadernos. Con esta iniciativa se busca generar un impacto educativo, social y ecológico sostenible en las comunidades beneficiadas.
+              {mission.cards.expansionText}
             </p>
           </div>
 
@@ -222,9 +225,9 @@ export default function MisionVisionValores() {
             
               <Iconify IconString="solar:leaf-bold" Size={32} Style={{color: isDark ? "white" : "#ff6900"}}/>
             <div className="flex flex-col gap-1">
-              <h3 className={`text-sm font-black ${textPrimary}`}>Sostenibilidad</h3>
+              <h3 className={`text-sm font-black ${textPrimary}`}>{mission.cards.sustainabilityTitle}</h3>
               <p className={`text-xs leading-relaxed ${textBody}`}>
-                Cada cuaderno rescatado es un paso hacia un planeta más sano.
+                {mission.cards.sustainabilityText}
               </p>
             </div>
           </motion.div>
@@ -238,9 +241,9 @@ export default function MisionVisionValores() {
           >
             <Iconify IconString="mdi:deal" Size={32} Style={{color: isDark ? "white" : "#ff6900"}}/>
             <div className="flex flex-col gap-1">
-              <h3 className={`text-sm font-black ${textPrimary}`}>Solidaridad</h3>
+              <h3 className={`text-sm font-black ${textPrimary}`}>{mission.cards.solidarityTitle}</h3>
               <p className={`text-xs leading-relaxed ${textBody}`}>
-                Juntos construimos un futuro más justo para todos.
+                {mission.cards.solidarityText}
               </p>
             </div>
           </motion.div>
@@ -262,12 +265,12 @@ export default function MisionVisionValores() {
             </span>
             <div className="flex items-center gap-2">
               <span className="w-7 h-7 rounded-lg bg-orange-500 flex items-center justify-center text-white text-xs font-black">01</span>
-              <span className={`text-xs font-bold uppercase tracking-widest text-orange-500`}>Objetivo principal</span>
+              <span className={`text-xs font-bold uppercase tracking-widest text-orange-500`}>{mission.cards.mainGoal}</span>
             </div>
             <div className="relative z-10 flex flex-col gap-1">
-              <h3 className={`text-lg font-black ${textPrimary}`}>Recolección Masiva Nacional</h3>
+              <h3 className={`text-lg font-black ${textPrimary}`}>{mission.cards.collectionTitle}</h3>
               <p className={`text-xs leading-relaxed max-w-sm ${textBody}`}>
-                Ampliar la red de centros de acopio en toda la República Dominicana para rescatar cuadernos al cierre de cada año escolar.
+                {mission.cards.collectionText}
               </p>
             </div>
           </motion.div>

@@ -3,6 +3,7 @@ import type { NewsItem } from "../../types/newsSection";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Iconify from "./IconsMock";
+import { useLanguage } from "../../i18n/LanguageContext";
 
 export default function NewsCard({
   news,
@@ -17,6 +18,8 @@ export default function NewsCard({
 }) {
   const [hovered, setHovered] = useState(false);
   const navigate = useNavigate();
+  const { t } = useLanguage();
+  const common = t("common");
 
   return (
     <motion.article
@@ -74,7 +77,7 @@ export default function NewsCard({
           <span className="text-xs">·</span>
           <span className="flex items-center gap-1">
             <Iconify Size={13} IconString="solar:clock-circle-bold-duotone" />
-            <span className="text-xs font-medium">{news.readTime} min</span>
+            <span className="text-xs font-medium">{news.readTime} {common.min}</span>
           </span>
         </div>
 
@@ -106,7 +109,7 @@ export default function NewsCard({
             animate={{ x: hovered ? 3 : 0 }}
             transition={{ duration: 0.2 }}
           >
-            Leer más <Iconify Size={13} IconString="solar:arrow-right-line-duotone" />
+            {common.readMore} <Iconify Size={13} IconString="solar:arrow-right-line-duotone" />
           </motion.span>
         </div>
       </div>

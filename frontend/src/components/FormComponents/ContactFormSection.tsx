@@ -15,6 +15,7 @@ import {
   contactDefaultValues,
   type ContactFormValues,
 } from "./schemas";
+import { useLanguage } from "../../i18n/LanguageContext";
 
 emailjs.init({
       publicKey: import.meta.env.VITE_PUBLIC_KEY_EMAILJS,
@@ -36,7 +37,9 @@ async function submitContactForm(data: ContactFormValues): Promise<void> {
 
 export default function ContactFormSection() {
   const { theme } = useSettings();
+  const { t } = useLanguage();
   const isDark = theme === "dark";
+  const formText = t("contactForm");
 
   const methods = useForm<ContactFormValues>({
     resolver: yupResolver(contactSchema),
@@ -49,10 +52,10 @@ export default function ContactFormSection() {
   const onSubmit = async (data: ContactFormValues) => {
     try {
       await submitContactForm(data);
-      enqueueSnackbar("¡Mensaje enviado! Te respondemos en 24 horas.", { variant: "success" });
+      enqueueSnackbar(formText.success, { variant: "success" });
       reset();
     } catch /*(error) */ {
-      enqueueSnackbar("Ocurrió un error al enviar. Por favor intenta nuevamente.", { variant: "error" });
+      enqueueSnackbar(formText.error, { variant: "error" });
      // console.error("Error enviando el formulario de contacto", error);
     }
   };
@@ -64,20 +67,20 @@ export default function ContactFormSection() {
   return (
     <FormManaged methods={methods} onSubmit={onSubmit}>
       <div className={`flex flex-col gap-5 sm:gap-6 p-5 sm:p-8 rounded-3xl border backdrop-blur-md ${cardBg}`}>
-        <h2 className={`text-xl font-black ${textPrimary}`}>Envíanos un mensaje</h2>
+        <h2 className={`text-xl font-black ${textPrimary}`}>{formText.title}</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <RHFTextField<ContactFormValues>
             name="firstName"
-            label="Nombre"
-            placeholder="Tu nombre"
+            label={formText.firstName}
+            placeholder={formText.firstNamePlaceholder}
             required
             autoComplete="given-name"
           />
           <RHFTextField<ContactFormValues>
             name="lastName"
-            label="Apellido"
-            placeholder="Tu apellido"
+            label={formText.lastName}
+            placeholder={formText.lastNamePlaceholder}
             required
             autoComplete="family-name"
           />
@@ -85,7 +88,7 @@ export default function ContactFormSection() {
 
         <RHFTextField<ContactFormValues>
           name="email"
-          label="Correo electrónico"
+          label={formText.email}
           placeholder="correo@ejemplo.com"
           type="email"
           required
@@ -94,15 +97,15 @@ export default function ContactFormSection() {
 
         <RHFTextField<ContactFormValues>
           name="subject"
-          label="Asunto"
-          placeholder="¿En qué podemos ayudarte?"
+          label={formText.subject}
+          placeholder={formText.subjectPlaceholder}
           required
         />
 
         <RHFTextArea<ContactFormValues>
           name="message"
-          label="Mensaje"
-          placeholder="Escribe tu mensaje aquí..."
+          label={formText.message}
+          placeholder={formText.messagePlaceholder}
           rows={5}
           required
         />
@@ -135,7 +138,7 @@ export default function ContactFormSection() {
                     <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.3)" strokeWidth="3" />
                     <path d="M12 2a10 10 0 0 1 10 10" stroke="#fff" strokeWidth="3" strokeLinecap="round" />
                   </svg>
-                  Enviando...
+                  {formText.sending}
                 </motion.span>
               ) : (
                 <motion.span
@@ -146,7 +149,7 @@ export default function ContactFormSection() {
                   className="flex items-center gap-2"
                 >
                   <Iconify IconString="solar:plain-3-bold-duotone" Size={18} />
-                  Enviar Mensaje
+                  {formText.submit}
                 </motion.span>
               )}
             </AnimatePresence>
@@ -154,7 +157,7 @@ export default function ContactFormSection() {
 
           {!isSubmitting && (
             <p className={`text-center text-xs ${textSecondary}`}>
-              Te respondemos en un plazo de 24 horas hábiles.
+              {formText.helper}
             </p>
           )}
         </div>

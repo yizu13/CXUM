@@ -5,7 +5,6 @@ import { useSettings } from "../../hooks/context/SettingsContext";
 import { useAnimation } from "../../hooks/context/AnimationContext";
 import Iconify from "../modularUI/IconsMock";
 import DefaultButton from "../modularUI/GeneralButton";
-import { NAV_LINKS } from "../../types/NavBarLinks";
 import NavBarDropDown from "../modularUI/NavBarDropDown";
 import { useNavigate } from "react-router-dom";
 import x from "../../assets/xStilizada.png";
@@ -13,6 +12,15 @@ import { InfoCards } from "../../types/NavBarLinks";
 import { useLocation } from "react-router-dom";
 import SimpleBar from "simplebar-react";
 import "simplebar-react/dist/simplebar.min.css";
+import { useLanguage } from "../../i18n/LanguageContext";
+
+const getCardTextIndex = (groupIndex: number, sectionIndex: number, cardIndex: number) =>
+  InfoCards.slice(0, groupIndex).reduce(
+    (total, group) => total + group.sections.reduce((sum, section) => sum + section.cards.length, 0),
+    0,
+  ) +
+  InfoCards[groupIndex].sections.slice(0, sectionIndex).reduce((sum, section) => sum + section.cards.length, 0) +
+  cardIndex;
 
 // ─ Mobile Menu ──────────────────────────────────────────────────────────────
 function MobileMenu({
@@ -20,11 +28,23 @@ function MobileMenu({
   onClose,
   isDark,
   navigate,
+  navLinks,
+  navCards,
+  donateText,
+  language,
+  switchLabel,
+  toggleLanguage,
 }: {
   open: boolean;
   onClose: () => void;
   isDark: boolean;
   navigate: ReturnType<typeof useNavigate>;
+  navLinks: readonly string[];
+  navCards: readonly { title: string; subtitle: string }[];
+  donateText: string;
+  language: "es" | "en";
+  switchLabel: string;
+  toggleLanguage: () => void;
 }) {
   const location = useLocation();
   const bg      = isDark ? "#0a0c12" : "#ffffff";
@@ -92,28 +112,32 @@ function MobileMenu({
                   {InfoCards.map((card, i) => (
                     <div key={i}>
                       <p className="text-[10px] font-black uppercase tracking-[0.15em] px-3 py-2 mt-2" style={{ color: "#f59e0b" }}>
-                        {NAV_LINKS[i]}
+                        {navLinks[i]}
                       </p>
                       {card.sections.map((section, si) => (
                         <div key={si}>
-                          {section.cards.map((c, ci) => (
-                            <button
-                              key={ci}
-                              onClick={() => scrollTo(c.link, c.path)}
-                              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all active:scale-[0.98]"
-                              style={{ color: text }}
-                              onMouseEnter={e => (e.currentTarget.style.background = isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)")}
-                              onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
-                            >
-                              <Iconify IconString={c.IconsString || ""} Size={20} Style={{ color: "#f59e0b", flexShrink: 0 }} />
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm font-semibold truncate">{c.cardTitle}</p>
-                                {"CardSubtitle" in c && c.CardSubtitle && (
-                                  <p className="text-xs truncate" style={{ color: textSub }}>{c.CardSubtitle}</p>
-                                )}
-                              </div>
-                            </button>
-                          ))}
+                          {section.cards.map((c, ci) => {
+                            const translated = navCards[getCardTextIndex(i, si, ci)];
+
+                            return (
+                              <button
+                                key={ci}
+                                onClick={() => scrollTo(c.link, c.path)}
+                                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all active:scale-[0.98]"
+                                style={{ color: text }}
+                                onMouseEnter={e => (e.currentTarget.style.background = isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)")}
+                                onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                              >
+                                <Iconify IconString={c.IconsString || ""} Size={20} Style={{ color: "#f59e0b", flexShrink: 0 }} />
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm font-semibold truncate">{translated.title}</p>
+                                  {translated.subtitle && (
+                                    <p className="text-xs truncate" style={{ color: textSub }}>{translated.subtitle}</p>
+                                  )}
+                                </div>
+                              </button>
+                            );
+                          })}
                         </div>
                       ))}
                     </div>
@@ -125,11 +149,24 @@ function MobileMenu({
             {/* Bottom actions */}
             <div className="shrink-0 px-4 pb-8 pt-4 space-y-3" style={{ borderTop: `1px solid ${border}` }}>
               <button
+                type="button"
+                onClick={toggleLanguage}
+                aria-label={switchLabel}
+                className="w-full py-2.5 rounded-2xl text-xs font-black active:scale-[0.98] transition-transform border"
+                style={{
+                  borderColor: border,
+                  color: text,
+                  background: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)",
+                }}
+              >
+                {language === "es" ? "English" : "Español"}
+              </button>
+              <button
                 onClick={() => { onClose(); navigate("/Contacto"); }}
                 className="w-full py-3 rounded-2xl text-sm font-black text-white active:scale-[0.98] transition-transform"
                 style={{ background: "linear-gradient(135deg, #fc3d3d, #f97316)", boxShadow: "0 4px 20px rgba(252,61,61,0.3)" }}
               >
-                Donar Ahora
+                {donateText}
               </button>
             </div>
           </motion.div>
@@ -151,6 +188,10 @@ export default function NavBar() {
   const [cardWidth, setCardWidth] = useState<number>(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const contentRef = useRef<HTMLDivElement | null>(null);
+  const { language, toggleLanguage, t } = useLanguage();
+  const nav = t("nav");
+  const common = t("common");
+  const languageText = t("language");
 
   useEffect(() => {
     if (!show || !contentRef.current) return;
@@ -203,6 +244,12 @@ export default function NavBar() {
         onClose={() => setMobileMenuOpen(false)}
         isDark={isDark}
         navigate={navigate}
+        navLinks={nav.links}
+        navCards={nav.cards}
+        donateText={common.donateNow}
+        language={language}
+        switchLabel={languageText.switchLabel}
+        toggleLanguage={toggleLanguage}
       />
 
       <div className="fixed top-0 left-0 right-0 z-100 flex justify-center items-center px-4 sm:px-6 pt-6 sm:pt-8 pointer-events-none font-outfit flex-col">
@@ -248,7 +295,7 @@ export default function NavBar() {
 
             {phase >= 2 && (
               <motion.nav initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="hidden md:flex items-center gap-8">
-                {NAV_LINKS.map((link, i) => (
+                {nav.links.map((link, i) => (
                   <motion.div
                     key={link}
                     initial={{ opacity: 0, y: 5 }}
@@ -312,8 +359,21 @@ export default function NavBar() {
                   </motion.button>
                   {/* Donar — solo desktop */}
                   <div className="hidden md:block">
-                    <DefaultButton textString="Donar Ahora" onClick={() => navigate("/Contacto")} color="#fc3d3d"/>
+                    <DefaultButton textString={common.donateNow} onClick={() => navigate("/Contacto")} color="#fc3d3d"/>
                   </div>
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={toggleLanguage}
+                    aria-label={languageText.switchLabel}
+                    className={`hidden md:flex items-center justify-center min-w-10 h-10 px-3 rounded-full border
+                               transition-all duration-300 cursor-pointer shadow-sm text-xs font-black
+                               ${glassStyles.themeBtn}`}
+                  >
+                    {language === "es" ? languageText.english : languageText.spanish}
+                  </motion.button>
                   {/* Hamburguesa — solo móvil */}
                   <motion.button
                     initial={{ opacity: 0, scale: 0.9 }}

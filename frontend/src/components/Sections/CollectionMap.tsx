@@ -8,7 +8,8 @@ import { useSettings } from "../../hooks/context/SettingsContext";
 import type { CollectionCenter } from "../../types/EnumsCollectionCenters";
 import { useCentros } from "../../hooks/useCentros";
 import Iconify from "../modularUI/IconsMock";
-import { headVariants, mapVariants, STATUS_COLOR, STATUS_LABEL } from "../../types/EnumsCollectionCenters";
+import { headVariants, mapVariants, STATUS_COLOR } from "../../types/EnumsCollectionCenters";
+import { useLanguage } from "../../i18n/LanguageContext";
 
 function MapController({ center }: { center: CollectionCenter | null }) {
   const map = useMap();
@@ -41,7 +42,10 @@ const makeIcon = (color: string, active = false) =>
 
 export default function CollectionMap() {
   const { theme } = useSettings();
+  const { t } = useLanguage();
   const isDark = theme === "dark";
+  const mapText = t("map");
+  const common = t("common");
   const { centros: COLLECTION_CENTERS, loading } = useCentros();
   const [selected, setSelected] = useState<CollectionCenter | null>(null);
   const [search, setSearch] = useState("");
@@ -53,7 +57,7 @@ export default function CollectionMap() {
       c.title.toLowerCase().includes(term) ||
       c.address.toLowerCase().includes(term) ||
       c.subtitle.toLowerCase().includes(term) ||
-      STATUS_LABEL[c.status].toLowerCase().includes(term)
+      mapText.statuses[c.status].toLowerCase().includes(term)
     );
   }, [search, COLLECTION_CENTERS]);
 
@@ -102,8 +106,8 @@ export default function CollectionMap() {
             initial="hidden"
             animate={inView ? "visible" : "exit"}
           >
-            Centros de{" "}
-            <span style={{ color: "#f59e0b" }}>acopio</span>
+            {mapText.titleStart}{" "}
+            <span style={{ color: "#f59e0b" }}>{mapText.titleHighlight}</span>
           </motion.h2>
 
           <motion.p
@@ -115,10 +119,9 @@ export default function CollectionMap() {
             initial="hidden"
             animate={inView ? "visible" : "exit"}
           >
-            Encuentra el centro de acopio más cercano. Llevá tus cuadernos usados
-            y dales una{" "}
+            {mapText.descriptionStart}{" "}
             <span className={isDark ? "text-white/70" : "text-slate-700"}>
-              segunda vida.
+              {mapText.descriptionHighlight}
             </span>
           </motion.p>
 
@@ -158,11 +161,11 @@ export default function CollectionMap() {
                   className="text-[20px] font-semibold "
                   style={{ color: "#f59e0b" }}
                 >
-                  Listado de Centros
+                  {mapText.listTitle}
                 </p>
                 <p className="mt-1 text-xs" style={{ color: muted }}>
-                  {COLLECTION_CENTERS.filter((c) => c.status === "open").length} centros
-                  abiertos · {COLLECTION_CENTERS.length} en total
+                  {COLLECTION_CENTERS.filter((c) => c.status === "open").length} {mapText.openCenters}
+                  {" · "} {COLLECTION_CENTERS.length} {mapText.total}
                 </p>              </div>
 
               <div className="px-3 pt-3">
@@ -181,7 +184,7 @@ export default function CollectionMap() {
                     type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Buscar centro..."
+                    placeholder={mapText.searchPlaceholder}
                     className="h-9 w-full rounded-xl pl-9 pr-8 text-xs outline-none transition-all duration-200"
                     style={{
                       background: isDark ? "rgba(255,255,255,0.05)" : "#f1f5f9",
@@ -207,12 +210,12 @@ export default function CollectionMap() {
               >
                 {loading ? (
                   <div className="pt-8 text-center">
-                    <p className="text-sm font-semibold" style={{ color: text }}>Cargando centros...</p>
+                    <p className="text-sm font-semibold" style={{ color: text }}>{common.loadingCenters}</p>
                   </div>
                 ) : filteredCenters.length === 0 ? (
                   <div className="pt-8 text-center">
-                    <p className="text-sm font-semibold" style={{ color: text }}>Sin resultados</p>
-                    <p className="mt-1 text-xs" style={{ color: muted }}>Intenta con otro término.</p>
+                    <p className="text-sm font-semibold" style={{ color: text }}>{common.noResults}</p>
+                    <p className="mt-1 text-xs" style={{ color: muted }}>{mapText.noResultsHint}</p>
                   </div>
                 ) : (
                   filteredCenters.map((center) => {
@@ -243,7 +246,7 @@ export default function CollectionMap() {
                           className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold"
                           style={{ background: `${color}18`, color }}
                         >
-                          {STATUS_LABEL[center.status]}
+                          {mapText.statuses[center.status]}
                         </span>
                       </div>
 
@@ -280,7 +283,7 @@ export default function CollectionMap() {
                             className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide"
                             style={{ color: muted }}
                           >
-                            Acepta
+                            {mapText.accepts}
                           </p>
                           <div className="flex flex-wrap gap-1">
                             {center.acceptedItems.map((item) => (
@@ -384,7 +387,7 @@ export default function CollectionMap() {
                             color: STATUS_COLOR[center.status],
                           }}
                         >
-                          {STATUS_LABEL[center.status]}
+                          {mapText.statuses[center.status]}
                         </div>
                       </div>
                     </Popup>
