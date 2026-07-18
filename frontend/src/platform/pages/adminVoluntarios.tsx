@@ -9,7 +9,7 @@ import {
   voluntarioEditSchema,
   type VoluntarioEditFormValues,
 } from "../../components/FormComponents/schemas";
-import { ROLE_LABELS, ROLE_COLORS } from "../../platform/components/auth";
+import { ROLE_LABELS, ROLE_COLORS, ROLE_ICONS } from "../../platform/components/auth";
 import type { UserRole } from "../../platform/components/auth";
 import Iconify from "../../components/modularUI/IconsMock";
 import AdminButton from "../components/AdminButton";
@@ -714,6 +714,10 @@ export default function AdminVoluntariosPage() {
   const tableBorderColor = isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.05)";
   const tableRowHover    = isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)";
 
+  const roleIcon = user
+      ? ROLE_ICONS[user.role]
+      : "solar:user-bold-duotone";
+
   return (
     <div className="p-4 sm:p-6 max-w-7xl mx-auto">
       <div className="mb-6 sm:mb-8">
@@ -946,7 +950,8 @@ export default function AdminVoluntariosPage() {
                                   className="w-8 h-8 rounded-xl flex items-center justify-center text-white font-black text-xs shrink-0"
                                   style={{ background: `${roleColor}20`, border: `1px solid ${roleColor}30` }}
                                 >
-                                  {v.name.charAt(0)}
+                                <Iconify IconString={roleIcon} Size={20} Style={{ color: roleColor }} />
+                                  
                                 </div>
                                 <div>
                                   <div className="flex items-center gap-2 flex-wrap">

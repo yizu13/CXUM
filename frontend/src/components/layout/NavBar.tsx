@@ -162,7 +162,7 @@ function MobileMenu({
                 {language === "es" ? "English" : "Español"}
               </button>
               <button
-                onClick={() => { onClose(); navigate("/Contacto"); }}
+                onClick={() => { onClose(); navigate("/donaciones"); }}
                 className="w-full py-3 rounded-2xl text-sm font-black text-white active:scale-[0.98] transition-transform"
                 style={{ background: "linear-gradient(135deg, #fc3d3d, #f97316)", boxShadow: "0 4px 20px rgba(252,61,61,0.3)" }}
               >
@@ -359,7 +359,7 @@ export default function NavBar() {
                   </motion.button>
                   {/* Donar — solo desktop */}
                   <div className="hidden md:block">
-                    <DefaultButton textString={common.donateNow} onClick={() => navigate("/Contacto")} color="#fc3d3d"/>
+                    <DefaultButton textString={common.donateNow} onClick={() => navigate("/donaciones")} color="#fc3d3d"/>
                   </div>
                   <motion.button
                     initial={{ opacity: 0, scale: 0.9 }}

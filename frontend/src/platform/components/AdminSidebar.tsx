@@ -1,16 +1,29 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { useSettings } from "../../hooks/context/SettingsContext";
-import { signOut } from "./cognito";
-import { ROLE_LABELS, ROLE_COLORS } from "./auth";
-import Iconify from "../../components/modularUI/IconsMock";
-import { useAuth } from "./AuthContextComps";
-import LogoCXUM from "../../assets/LogoCXUM.png";
+import { AnimatePresence, motion } from "framer-motion";
 import SimpleBar from "simplebar-react";
+
+import { useSettings } from "../../hooks/context/SettingsContext";
+import { useAuth } from "./AuthContextComps";
+import { signOut } from "./cognito";
+import {
+  ROLE_COLORS,
+  ROLE_ICONS,
+  ROLE_LABELS,
+  type AuthUser,
+} from "./auth";
+
+import Iconify from "../../components/modularUI/IconsMock";
+import LogoCXUM from "../../assets/LogoCXUM.png";
+
 import "simplebar-react/dist/simplebar.min.css";
 
-// ── Nav items ─────────────────────────────────────────────────────────────────
+const SIDEBAR_EXPANDED_WIDTH = 256;
+const SIDEBAR_COLLAPSED_WIDTH = 76;
+const DESKTOP_MEDIA_QUERY = "(min-width: 1024px)";
+
+// ── Types ─────────────────────────────────────────────────────────────────────
+
 interface NavItem {
   label: string;
   path: string;
@@ -19,6 +32,21 @@ interface NavItem {
   requiredGroup?: string[];
   badge?: string;
 }
+
+interface SidebarLogoProps {
+  collapsed: boolean;
+  isDark: boolean;
+}
+
+interface SidebarNavItemProps {
+  item: NavItem;
+  collapsed: boolean;
+  user: AuthUser | null;
+  isDark: boolean;
+  onClose?: () => void;
+}
+
+// ── Navigation ────────────────────────────────────────────────────────────────
 
 const NAV_ITEMS: NavItem[] = [
   {
@@ -52,6 +80,12 @@ const NAV_ITEMS: NavItem[] = [
     iconActive: "solar:diploma-bold-duotone",
   },
   {
+    label: "Formularios",
+    path: "/plataforma/admin/donaciones",
+    icon: "solar:file-text-broken",
+    iconActive: "solar:file-text-bold-duotone",
+  },
+  {
     label: "Voluntarios",
     path: "/plataforma/admin/voluntarios",
     icon: "solar:users-group-two-rounded-linear",
@@ -62,28 +96,70 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 // ── Logo ──────────────────────────────────────────────────────────────────────
-function SidebarLogo({ collapsed, isDark }: { collapsed: boolean; isDark: boolean }) {
+
+function SidebarLogo({
+  collapsed,
+  isDark,
+}: SidebarLogoProps) {
   return (
-    <div className="flex items-center gap-3 px-1 py-1">
-      <img src={LogoCXUM} alt="CXUM Logo" className="w-8 h-8" />
-      <AnimatePresence>
+    <div
+      className={[
+        "flex min-w-0 items-center",
+        collapsed
+          ? "w-full justify-center"
+          : "w-full gap-3",
+      ].join(" ")}
+    >
+      <img
+        src={LogoCXUM}
+        alt="CXUM Logo"
+        className="h-8 w-8 shrink-0 object-contain"
+      />
+
+      <AnimatePresence initial={false}>
         {!collapsed && (
           <motion.div
-            initial={{ opacity: 0, width: 0 }}
-            animate={{ opacity: 1, width: "auto" }}
-            exit={{ opacity: 0, width: 0 }}
-            transition={{ duration: 0.2 }}
-            className="overflow-hidden cursor-default"
+            key="sidebar-logo-content"
+            initial={{
+              opacity: 0,
+              x: -8,
+            }}
+            animate={{
+              opacity: 1,
+              x: 0,
+            }}
+            exit={{
+              opacity: 0,
+              x: -8,
+            }}
+            transition={{
+              duration: 0.18,
+              ease: "easeOut",
+            }}
+            className="min-w-0 overflow-hidden"
           >
             <p
-              className="font-black text-sm tracking-tight leading-none whitespace-nowrap"
-              style={{ color: isDark ? "#fff" : "#0f172a" }}
+              className="
+                whitespace-nowrap text-sm
+                font-black leading-none tracking-tight
+              "
+              style={{
+                color: isDark ? "#ffffff" : "#0f172a",
+              }}
             >
               CXUM
             </p>
+
             <p
-              className="text-[10px] font-medium whitespace-nowrap"
-              style={{ color: isDark ? "rgba(255,255,255,0.3)" : "#94a3b8" }}
+              className="
+                mt-1 whitespace-nowrap
+                text-[10px] font-medium
+              "
+              style={{
+                color: isDark
+                  ? "rgba(255,255,255,0.35)"
+                  : "#94a3b8",
+              }}
             >
               Panel de Administración
             </p>
@@ -94,97 +170,174 @@ function SidebarLogo({ collapsed, isDark }: { collapsed: boolean; isDark: boolea
   );
 }
 
-// ── Nav Item ──────────────────────────────────────────────────────────────────
+// ── Navigation item ───────────────────────────────────────────────────────────
+
 function SidebarNavItem({
   item,
   collapsed,
   user,
   isDark,
   onClose,
-}: {
-  item: NavItem;
-  collapsed: boolean;
-  user: import("./auth").AuthUser | null;
-  isDark: boolean;
-  onClose?: () => void;
-}) {
-  const hasAccess = !item.requiredGroup || item.requiredGroup.some((g) => user?.groups?.includes(g));
-  if (!hasAccess) return null;
+}: SidebarNavItemProps) {
+  const hasAccess =
+    !item.requiredGroup ||
+    item.requiredGroup.some((group) =>
+      user?.groups?.includes(group),
+    );
+
+  if (!hasAccess) {
+    return null;
+  }
 
   return (
     <NavLink
       to={item.path}
       end={item.path === "/plataforma/admin"}
       onClick={onClose}
-      className="group relative flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-200 cursor-pointer"
+      aria-label={item.label}
+      title={collapsed ? item.label : undefined}
+      className={[
+        "group relative flex min-h-11 w-full items-center",
+        "overflow-hidden rounded-xl",
+        "transition-colors duration-200",
+        "focus-visible:outline-none",
+        "focus-visible:ring-2 focus-visible:ring-amber-500/40",
+        collapsed
+          ? "justify-center px-2"
+          : "gap-3 px-3",
+        isDark
+          ? "hover:bg-white/5"
+          : "hover:bg-slate-950/5",
+      ].join(" ")}
       style={({ isActive }) => ({
         background: isActive
-          ? isDark ? "rgba(245,158,11,0.14)" : "rgba(245,158,11,0.1)"
-          : "transparent",
+          ? isDark
+            ? "rgba(245,158,11,0.14)"
+            : "rgba(245,158,11,0.10)"
+          : undefined,
         color: isActive
           ? "#f59e0b"
-          : isDark ? "rgba(255,255,255,0.4)" : "#64748b",
+          : isDark
+            ? "rgba(255,255,255,0.48)"
+            : "#64748b",
       })}
     >
       {({ isActive }) => (
         <>
-          <div className="shrink-0 w-5 h-5 flex items-center justify-center">
+          <div
+            className="
+              relative flex h-5 w-5 shrink-0
+              items-center justify-center
+            "
+          >
             <Iconify
               Size={20}
-              IconString={isActive ? item.iconActive : item.icon}
-              Style={{ color: isActive ? "#f59e0b" : "currentColor" }}
+              IconString={
+                isActive
+                  ? item.iconActive
+                  : item.icon
+              }
+              Style={{
+                color: isActive
+                  ? "#f59e0b"
+                  : "currentColor",
+              }}
             />
+
+            {collapsed && item.badge && (
+              <span
+                className="
+                  absolute -right-1 -top-1
+                  h-1.5 w-1.5 rounded-full
+                "
+                style={{
+                  background: "#ef4444",
+                  boxShadow:
+                    "0 0 0 2px rgba(12,14,18,0.85)",
+                }}
+              />
+            )}
           </div>
 
-          <AnimatePresence>
+          <AnimatePresence initial={false}>
             {!collapsed && (
               <motion.span
-                initial={{ opacity: 0, width: 0 }}
-                animate={{ opacity: 1, width: "auto" }}
-                exit={{ opacity: 0, width: 0 }}
-                transition={{ duration: 0.2 }}
-                className="overflow-hidden whitespace-nowrap text-sm font-semibold flex-1"
+                key={`label-${item.path}`}
+                initial={{
+                  opacity: 0,
+                  x: -6,
+                }}
+                animate={{
+                  opacity: 1,
+                  x: 0,
+                }}
+                exit={{
+                  opacity: 0,
+                  x: -6,
+                }}
+                transition={{
+                  duration: 0.16,
+                  ease: "easeOut",
+                }}
+                className="
+                  min-w-0 flex-1 overflow-hidden
+                  whitespace-nowrap text-sm font-semibold
+                "
               >
                 {item.label}
               </motion.span>
             )}
           </AnimatePresence>
 
-          {!collapsed && item.badge && (
-            <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="text-[9px] font-black px-1.5 py-0.5 rounded-md whitespace-nowrap"
-              style={{ background: "rgba(239,68,68,0.2)", color: "#ef4444" }}
-            >
-              {item.badge}
-            </motion.span>
-          )}
-
-          {/* Tooltip colapsado */}
-          {collapsed && (
-            <div
-              className="absolute left-full ml-3 px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 shadow-xl"
-              style={{
-                background: isDark ? "#1a1d24" : "#1e293b",
-                border: "1px solid rgba(255,255,255,0.1)",
-                color: "#fff",
-              }}
-            >
-              {item.label}
-              <div
-                className="absolute left-0 top-1/2 -translate-x-1 -translate-y-1/2 w-2 h-2 rotate-45"
-                style={{ background: isDark ? "#1a1d24" : "#1e293b", borderLeft: "1px solid rgba(255,255,255,0.1)", borderBottom: "1px solid rgba(255,255,255,0.1)" }}
-              />
-            </div>
-          )}
+          <AnimatePresence initial={false}>
+            {!collapsed && item.badge && (
+              <motion.span
+                key={`badge-${item.path}`}
+                initial={{
+                  opacity: 0,
+                  scale: 0.9,
+                }}
+                animate={{
+                  opacity: 1,
+                  scale: 1,
+                }}
+                exit={{
+                  opacity: 0,
+                  scale: 0.9,
+                }}
+                transition={{
+                  duration: 0.15,
+                }}
+                className="
+                  shrink-0 whitespace-nowrap rounded-md
+                  px-1.5 py-0.5 text-[9px] font-black
+                "
+                style={{
+                  background: "rgba(239,68,68,0.14)",
+                  color: "#ef4444",
+                }}
+              >
+                {item.badge}
+              </motion.span>
+            )}
+          </AnimatePresence>
 
           {isActive && (
             <motion.div
-              layoutId="activeIndicator"
-              className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-full"
-              style={{ background: "#f59e0b" }}
+              layoutId="sidebar-active-indicator"
+              className="
+                absolute left-0 top-1/2
+                h-5 w-0.5 -translate-y-1/2
+                rounded-full
+              "
+              style={{
+                background: "#f59e0b",
+              }}
+              transition={{
+                type: "spring",
+                stiffness: 450,
+                damping: 35,
+              }}
             />
           )}
         </>
@@ -193,131 +346,424 @@ function SidebarNavItem({
   );
 }
 
-// ── Main Sidebar ──────────────────────────────────────────────────────────────
-export default function AdminSidebar({ onClose }: { onClose?: () => void }) {
+// ── Main sidebar ──────────────────────────────────────────────────────────────
+
+export default function AdminSidebar({
+  onClose,
+}: {
+  onClose?: () => void;
+}) {
   const { user, setUser } = useAuth();
   const { theme } = useSettings();
-  const isDark = theme === "dark";
+
   const navigate = useNavigate();
+
+  const isDark = theme === "dark";
+
   const [collapsed, setCollapsed] = useState(false);
+
+
+  const [isDesktop, setIsDesktop] = useState(() => {
+    if (typeof window === "undefined") {
+      return true;
+    }
+
+    return window.matchMedia(
+      DESKTOP_MEDIA_QUERY,
+    ).matches;
+  });
+
+  /*
+   * El sidebar solamente puede permanecer colapsado
+   * en escritorio. Al cambiar a móvil, se expande.
+   */
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia(
+      DESKTOP_MEDIA_QUERY,
+    );
+
+    const synchronizeViewport = (
+      desktop: boolean,
+    ) => {
+      setIsDesktop(desktop);
+
+      if (!desktop) {
+        setCollapsed(false);
+      }
+    };
+
+    synchronizeViewport(mediaQuery.matches);
+
+    const handleViewportChange = (
+      event: MediaQueryListEvent,
+    ) => {
+      synchronizeViewport(event.matches);
+    };
+
+    mediaQuery.addEventListener(
+      "change",
+      handleViewportChange,
+    );
+
+    return () => {
+      mediaQuery.removeEventListener(
+        "change",
+        handleViewportChange,
+      );
+    };
+  }, []);
+
+  const effectiveCollapsed =
+    isDesktop && collapsed;
+
+  const roleColor = user
+    ? ROLE_COLORS[user.role]
+    : "#6366f1";
+
+  const roleIcon = user
+    ? ROLE_ICONS[user.role]
+    : "solar:user-bold-duotone";
+
+  const roleLabel = user
+    ? ROLE_LABELS[user.role]
+    : "";
+
+  // ── Theme colors ────────────────────────────────────────────────────────────
+
+  const background = isDark
+    ? "#0a0c11"
+    : "#ffffff";
+
+  const borderColor = isDark
+    ? "rgba(255,255,255,0.06)"
+    : "rgba(15,23,42,0.08)";
+
+  const dividerColor = isDark
+    ? "rgba(255,255,255,0.06)"
+    : "rgba(15,23,42,0.07)";
+
+  const toggleColor = isDark
+    ? "rgba(255,255,255,0.48)"
+    : "#64748b";
+
+  const toggleHoverBackground = isDark
+    ? "rgba(255,255,255,0.07)"
+    : "rgba(15,23,42,0.06)";
+
+  const userCardBackground = isDark
+    ? "rgba(255,255,255,0.035)"
+    : "rgba(15,23,42,0.035)";
+
+  // ── Handlers ────────────────────────────────────────────────────────────────
+
+  const handleToggleSidebar = () => {
+    if (!isDesktop) {
+      return;
+    }
+
+    setCollapsed((current) => !current);
+  };
+
+  const handleNavigate = () => {
+    if (!isDesktop) {
+      onClose?.();
+    }
+  };
 
   const handleLogout = () => {
     signOut();
     setUser(null);
     navigate("/plataforma/login");
-    onClose?.(); // Cerrar sidebar móvil si está abierto
+    onClose?.();
   };
 
-  const roleColor = user ? ROLE_COLORS[user.role] : "#6366f1";
-  const roleLabel = user ? ROLE_LABELS[user.role] : "";
-
-  // Theme-aware colors
-  const bg          = isDark ? "#0a0c11" : "#ffffff";
-  const border      = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.08)";
-  const divider     = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)";
-  const toggleColor = isDark ? "rgba(255,255,255,0.3)" : "#94a3b8";
-  const toggleHoverBg = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)";
-
   return (
-    <aside
-      className="relative w-60 lg:w-auto shrink-0 h-screen flex flex-col border-r"
-      style={{ background: bg, borderColor: border }}
+    <motion.aside
+      initial={false}
+      animate={{
+        width: effectiveCollapsed
+          ? SIDEBAR_COLLAPSED_WIDTH
+          : SIDEBAR_EXPANDED_WIDTH,
+      }}
+      transition={{
+        duration: 0.24,
+        ease: [0.4, 0, 0.2, 1],
+      }}
+      aria-label="Navegación administrativa"
+      data-collapsed={effectiveCollapsed}
+      className="
+        relative flex h-screen h-dvh
+        shrink-0 flex-col overflow-visible border-r
+      "
+      style={{
+        background,
+        borderColor,
+        willChange: "width",
+      }}
     >
       {/* Header */}
-      <div className="shrink-0 flex items-center justify-between px-4 pt-5 pb-4">
-        <SidebarLogo collapsed={collapsed} isDark={isDark} />
-        <div className="flex items-center gap-1">
-          {/* Close button — mobile only */}
-          {onClose && (
-            <button
-              onClick={onClose}
-              className="lg:hidden shrink-0 w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
-              style={{ color: toggleColor }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = toggleHoverBg)}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-              title="Cerrar menú"
-            >
-              <Iconify Size={16} IconString="solar:close-circle-linear" Style={{ color: "currentColor" }} />
-            </button>
-          )}
+      <div
+        className={[
+          "relative flex h-[76px] shrink-0 items-center",
+          effectiveCollapsed
+            ? "justify-center px-2"
+            : "px-4",
+          onClose && !isDesktop
+            ? "pr-12"
+            : "",
+        ].join(" ")}
+      >
+        <SidebarLogo
+          collapsed={effectiveCollapsed}
+          isDark={isDark}
+        />
+
+        {/* Botón de cerrar en móvil */}
+        {onClose && (
           <button
-            onClick={() => setCollapsed((c) => !c)}
-            className="hidden lg:flex shrink-0 w-7 h-7 rounded-lg items-center justify-center transition-colors"
-            style={{ color: toggleColor }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = toggleHoverBg)}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-            title={collapsed ? "Expandir" : "Colapsar"}
+            type="button"
+            onClick={onClose}
+            aria-label="Cerrar menú"
+            title="Cerrar menú"
+            className="
+              absolute right-3 top-1/2
+              flex h-8 w-8 -translate-y-1/2
+              items-center justify-center rounded-lg
+              transition-colors
+              focus-visible:outline-none
+              focus-visible:ring-2
+              focus-visible:ring-amber-500/40
+              lg:hidden
+            "
+            style={{
+              color: toggleColor,
+            }}
+            onMouseEnter={(event) => {
+              event.currentTarget.style.background =
+                toggleHoverBackground;
+            }}
+            onMouseLeave={(event) => {
+              event.currentTarget.style.background =
+                "transparent";
+            }}
           >
             <Iconify
-              Size={16}
-              IconString={
-                collapsed
-                  ? "solar:alt-arrow-right-linear"
-                  : "solar:alt-arrow-left-linear"
-              }
-              Style={{ color: "currentColor" }}
+              Size={18}
+              IconString="solar:close-circle-linear"
+              Style={{
+                color: "currentColor",
+              }}
             />
           </button>
-        </div>
+        )}
       </div>
 
-      {/* Divider */}
-      <div className="shrink-0 mx-4 h-px mb-4" style={{ background: divider }} />
+      {/* Botón de colapsar/expandir */}
+      <button
+        type="button"
+        onClick={handleToggleSidebar}
+        aria-expanded={!effectiveCollapsed}
+        aria-label={
+          effectiveCollapsed
+            ? "Expandir menú lateral"
+            : "Colapsar menú lateral"
+        }
+        title={
+          effectiveCollapsed
+            ? "Expandir menú"
+            : "Colapsar menú"
+        }
+        className="
+          absolute -right-3 top-6 z-50
+          hidden h-7 w-7
+          items-center justify-center
+          rounded-full border shadow-md
+          transition-transform duration-200
+          hover:scale-105
+          focus-visible:outline-none
+          focus-visible:ring-2
+          focus-visible:ring-amber-500/40
+          lg:flex
+        "
+        style={{
+          color: toggleColor,
+          background,
+          borderColor,
+        }}
+      >
+        <Iconify
+          Size={16}
+          IconString={
+            effectiveCollapsed
+              ? "solar:alt-arrow-right-linear"
+              : "solar:alt-arrow-left-linear"
+          }
+          Style={{
+            color: "currentColor",
+          }}
+        />
+      </button>
 
-      {/* Nav - Scrollable */}
-      <div className="flex-1 overflow-hidden min-h-0">
-        <SimpleBar style={{ height: "100%", maxHeight: "100%" }}>
-          <div className="px-3 flex flex-col gap-1 py-1">
+      {/* Divider superior */}
+      <div
+        className={[
+          "mb-4 h-px shrink-0",
+          effectiveCollapsed
+            ? "mx-3"
+            : "mx-4",
+        ].join(" ")}
+        style={{
+          background: dividerColor,
+        }}
+      />
+
+      {/* Navigation */}
+      <div className="min-h-0 flex-1 overflow-hidden">
+        <SimpleBar
+          autoHide
+          className="h-full"
+          style={{
+            height: "100%",
+            maxHeight: "100%",
+          }}
+        >
+          <nav
+            aria-label="Secciones administrativas"
+            className={[
+              "flex flex-col gap-1 py-1",
+              effectiveCollapsed
+                ? "px-2"
+                : "px-3",
+            ].join(" ")}
+          >
             {NAV_ITEMS.map((item) => (
               <SidebarNavItem
                 key={item.path}
                 item={item}
-                collapsed={collapsed}
+                collapsed={effectiveCollapsed}
                 user={user}
                 isDark={isDark}
-                onClose={onClose}
+                onClose={handleNavigate}
               />
             ))}
-          </div>
+          </nav>
         </SimpleBar>
       </div>
 
-      {/* Divider */}
-      <div className="shrink-0 mx-4 h-px mt-4" style={{ background: divider }} />
+      {/* Divider inferior */}
+      <div
+        className={[
+          "mt-4 h-px shrink-0",
+          effectiveCollapsed
+            ? "mx-3"
+            : "mx-4",
+        ].join(" ")}
+        style={{
+          background: dividerColor,
+        }}
+      />
 
-      {/* User Card */}
-      <div className="shrink-0 px-3 py-4">
+      {/* User card */}
+      <div
+        className={[
+          "shrink-0 py-4",
+          effectiveCollapsed
+            ? "px-2"
+            : "px-3",
+        ].join(" ")}
+      >
         <div
-          className={`flex items-center gap-3 p-3 rounded-xl ${collapsed ? "justify-center" : ""}`}
-          style={{ background: isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)" }}
+          title={
+            effectiveCollapsed
+              ? `${user?.name ?? "Usuario"}${
+                  roleLabel
+                    ? ` · ${roleLabel}`
+                    : ""
+                }`
+              : undefined
+          }
+          className={[
+            "flex min-h-14 items-center rounded-xl",
+            "overflow-hidden transition-all duration-200",
+            effectiveCollapsed
+              ? "justify-center p-2"
+              : "gap-3 p-3",
+          ].join(" ")}
+          style={{
+            background: userCardBackground,
+          }}
         >
           <div
-            className="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-white font-black text-xs"
+            className="
+              flex h-8 w-8 shrink-0
+              items-center justify-center
+              rounded-lg text-xs font-black
+            "
             style={{
-              background: `${roleColor}30`,
-              border: `1px solid ${roleColor}50`,
+              background: `${roleColor}20`,
+              border: `1px solid ${roleColor}45`,
               color: roleColor,
             }}
           >
-            {user?.name?.charAt(0).toUpperCase() ?? "U"}
+            <Iconify
+              Size={18}
+              IconString={roleIcon}
+              Style={{
+                color: "currentColor",
+              }}
+            />
           </div>
 
-          <AnimatePresence>
-            {!collapsed && (
+          <AnimatePresence initial={false}>
+            {!effectiveCollapsed && (
               <motion.div
-                initial={{ opacity: 0, width: 0 }}
-                animate={{ opacity: 1, width: "auto" }}
-                exit={{ opacity: 0, width: 0 }}
-                transition={{ duration: 0.2 }}
-                className="overflow-hidden flex-1 min-w-0"
+                key="sidebar-user-information"
+                initial={{
+                  opacity: 0,
+                  x: -6,
+                }}
+                animate={{
+                  opacity: 1,
+                  x: 0,
+                }}
+                exit={{
+                  opacity: 0,
+                  x: -6,
+                }}
+                transition={{
+                  duration: 0.16,
+                  ease: "easeOut",
+                }}
+                className="
+                  min-w-0 flex-1 overflow-hidden
+                "
               >
                 <p
-                  className="text-xs font-bold truncate"
-                  style={{ color: isDark ? "#fff" : "#0f172a" }}
+                  className="
+                    truncate text-xs font-bold
+                  "
+                  style={{
+                    color: isDark
+                      ? "#ffffff"
+                      : "#0f172a",
+                  }}
                 >
                   {user?.name ?? "Usuario"}
                 </p>
-                <p className="text-[10px] font-semibold truncate" style={{ color: roleColor }}>
+
+                <p
+                  className="
+                    mt-0.5 truncate
+                    text-[10px] font-semibold
+                  "
+                  style={{
+                    color: roleColor,
+                  }}
+                >
                   {roleLabel}
                 </p>
               </motion.div>
@@ -326,37 +772,91 @@ export default function AdminSidebar({ onClose }: { onClose?: () => void }) {
         </div>
       </div>
 
-      {/* Logout Button */}
-      <div className="shrink-0 px-3 pb-5">
+      {/* Logout */}
+      <div
+        className={[
+          "shrink-0 pb-5",
+          effectiveCollapsed
+            ? "px-2"
+            : "px-3",
+        ].join(" ")}
+      >
         <button
+          type="button"
           onClick={handleLogout}
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${collapsed ? "justify-center" : ""} cursor-pointer`}
-          style={{ color: "rgba(239,68,68,0.6)" }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = "#ef4444";
-            e.currentTarget.style.background = "rgba(239,68,68,0.08)";
+          aria-label="Cerrar sesión"
+          title={
+            effectiveCollapsed
+              ? "Cerrar sesión"
+              : undefined
+          }
+          className={[
+            "flex min-h-11 w-full items-center rounded-xl",
+            "overflow-hidden transition-all duration-200",
+            "focus-visible:outline-none",
+            "focus-visible:ring-2",
+            "focus-visible:ring-red-500/30",
+            effectiveCollapsed
+              ? "justify-center px-2"
+              : "gap-3 px-3",
+          ].join(" ")}
+          style={{
+            color: "rgba(239,68,68,0.65)",
           }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = "rgba(239,68,68,0.6)";
-            e.currentTarget.style.background = "transparent";
+          onMouseEnter={(event) => {
+            event.currentTarget.style.color =
+              "#ef4444";
+
+            event.currentTarget.style.background =
+              "rgba(239,68,68,0.08)";
           }}
-          title="Cerrar sesión"
+          onMouseLeave={(event) => {
+            event.currentTarget.style.color =
+              "rgba(239,68,68,0.65)";
+
+            event.currentTarget.style.background =
+              "transparent";
+          }}
         >
-          <div className="shrink-0 w-5 h-5 flex items-center justify-center">
+          <div
+            className="
+              flex h-5 w-5 shrink-0
+              items-center justify-center
+            "
+          >
             <Iconify
               Size={18}
               IconString="solar:logout-2-bold-duotone"
-              Style={{ color: "currentColor" }}
+              Style={{
+                color: "currentColor",
+              }}
             />
           </div>
-          <AnimatePresence>
-            {!collapsed && (
+
+          <AnimatePresence initial={false}>
+            {!effectiveCollapsed && (
               <motion.span
-                initial={{ opacity: 0, width: 0 }}
-                animate={{ opacity: 1, width: "auto" }}
-                exit={{ opacity: 0, width: 0 }}
-                transition={{ duration: 0.2 }}
-                className="text-sm font-semibold whitespace-nowrap overflow-hidden"
+                key="sidebar-logout-label"
+                initial={{
+                  opacity: 0,
+                  x: -6,
+                }}
+                animate={{
+                  opacity: 1,
+                  x: 0,
+                }}
+                exit={{
+                  opacity: 0,
+                  x: -6,
+                }}
+                transition={{
+                  duration: 0.16,
+                  ease: "easeOut",
+                }}
+                className="
+                  overflow-hidden whitespace-nowrap
+                  text-sm font-semibold
+                "
               >
                 Cerrar sesión
               </motion.span>
@@ -364,6 +864,6 @@ export default function AdminSidebar({ onClose }: { onClose?: () => void }) {
           </AnimatePresence>
         </button>
       </div>
-    </aside>
+    </motion.aside>
   );
 }

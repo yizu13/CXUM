@@ -89,3 +89,10 @@ export const ROLE_COLORS: Record<UserRole, string> = {
   colaborador:     "#f59e0b",
   administradores: "#ef4444",
 };
+
+export const ROLE_ICONS: Record<UserRole, string> ={
+    voluntario: "solar:user-hand-up-bold-duotone",
+    escritor: "solar:pen-bold-duotone",
+    colaborador: "solar:user-bold-duotone",
+    administradores: "solar:shield-user-bold-duotone"
+  }

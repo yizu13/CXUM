@@ -301,6 +301,21 @@
         }
       }
     },
+    "3743fbdc66995b1dc03080a83a5c4fa6d38989227b035dda326728c94add0085": {
+      "displayName": "Donations/Code",
+      "source": {
+        "path": "asset.3743fbdc66995b1dc03080a83a5c4fa6d38989227b035dda326728c94add0085",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "773079261320-us-east-2-b7a38235": {
+          "bucketName": "cdk-hnb659fds-assets-773079261320-us-east-2",
+          "objectKey": "3743fbdc66995b1dc03080a83a5c4fa6d38989227b035dda326728c94add0085.zip",
+          "region": "us-east-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::773079261320:role/cdk-hnb659fds-file-publishing-role-773079261320-us-east-2"
+        }
+      }
+    },
     "9f9f05174444ff521863c527a9699f157aa536384ad97f977d5a77a92669a63a": {
       "displayName": "GetTempPassword/Code",
       "source": {
@@ -316,16 +331,16 @@
         }
       }
     },
-    "3ddbfd9cb884fd2b09f362aadd01b849ecaced0fb33216bbe5d959274befc25d": {
+    "151e3ce57cb0434dcb5436550309af8d7f357f1ddd8fd8c9cc32c25990b61fa5": {
       "displayName": "CxumStack Template",
       "source": {
         "path": "CxumStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "773079261320-us-east-2-1a4c31cf": {
+        "773079261320-us-east-2-289e00fe": {
           "bucketName": "cdk-hnb659fds-assets-773079261320-us-east-2",
-          "objectKey": "3ddbfd9cb884fd2b09f362aadd01b849ecaced0fb33216bbe5d959274befc25d.json",
+          "objectKey": "151e3ce57cb0434dcb5436550309af8d7f357f1ddd8fd8c9cc32c25990b61fa5.json",
           "region": "us-east-2",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::773079261320:role/cdk-hnb659fds-file-publishing-role-773079261320-us-east-2"
         }

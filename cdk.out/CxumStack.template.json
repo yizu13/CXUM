@@ -209,6 +209,90 @@
     "aws:cdk:path": "CxumStack/CertificateDesignsTable/Resource"
    }
   },
+  "DonationFormsTable1BF14651": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "slug",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "GlobalSecondaryIndexes": [
+     {
+      "IndexName": "slug-index",
+      "KeySchema": [
+       {
+        "AttributeName": "slug",
+        "KeyType": "HASH"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": "cxum-donation-forms"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/DonationFormsTable/Resource"
+   }
+  },
+  "DonationResponsesTableA05AE85F": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "formId",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "GlobalSecondaryIndexes": [
+     {
+      "IndexName": "formId-index",
+      "KeySchema": [
+       {
+        "AttributeName": "formId",
+        "KeyType": "HASH"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": "cxum-donation-responses"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/DonationResponsesTable/Resource"
+   }
+  },
   "ImagesBucket1E86AFB2": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
@@ -537,6 +621,12 @@
       "CERTIFICATE_DESIGNS_TABLE": {
        "Ref": "CertificateDesignsTableD292DEDC"
       },
+      "DONATION_FORMS_TABLE": {
+       "Ref": "DonationFormsTable1BF14651"
+      },
+      "DONATION_RESPONSES_TABLE": {
+       "Ref": "DonationResponsesTableA05AE85F"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -627,6 +717,12 @@
       },
       "CERTIFICATE_DESIGNS_TABLE": {
        "Ref": "CertificateDesignsTableD292DEDC"
+      },
+      "DONATION_FORMS_TABLE": {
+       "Ref": "DonationFormsTable1BF14651"
+      },
+      "DONATION_RESPONSES_TABLE": {
+       "Ref": "DonationResponsesTableA05AE85F"
       },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
@@ -783,6 +879,12 @@
       },
       "CERTIFICATE_DESIGNS_TABLE": {
        "Ref": "CertificateDesignsTableD292DEDC"
+      },
+      "DONATION_FORMS_TABLE": {
+       "Ref": "DonationFormsTable1BF14651"
+      },
+      "DONATION_RESPONSES_TABLE": {
+       "Ref": "DonationResponsesTableA05AE85F"
       },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
@@ -989,6 +1091,12 @@
       "CERTIFICATE_DESIGNS_TABLE": {
        "Ref": "CertificateDesignsTableD292DEDC"
       },
+      "DONATION_FORMS_TABLE": {
+       "Ref": "DonationFormsTable1BF14651"
+      },
+      "DONATION_RESPONSES_TABLE": {
+       "Ref": "DonationResponsesTableA05AE85F"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -1145,6 +1253,12 @@
       },
       "CERTIFICATE_DESIGNS_TABLE": {
        "Ref": "CertificateDesignsTableD292DEDC"
+      },
+      "DONATION_FORMS_TABLE": {
+       "Ref": "DonationFormsTable1BF14651"
+      },
+      "DONATION_RESPONSES_TABLE": {
+       "Ref": "DonationResponsesTableA05AE85F"
       },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
@@ -1351,6 +1465,12 @@
       "CERTIFICATE_DESIGNS_TABLE": {
        "Ref": "CertificateDesignsTableD292DEDC"
       },
+      "DONATION_FORMS_TABLE": {
+       "Ref": "DonationFormsTable1BF14651"
+      },
+      "DONATION_RESPONSES_TABLE": {
+       "Ref": "DonationResponsesTableA05AE85F"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -1552,6 +1672,12 @@
       "CERTIFICATE_DESIGNS_TABLE": {
        "Ref": "CertificateDesignsTableD292DEDC"
       },
+      "DONATION_FORMS_TABLE": {
+       "Ref": "DonationFormsTable1BF14651"
+      },
+      "DONATION_RESPONSES_TABLE": {
+       "Ref": "DonationResponsesTableA05AE85F"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -1722,6 +1848,12 @@
       "CERTIFICATE_DESIGNS_TABLE": {
        "Ref": "CertificateDesignsTableD292DEDC"
       },
+      "DONATION_FORMS_TABLE": {
+       "Ref": "DonationFormsTable1BF14651"
+      },
+      "DONATION_RESPONSES_TABLE": {
+       "Ref": "DonationResponsesTableA05AE85F"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -1878,6 +2010,12 @@
       },
       "CERTIFICATE_DESIGNS_TABLE": {
        "Ref": "CertificateDesignsTableD292DEDC"
+      },
+      "DONATION_FORMS_TABLE": {
+       "Ref": "DonationFormsTable1BF14651"
+      },
+      "DONATION_RESPONSES_TABLE": {
+       "Ref": "DonationResponsesTableA05AE85F"
       },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
@@ -2110,6 +2248,12 @@
       "CERTIFICATE_DESIGNS_TABLE": {
        "Ref": "CertificateDesignsTableD292DEDC"
       },
+      "DONATION_FORMS_TABLE": {
+       "Ref": "DonationFormsTable1BF14651"
+      },
+      "DONATION_RESPONSES_TABLE": {
+       "Ref": "DonationResponsesTableA05AE85F"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -2245,6 +2389,12 @@
       "CERTIFICATE_DESIGNS_TABLE": {
        "Ref": "CertificateDesignsTableD292DEDC"
       },
+      "DONATION_FORMS_TABLE": {
+       "Ref": "DonationFormsTable1BF14651"
+      },
+      "DONATION_RESPONSES_TABLE": {
+       "Ref": "DonationResponsesTableA05AE85F"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -2379,6 +2529,12 @@
       },
       "CERTIFICATE_DESIGNS_TABLE": {
        "Ref": "CertificateDesignsTableD292DEDC"
+      },
+      "DONATION_FORMS_TABLE": {
+       "Ref": "DonationFormsTable1BF14651"
+      },
+      "DONATION_RESPONSES_TABLE": {
+       "Ref": "DonationResponsesTableA05AE85F"
       },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
@@ -2527,6 +2683,12 @@
       },
       "CERTIFICATE_DESIGNS_TABLE": {
        "Ref": "CertificateDesignsTableD292DEDC"
+      },
+      "DONATION_FORMS_TABLE": {
+       "Ref": "DonationFormsTable1BF14651"
+      },
+      "DONATION_RESPONSES_TABLE": {
+       "Ref": "DonationResponsesTableA05AE85F"
       },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
@@ -2684,6 +2846,12 @@
       },
       "CERTIFICATE_DESIGNS_TABLE": {
        "Ref": "CertificateDesignsTableD292DEDC"
+      },
+      "DONATION_FORMS_TABLE": {
+       "Ref": "DonationFormsTable1BF14651"
+      },
+      "DONATION_RESPONSES_TABLE": {
+       "Ref": "DonationResponsesTableA05AE85F"
       },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
@@ -2846,6 +3014,12 @@
       "CERTIFICATE_DESIGNS_TABLE": {
        "Ref": "CertificateDesignsTableD292DEDC"
       },
+      "DONATION_FORMS_TABLE": {
+       "Ref": "DonationFormsTable1BF14651"
+      },
+      "DONATION_RESPONSES_TABLE": {
+       "Ref": "DonationResponsesTableA05AE85F"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -3006,6 +3180,12 @@
       },
       "CERTIFICATE_DESIGNS_TABLE": {
        "Ref": "CertificateDesignsTableD292DEDC"
+      },
+      "DONATION_FORMS_TABLE": {
+       "Ref": "DonationFormsTable1BF14651"
+      },
+      "DONATION_RESPONSES_TABLE": {
+       "Ref": "DonationResponsesTableA05AE85F"
       },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
@@ -3168,6 +3348,12 @@
       "CERTIFICATE_DESIGNS_TABLE": {
        "Ref": "CertificateDesignsTableD292DEDC"
       },
+      "DONATION_FORMS_TABLE": {
+       "Ref": "DonationFormsTable1BF14651"
+      },
+      "DONATION_RESPONSES_TABLE": {
+       "Ref": "DonationResponsesTableA05AE85F"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -3303,6 +3489,12 @@
       },
       "CERTIFICATE_DESIGNS_TABLE": {
        "Ref": "CertificateDesignsTableD292DEDC"
+      },
+      "DONATION_FORMS_TABLE": {
+       "Ref": "DonationFormsTable1BF14651"
+      },
+      "DONATION_RESPONSES_TABLE": {
+       "Ref": "DonationResponsesTableA05AE85F"
       },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
@@ -3462,6 +3654,12 @@
       },
       "CERTIFICATE_DESIGNS_TABLE": {
        "Ref": "CertificateDesignsTableD292DEDC"
+      },
+      "DONATION_FORMS_TABLE": {
+       "Ref": "DonationFormsTable1BF14651"
+      },
+      "DONATION_RESPONSES_TABLE": {
+       "Ref": "DonationResponsesTableA05AE85F"
       },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
@@ -3733,6 +3931,12 @@
       "CERTIFICATE_DESIGNS_TABLE": {
        "Ref": "CertificateDesignsTableD292DEDC"
       },
+      "DONATION_FORMS_TABLE": {
+       "Ref": "DonationFormsTable1BF14651"
+      },
+      "DONATION_RESPONSES_TABLE": {
+       "Ref": "DonationResponsesTableA05AE85F"
+      },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
       },
@@ -3759,6 +3963,279 @@
    "Metadata": {
     "aws:cdk:path": "CxumStack/Certificates/Resource",
     "aws:asset:path": "asset.52cd08016f8c7e1ff8126a1f8600eea2dbac3f15a87492dad80b9de41151a8e3",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "DonationsServiceRoleF93E7C16": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/Donations/ServiceRole/Resource"
+   }
+  },
+  "DonationsServiceRoleDefaultPolicy1728304A": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "DonationFormsTable1BF14651",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "DonationFormsTable1BF14651",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "DonationFormsTable1BF14651",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "DonationFormsTable1BF14651",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "DonationResponsesTableA05AE85F",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "DonationResponsesTableA05AE85F",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "DonationResponsesTableA05AE85F",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "DonationResponsesTableA05AE85F",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":dynamodb:us-east-2:773079261320:table/cxum-activity"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "DonationsServiceRoleDefaultPolicy1728304A",
+    "Roles": [
+     {
+      "Ref": "DonationsServiceRoleF93E7C16"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/Donations/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "DonationsE79A813C": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-773079261320-us-east-2",
+     "S3Key": "3743fbdc66995b1dc03080a83a5c4fa6d38989227b035dda326728c94add0085.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "COGNITO_USER_POOL_ID": {
+       "Ref": "CxumUserPool8AB7B167"
+      },
+      "COGNITO_APP_CLIENT_ID": {
+       "Ref": "CxumUserPoolClient3271F560"
+      },
+      "CENTROS_TABLE": "cxum-centros",
+      "NOTICIAS_TABLE": "cxum-noticias",
+      "SOLICITUDES_TABLE": "cxum-solicitudes",
+      "CONTACTOS_TABLE": "cxum-contactos",
+      "INVITE_TOKENS_TABLE": "cxum-invite-tokens",
+      "ACTIVITY_TABLE": "cxum-activity",
+      "PROFILES_TABLE": "cxum-user-profiles",
+      "CERTIFICATES_INDEX_TABLE": {
+       "Ref": "CertificatesIndexTable2F8513FC"
+      },
+      "CERTIFICATE_DESIGNS_TABLE": {
+       "Ref": "CertificateDesignsTableD292DEDC"
+      },
+      "DONATION_FORMS_TABLE": {
+       "Ref": "DonationFormsTable1BF14651"
+      },
+      "DONATION_RESPONSES_TABLE": {
+       "Ref": "DonationResponsesTableA05AE85F"
+      },
+      "IMAGES_BUCKET": {
+       "Ref": "ImagesBucket1E86AFB2"
+      },
+      "CERTIFICATES_BUCKET": {
+       "Ref": "CertificatesBucketE5F004DB"
+      }
+     }
+    },
+    "FunctionName": "donationsCXUM",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "DonationsServiceRoleF93E7C16",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "DonationsServiceRoleDefaultPolicy1728304A",
+    "DonationsServiceRoleF93E7C16"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/Donations/Resource",
+    "aws:asset:path": "asset.3743fbdc66995b1dc03080a83a5c4fa6d38989227b035dda326728c94add0085",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -3856,6 +4333,12 @@
       },
       "CERTIFICATE_DESIGNS_TABLE": {
        "Ref": "CertificateDesignsTableD292DEDC"
+      },
+      "DONATION_FORMS_TABLE": {
+       "Ref": "DonationFormsTable1BF14651"
+      },
+      "DONATION_RESPONSES_TABLE": {
+       "Ref": "DonationResponsesTableA05AE85F"
       },
       "IMAGES_BUCKET": {
        "Ref": "ImagesBucket1E86AFB2"
@@ -4810,6 +5293,358 @@
     "aws:cdk:path": "CxumStack/CxumBackend/DELETE--admin--noticias--{id}/Resource"
    }
   },
+  "CxumBackendGETadmindonationformsAdminDonationFormsInt1CC82F12": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "DonationsE79A813C",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--donation-forms/AdminDonationFormsInt/Resource"
+   }
+  },
+  "CxumBackendGETadmindonationformsAdminDonationFormsIntPermission79E72E1D": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "DonationsE79A813C",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:773079261320:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/admin/donation-forms"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--donation-forms/AdminDonationFormsInt-Permission"
+   }
+  },
+  "CxumBackendGETadmindonationformsCCD03917": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "CxumBackendMultiRoleAuthorizer01F621D0"
+    },
+    "RouteKey": "GET /admin/donation-forms",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendGETadmindonationformsAdminDonationFormsInt1CC82F12"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--donation-forms/Resource"
+   }
+  },
+  "CxumBackendPOSTadmindonationformsAdminDonationFormsIntPermissionE64CE96B": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "DonationsE79A813C",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:773079261320:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/admin/donation-forms"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/POST--admin--donation-forms/AdminDonationFormsInt-Permission"
+   }
+  },
+  "CxumBackendPOSTadmindonationformsDAE74782": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "CxumBackendMultiRoleAuthorizer01F621D0"
+    },
+    "RouteKey": "POST /admin/donation-forms",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendGETadmindonationformsAdminDonationFormsInt1CC82F12"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/POST--admin--donation-forms/Resource"
+   }
+  },
+  "CxumBackendPUTadmindonationformsidAdminDonationFormDetailInt42C97B49": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "DonationsE79A813C",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/PUT--admin--donation-forms--{id}/AdminDonationFormDetailInt/Resource"
+   }
+  },
+  "CxumBackendPUTadmindonationformsidAdminDonationFormDetailIntPermissionED5B7CCA": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "DonationsE79A813C",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:773079261320:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/admin/donation-forms/{id}"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/PUT--admin--donation-forms--{id}/AdminDonationFormDetailInt-Permission"
+   }
+  },
+  "CxumBackendPUTadmindonationformsid25A2D7BE": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "CxumBackendMultiRoleAuthorizer01F621D0"
+    },
+    "RouteKey": "PUT /admin/donation-forms/{id}",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendPUTadmindonationformsidAdminDonationFormDetailInt42C97B49"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/PUT--admin--donation-forms--{id}/Resource"
+   }
+  },
+  "CxumBackendDELETEadmindonationformsidAdminDonationFormDetailIntPermissionEE5934CC": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "DonationsE79A813C",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:773079261320:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/admin/donation-forms/{id}"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/DELETE--admin--donation-forms--{id}/AdminDonationFormDetailInt-Permission"
+   }
+  },
+  "CxumBackendDELETEadmindonationformsid8172189A": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "CxumBackendMultiRoleAuthorizer01F621D0"
+    },
+    "RouteKey": "DELETE /admin/donation-forms/{id}",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendPUTadmindonationformsidAdminDonationFormDetailInt42C97B49"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/DELETE--admin--donation-forms--{id}/Resource"
+   }
+  },
+  "CxumBackendGETadmindonationresponsesAdminDonationResponsesInt19842E27": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "DonationsE79A813C",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--donation-responses/AdminDonationResponsesInt/Resource"
+   }
+  },
+  "CxumBackendGETadmindonationresponsesAdminDonationResponsesIntPermission5367220C": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "DonationsE79A813C",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:773079261320:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/admin/donation-responses"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--donation-responses/AdminDonationResponsesInt-Permission"
+   }
+  },
+  "CxumBackendGETadmindonationresponsesF68C8166": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "CxumBackendMultiRoleAuthorizer01F621D0"
+    },
+    "RouteKey": "GET /admin/donation-responses",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendGETadmindonationresponsesAdminDonationResponsesInt19842E27"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--admin--donation-responses/Resource"
+   }
+  },
   "CxumBackendGETadminsolicitudesGetSolicitudesInt9F178EEF": {
    "Type": "AWS::ApiGatewayV2::Integration",
    "Properties": {
@@ -5189,6 +6024,231 @@
    },
    "Metadata": {
     "aws:cdk:path": "CxumStack/CxumBackend/GET--centros/Resource"
+   }
+  },
+  "CxumBackendGETdonationformsDonationFormsPublicInt3A47B3F1": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "DonationsE79A813C",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--donation-forms/DonationFormsPublicInt/Resource"
+   }
+  },
+  "CxumBackendGETdonationformsDonationFormsPublicIntPermission4687D0EF": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "DonationsE79A813C",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:773079261320:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/donation-forms"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--donation-forms/DonationFormsPublicInt-Permission"
+   }
+  },
+  "CxumBackendGETdonationformsE65A8BB5": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "GET /donation-forms",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendGETdonationformsDonationFormsPublicInt3A47B3F1"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--donation-forms/Resource"
+   }
+  },
+  "CxumBackendGETdonationformsslugDonationFormPublicDetailIntAA276BE9": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "DonationsE79A813C",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--donation-forms--{slug}/DonationFormPublicDetailInt/Resource"
+   }
+  },
+  "CxumBackendGETdonationformsslugDonationFormPublicDetailIntPermission383D2722": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "DonationsE79A813C",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:773079261320:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/donation-forms/{slug}"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--donation-forms--{slug}/DonationFormPublicDetailInt-Permission"
+   }
+  },
+  "CxumBackendGETdonationformsslugD9296B67": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "GET /donation-forms/{slug}",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendGETdonationformsslugDonationFormPublicDetailIntAA276BE9"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/GET--donation-forms--{slug}/Resource"
+   }
+  },
+  "CxumBackendPOSTdonationformsformIdresponsesDonationResponsePublicIntB064ECA5": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "DonationsE79A813C",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/POST--donation-forms--{formId}--responses/DonationResponsePublicInt/Resource"
+   }
+  },
+  "CxumBackendPOSTdonationformsformIdresponsesDonationResponsePublicIntPermission44A480E4": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "DonationsE79A813C",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-2:773079261320:",
+       {
+        "Ref": "CxumBackend6F4D0EA7"
+       },
+       "/*/*/donation-forms/{formId}/responses"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/POST--donation-forms--{formId}--responses/DonationResponsePublicInt-Permission"
+   }
+  },
+  "CxumBackendPOSTdonationformsformIdresponsesDCE9DBE9": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "CxumBackend6F4D0EA7"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "POST /donation-forms/{formId}/responses",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "CxumBackendPOSTdonationformsformIdresponsesDonationResponsePublicIntB064ECA5"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumBackend/POST--donation-forms--{formId}--responses/Resource"
    }
   },
   "CxumBackendPOSTvoluntariosSubmitVolunteerInt1E01B7E1": {
@@ -7034,7 +8094,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/3WQy07DMBBFv4W9a6q0SGzTIB4rqhTWleO4YdrEE3nGrYqVf0d2+hKI1T13PL6ecSaz+aOc3qkDTXS9m7RQybBipXdCHWgdNDYWGGX4JOOWiK0oNvbCZyhaMJZvj/5WXhz6fhD10aoO60qGD1W1ZqHIiESxN8EgaCbDwuudSQEnGmWJLejjtXzyo4lhg9At+nrj0LIMT0DsoPIMaMVq9u6gAZtrbYgKtOzGff4p314eRKu6qlYyPHurU1yxsbe8NK4DotQLqpOhxHGppNe5R4pLrhWRYZJ5FKF6aBSbgzruMxlemfu8h3ghSrQrVk0KHCGWSvQ80ptl0zh1HuaXvfblnr/QwbdxKfrihkGUhtA7bUSaJz4Ctknf47n3PAiLtZFbut9nc/kgp3dbApg4bxk6I8tRfwDctancUAIAAA=="
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/3WQy07DMBBFv4W9a6q0QmzTIB4rqhTWleO4YdrEE3nGrYqVf0d2+hKI1T13PL6ecSaz+aOc3qkDTXS9m7RQybBipXdCHWgdNDYWGGX4JOOWiK0oNvbCZyhaMJZvj/5WXhz6fhD10aoO60qGD1W1ZqHIiESxN8EgaCbDwuudSQEnGmWJLejjtXzyo4lhg9At+nrj0LIMT0DsoPIMaMVq9u6gAZtrbYgKtOzGff4p314eRKu6qlYyPHurU1yxsbe8NK4DotQLqpOhxHGppNe5R4pLrhWRYZJ5FKF6aBSbgzruMxlemfu8h3ghSrQrVk0KHCGWSvQ80ptl0zh1HuaXvfblnr/QwbdxKfrihkGUhtA7bUSaJz4Ctknf47n3PAiLtZFbut9nD3Iup3dbApg4bxk6I8tRfwCUm8ZIUAIAAA=="
    },
    "Metadata": {
     "aws:cdk:path": "CxumStack/CDKMetadata/Default"

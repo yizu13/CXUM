@@ -111,6 +111,34 @@ class CxumStack extends cdk.Stack {
             partitionKey: { name: "generationId", type: dynamodb.AttributeType.STRING },
             projectionType: dynamodb.ProjectionType.ALL,
         });
+        const certificateDesignsTable = new dynamodb.Table(this, "CertificateDesignsTable", {
+            tableName: "cxum-certificate-designs",
+            partitionKey: { name: "templateId", type: dynamodb.AttributeType.STRING },
+            billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+            removalPolicy: cdk.RemovalPolicy.RETAIN,
+        });
+        const donationFormsTable = new dynamodb.Table(this, "DonationFormsTable", {
+            tableName: "cxum-donation-forms",
+            partitionKey: { name: "id", type: dynamodb.AttributeType.STRING },
+            billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+            removalPolicy: cdk.RemovalPolicy.RETAIN,
+        });
+        donationFormsTable.addGlobalSecondaryIndex({
+            indexName: "slug-index",
+            partitionKey: { name: "slug", type: dynamodb.AttributeType.STRING },
+            projectionType: dynamodb.ProjectionType.ALL,
+        });
+        const donationResponsesTable = new dynamodb.Table(this, "DonationResponsesTable", {
+            tableName: "cxum-donation-responses",
+            partitionKey: { name: "id", type: dynamodb.AttributeType.STRING },
+            billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+            removalPolicy: cdk.RemovalPolicy.RETAIN,
+        });
+        donationResponsesTable.addGlobalSecondaryIndex({
+            indexName: "formId-index",
+            partitionKey: { name: "formId", type: dynamodb.AttributeType.STRING },
+            projectionType: dynamodb.ProjectionType.ALL,
+        });
         // ─── S3 Buckets ───────────────────────────────────────────────────────────
         const imagesBucket = new s3.Bucket(this, "ImagesBucket", {
             bucketName: `cxum-images-${this.account}`,
@@ -211,6 +239,9 @@ class CxumStack extends cdk.Stack {
                 ACTIVITY_TABLE: activityTable.tableName,
                 PROFILES_TABLE: profilesTable.tableName,
                 CERTIFICATES_INDEX_TABLE: certificatesIndexTable.tableName,
+                CERTIFICATE_DESIGNS_TABLE: certificateDesignsTable.tableName,
+                DONATION_FORMS_TABLE: donationFormsTable.tableName,
+                DONATION_RESPONSES_TABLE: donationResponsesTable.tableName,
                 IMAGES_BUCKET: imagesBucket.bucketName,
                 CERTIFICATES_BUCKET: certificatesBucket.bucketName,
                 ...extraEnv,
@@ -239,6 +270,7 @@ class CxumStack extends cdk.Stack {
         const uploadImageFn = makeFn("UploadImage", "uploadImageCXUM", "uploadImage");
         const listImagesFn = makeFn("ListImages", "listImagesCXUM", "listImages");
         const certificatesFn = makeFn("Certificates", "certificatesCXUM", "certificates");
+        const donationsFn = makeFn("Donations", "donationsCXUM", "donations");
         const getTempPasswordFn = makeFn("GetTempPassword", "getTempPasswordCXUM", "getTempPassword");
         // ─── Permisos S3 ──────────────────────────────────────────────────────────
         imagesBucket.grantPut(uploadImageFn);
@@ -248,6 +280,9 @@ class CxumStack extends cdk.Stack {
         certificatesBucket.grantReadWrite(certificatesFn);
         certificatesBucket.grantDelete(certificatesFn);
         certificatesIndexTable.grantReadWriteData(certificatesFn);
+        certificateDesignsTable.grantReadWriteData(certificatesFn);
+        donationFormsTable.grantReadWriteData(donationsFn);
+        donationResponsesTable.grantReadWriteData(donationsFn);
         // ─── Permisos DynamoDB ────────────────────────────────────────────────────
         centrosTable.grantReadData(getCentrosFn);
         centrosTable.grantWriteData(mutateCentroFn);
@@ -278,7 +313,7 @@ class CxumStack extends cdk.Stack {
         inviteTokensTable.grantReadWriteData(consumeInviteTokenFn);
         // Activity — lectura para getActivity, escritura para todas las lambdas que loguean
         activityTable.grantReadData(getActivityFn);
-        for (const fn of [mutateCentroFn, mutateNoticiaFn, modifyUserRoleFn, mutateSolicitudFn, inviteUserFn]) {
+        for (const fn of [mutateCentroFn, mutateNoticiaFn, modifyUserRoleFn, mutateSolicitudFn, inviteUserFn, donationsFn]) {
             activityTable.grantWriteData(fn);
         }
         // ─── Permisos Cognito (continuación) ─────────────────────────────────────
@@ -386,6 +421,24 @@ class CxumStack extends cdk.Stack {
             authorizer: multiRoleAuthorizer,
         });
         httpApi.addRoutes({
+            path: "/admin/donation-forms",
+            methods: [apigwv2.HttpMethod.GET, apigwv2.HttpMethod.POST],
+            integration: new integrations.HttpLambdaIntegration("AdminDonationFormsInt", donationsFn),
+            authorizer: multiRoleAuthorizer,
+        });
+        httpApi.addRoutes({
+            path: "/admin/donation-forms/{id}",
+            methods: [apigwv2.HttpMethod.PUT, apigwv2.HttpMethod.DELETE],
+            integration: new integrations.HttpLambdaIntegration("AdminDonationFormDetailInt", donationsFn),
+            authorizer: multiRoleAuthorizer,
+        });
+        httpApi.addRoutes({
+            path: "/admin/donation-responses",
+            methods: [apigwv2.HttpMethod.GET],
+            integration: new integrations.HttpLambdaIntegration("AdminDonationResponsesInt", donationsFn),
+            authorizer: multiRoleAuthorizer,
+        });
+        httpApi.addRoutes({
             path: "/admin/solicitudes",
             methods: [apigwv2.HttpMethod.GET],
             integration: new integrations.HttpLambdaIntegration("GetSolicitudesInt", getSolicitudesFn),
@@ -412,6 +465,21 @@ class CxumStack extends cdk.Stack {
             path: "/centros",
             methods: [apigwv2.HttpMethod.GET],
             integration: new integrations.HttpLambdaIntegration("GetCentrosPublicInt", getCentrosFn),
+        });
+        httpApi.addRoutes({
+            path: "/donation-forms",
+            methods: [apigwv2.HttpMethod.GET],
+            integration: new integrations.HttpLambdaIntegration("DonationFormsPublicInt", donationsFn),
+        });
+        httpApi.addRoutes({
+            path: "/donation-forms/{slug}",
+            methods: [apigwv2.HttpMethod.GET],
+            integration: new integrations.HttpLambdaIntegration("DonationFormPublicDetailInt", donationsFn),
+        });
+        httpApi.addRoutes({
+            path: "/donation-forms/{formId}/responses",
+            methods: [apigwv2.HttpMethod.POST],
+            integration: new integrations.HttpLambdaIntegration("DonationResponsePublicInt", donationsFn),
         });
         httpApi.addRoutes({
             path: "/voluntarios",
@@ -498,6 +566,12 @@ class CxumStack extends cdk.Stack {
             path: "/admin/certificates/templates/{templateId}",
             methods: [apigwv2.HttpMethod.DELETE],
             integration: new integrations.HttpLambdaIntegration("CertificateTemplateDeleteInt", certificatesFn),
+            authorizer: multiRoleAuthorizer,
+        });
+        httpApi.addRoutes({
+            path: "/admin/certificates/designs/{templateId}",
+            methods: [apigwv2.HttpMethod.GET, apigwv2.HttpMethod.PUT, apigwv2.HttpMethod.DELETE],
+            integration: new integrations.HttpLambdaIntegration("CertificateDesignFlowInt", certificatesFn),
             authorizer: multiRoleAuthorizer,
         });
         httpApi.addRoutes({

@@ -39,6 +39,22 @@
       }
     }
   ],
+  "/CxumStack/DonationFormsTable": [
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "DonationFormsTable1BF14651"
+      }
+    }
+  ],
+  "/CxumStack/DonationResponsesTable": [
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "DonationResponsesTableA05AE85F"
+      }
+    }
+  ],
   "/CxumStack/UserPoolId": [
     {
       "type": "aws:cdk:logicalId",
@@ -127,6 +143,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CertificateDesignsTableD292DEDC"
+    }
+  ],
+  "/CxumStack/DonationFormsTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DonationFormsTable1BF14651"
+    }
+  ],
+  "/CxumStack/DonationResponsesTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DonationResponsesTableA05AE85F"
     }
   ],
   "/CxumStack/ImagesBucket/Resource": [
@@ -271,6 +299,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "Certificates2374895F"
+    }
+  ],
+  "/CxumStack/Donations/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DonationsE79A813C"
     }
   ],
   "/CxumStack/GetTempPassword/Resource": [
@@ -435,6 +469,12 @@
       "data": "CertificatesServiceRole0810B1A2"
     }
   ],
+  "/CxumStack/Donations/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DonationsServiceRoleF93E7C16"
+    }
+  ],
   "/CxumStack/GetTempPassword/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -579,6 +619,66 @@
       "data": "CxumBackendDELETEadminnoticiasid7F73B3BF"
     }
   ],
+  "/CxumStack/CxumBackend/GET--admin--donation-forms/AdminDonationFormsInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadmindonationformsAdminDonationFormsIntPermission79E72E1D"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--donation-forms/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadmindonationformsCCD03917"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--admin--donation-forms/AdminDonationFormsInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTadmindonationformsAdminDonationFormsIntPermissionE64CE96B"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--admin--donation-forms/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTadmindonationformsDAE74782"
+    }
+  ],
+  "/CxumStack/CxumBackend/PUT--admin--donation-forms--{id}/AdminDonationFormDetailInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPUTadmindonationformsidAdminDonationFormDetailIntPermissionED5B7CCA"
+    }
+  ],
+  "/CxumStack/CxumBackend/PUT--admin--donation-forms--{id}/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPUTadmindonationformsid25A2D7BE"
+    }
+  ],
+  "/CxumStack/CxumBackend/DELETE--admin--donation-forms--{id}/AdminDonationFormDetailInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendDELETEadmindonationformsidAdminDonationFormDetailIntPermissionEE5934CC"
+    }
+  ],
+  "/CxumStack/CxumBackend/DELETE--admin--donation-forms--{id}/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendDELETEadmindonationformsid8172189A"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--donation-responses/AdminDonationResponsesInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadmindonationresponsesAdminDonationResponsesIntPermission5367220C"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--donation-responses/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadmindonationresponsesF68C8166"
+    }
+  ],
   "/CxumStack/CxumBackend/GET--admin--solicitudes/GetSolicitudesInt-Permission": [
     {
       "type": "aws:cdk:logicalId",
@@ -637,6 +737,42 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CxumBackendGETcentros7BA18D34"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--donation-forms/DonationFormsPublicInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETdonationformsDonationFormsPublicIntPermission4687D0EF"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--donation-forms/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETdonationformsE65A8BB5"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--donation-forms--{slug}/DonationFormPublicDetailInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETdonationformsslugDonationFormPublicDetailIntPermission383D2722"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--donation-forms--{slug}/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETdonationformsslugD9296B67"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--donation-forms--{formId}--responses/DonationResponsePublicInt-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTdonationformsformIdresponsesDonationResponsePublicIntPermission44A480E4"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--donation-forms--{formId}--responses/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTdonationformsformIdresponsesDCE9DBE9"
     }
   ],
   "/CxumStack/CxumBackend/POST--voluntarios/SubmitVolunteerInt-Permission": [
@@ -1053,6 +1189,12 @@
       "data": "CertificatesServiceRoleDefaultPolicy1702F0E2"
     }
   ],
+  "/CxumStack/Donations/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DonationsServiceRoleDefaultPolicy1728304A"
+    }
+  ],
   "/CxumStack/GetTempPassword/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -1107,6 +1249,24 @@
       "data": "CxumBackendPUTadminnoticiasidMutateNoticiaIntB2BE1265"
     }
   ],
+  "/CxumStack/CxumBackend/GET--admin--donation-forms/AdminDonationFormsInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadmindonationformsAdminDonationFormsInt1CC82F12"
+    }
+  ],
+  "/CxumStack/CxumBackend/PUT--admin--donation-forms--{id}/AdminDonationFormDetailInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPUTadmindonationformsidAdminDonationFormDetailInt42C97B49"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--admin--donation-responses/AdminDonationResponsesInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETadmindonationresponsesAdminDonationResponsesInt19842E27"
+    }
+  ],
   "/CxumStack/CxumBackend/GET--admin--solicitudes/GetSolicitudesInt/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -1135,6 +1295,24 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CxumBackendGETcentrosGetCentrosPublicInt582A5004"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--donation-forms/DonationFormsPublicInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETdonationformsDonationFormsPublicInt3A47B3F1"
+    }
+  ],
+  "/CxumStack/CxumBackend/GET--donation-forms--{slug}/DonationFormPublicDetailInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendGETdonationformsslugDonationFormPublicDetailIntAA276BE9"
+    }
+  ],
+  "/CxumStack/CxumBackend/POST--donation-forms--{formId}--responses/DonationResponsePublicInt/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumBackendPOSTdonationformsformIdresponsesDonationResponsePublicIntB064ECA5"
     }
   ],
   "/CxumStack/CxumBackend/POST--voluntarios/SubmitVolunteerInt/Resource": [
