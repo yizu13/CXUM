@@ -24,9 +24,17 @@ export async function getAllUsers(): Promise<ListUsersResponse> {
   return apiFetch<ListUsersResponse>("/admin/usersget", { method: "GET" });
 }
 
-export async function updateUserRole(username: string, role?: string, status?: string): Promise<{ message: string }> {
+export interface UpdateUserInput {
+  name: string;
+  role: string;
+  status: string;
+  telefono: string;
+  municipio: string;
+}
+
+export async function updateUserRole(username: string, data: UpdateUserInput): Promise<{ message: string }> {
   return apiFetch<{ message: string }>(`/admin/users/${username}`, {
     method: "PUT",
-    body: JSON.stringify({ username, role, status }),
+    body: JSON.stringify({ username, ...data }),
   });
 }

@@ -12,13 +12,21 @@
      ]
     },
     "AdminCreateUserConfig": {
-     "AllowAdminCreateUserOnly": true
+     "AllowAdminCreateUserOnly": false
     },
     "AutoVerifiedAttributes": [
      "email"
     ],
     "EmailVerificationMessage": "The verification code to your new account is {####}",
     "EmailVerificationSubject": "Verify your new account",
+    "LambdaConfig": {
+     "PreSignUp": {
+      "Fn::GetAtt": [
+       "PreSignUpInvite85BED78C",
+       "Arn"
+      ]
+     }
+    },
     "Policies": {
      "PasswordPolicy": {
       "MinimumLength": 8,
@@ -38,6 +46,15 @@
       "Mutable": true,
       "Name": "name",
       "Required": false
+     },
+     {
+      "AttributeDataType": "String",
+      "Mutable": true,
+      "Name": "municipio",
+      "StringAttributeConstraints": {
+       "MaxLength": "100",
+       "MinLength": "2"
+      }
      }
     ],
     "SmsVerificationMessage": "The verification code to your new account is {####}",
@@ -56,6 +73,28 @@
    "DeletionPolicy": "Retain",
    "Metadata": {
     "aws:cdk:path": "CxumStack/CxumUserPool/Resource"
+   }
+  },
+  "CxumUserPoolPreSignUpCognito54C0490E": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "PreSignUpInvite85BED78C",
+      "Arn"
+     ]
+    },
+    "Principal": "cognito-idp.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "CxumUserPool8AB7B167",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/CxumUserPool/PreSignUpCognito"
    }
   },
   "CxumUserPoolClient3271F560": {
@@ -291,6 +330,30 @@
    "DeletionPolicy": "Retain",
    "Metadata": {
     "aws:cdk:path": "CxumStack/DonationResponsesTable/Resource"
+   }
+  },
+  "DonationIdentifierLimitsTable82DEC796": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "key",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "key",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": "cxum-donation-identifier-limits"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/DonationIdentifierLimitsTable/Resource"
    }
   },
   "ImagesBucket1E86AFB2": {
@@ -1649,7 +1712,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-773079261320-us-east-2",
-     "S3Key": "c4a4ba852fb6e25efd6c4afdb195f44626d7b6cfc5662c4a4827fb6e0cec5c75.zip"
+     "S3Key": "73d3b2c885f4d3d9155ed209e26a5386c55d0aa537e62306ddbd43b0442bdd66.zip"
     },
     "Environment": {
      "Variables": {
@@ -1703,7 +1766,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "CxumStack/ModifyUserRole/Resource",
-    "aws:asset:path": "asset.c4a4ba852fb6e25efd6c4afdb195f44626d7b6cfc5662c4a4827fb6e0cec5c75",
+    "aws:asset:path": "asset.73d3b2c885f4d3d9155ed209e26a5386c55d0aa537e62306ddbd43b0442bdd66",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -1825,7 +1888,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-773079261320-us-east-2",
-     "S3Key": "7b9ea9d3c6d80cfb7077776bba7d9836b1f6ae0d4812e493233d206a391030c1.zip"
+     "S3Key": "7e4ecbffdf37b08e8ff066e5cd990089db964476e8e4aa24fc386d0033e53c75.zip"
     },
     "Environment": {
      "Variables": {
@@ -1879,7 +1942,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "CxumStack/ListUsers/Resource",
-    "aws:asset:path": "asset.7b9ea9d3c6d80cfb7077776bba7d9836b1f6ae0d4812e493233d206a391030c1",
+    "aws:asset:path": "asset.7e4ecbffdf37b08e8ff066e5cd990089db964476e8e4aa24fc386d0033e53c75",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -2366,7 +2429,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-773079261320-us-east-2",
-     "S3Key": "a800165b084d8eafb75a7eee6372400b70c33aeff6da571bd0505fe23bf4ae5c.zip"
+     "S3Key": "b944a3b168a8f2909517306e5849a0f8ad337fa8b541266dbbe0d2187dc1f4bb.zip"
     },
     "Environment": {
      "Variables": {
@@ -2420,7 +2483,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "CxumStack/SubmitVolunteer/Resource",
-    "aws:asset:path": "asset.a800165b084d8eafb75a7eee6372400b70c33aeff6da571bd0505fe23bf4ae5c",
+    "aws:asset:path": "asset.b944a3b168a8f2909517306e5849a0f8ad337fa8b541266dbbe0d2187dc1f4bb",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -2606,6 +2669,45 @@
     "PolicyDocument": {
      "Statement": [
       {
+       "Action": "dynamodb:PutItem",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":dynamodb:us-east-2:773079261320:table/cxum-user-profiles"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:GetItem",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":dynamodb:us-east-2:773079261320:table/cxum-solicitudes"
+          ]
+         ]
+        }
+       ]
+      },
+      {
        "Action": [
         "dynamodb:BatchWriteItem",
         "dynamodb:PutItem",
@@ -2661,7 +2763,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-773079261320-us-east-2",
-     "S3Key": "84cd0b84d1ba94ae44d563748ac403ef593fbd23af807c1ce7a753699cc2b7d8.zip"
+     "S3Key": "ffe8d7c3a9e8bd87feaf6c3a3bc60e934d7250925ca1d6b48ff84390549958e9.zip"
     },
     "Environment": {
      "Variables": {
@@ -2715,7 +2817,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "CxumStack/InviteUser/Resource",
-    "aws:asset:path": "asset.84cd0b84d1ba94ae44d563748ac403ef593fbd23af807c1ce7a753699cc2b7d8",
+    "aws:asset:path": "asset.ffe8d7c3a9e8bd87feaf6c3a3bc60e934d7250925ca1d6b48ff84390549958e9",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -3325,7 +3427,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-773079261320-us-east-2",
-     "S3Key": "f7585cb38bc9a77f7dcea63f45b890a738bad57fda4658e37294f07514e0ae37.zip"
+     "S3Key": "bba88e3488226afa40baa84d0b519dd53fa6f087fb5e4f966aa3d5b1a8240b00.zip"
     },
     "Environment": {
      "Variables": {
@@ -3379,7 +3481,112 @@
    ],
    "Metadata": {
     "aws:cdk:path": "CxumStack/ConsumeInviteToken/Resource",
-    "aws:asset:path": "asset.f7585cb38bc9a77f7dcea63f45b890a738bad57fda4658e37294f07514e0ae37",
+    "aws:asset:path": "asset.bba88e3488226afa40baa84d0b519dd53fa6f087fb5e4f966aa3d5b1a8240b00",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "PreSignUpInviteServiceRole897C6716": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/PreSignUpInvite/ServiceRole/Resource"
+   }
+  },
+  "PreSignUpInviteServiceRoleDefaultPolicyC074B276": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "dynamodb:UpdateItem",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":dynamodb:us-east-2:773079261320:table/cxum-invite-tokens"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PreSignUpInviteServiceRoleDefaultPolicyC074B276",
+    "Roles": [
+     {
+      "Ref": "PreSignUpInviteServiceRole897C6716"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/PreSignUpInvite/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "PreSignUpInvite85BED78C": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-773079261320-us-east-2",
+     "S3Key": "ac7b725f331fda25ab38017e018bff5a02bde4e1b8a028ba4a9422cdaf718915.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "INVITE_TOKENS_TABLE": "cxum-invite-tokens"
+     }
+    },
+    "FunctionName": "preSignUpInviteCXUM",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "PreSignUpInviteServiceRole897C6716",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 10
+   },
+   "DependsOn": [
+    "PreSignUpInviteServiceRoleDefaultPolicyC074B276",
+    "PreSignUpInviteServiceRole897C6716"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CxumStack/PreSignUpInvite/Resource",
+    "aws:asset:path": "asset.ac7b725f331fda25ab38017e018bff5a02bde4e1b8a028ba4a9422cdaf718915",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -4140,6 +4347,82 @@
       },
       {
        "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "DonationIdentifierLimitsTable82DEC796",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "DonationIdentifierLimitsTable82DEC796",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "dynamodb:TransactWriteItems",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "DonationResponsesTableA05AE85F",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "DonationResponsesTableA05AE85F",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "dynamodb:TransactWriteItems",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "DonationIdentifierLimitsTable82DEC796",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
         "dynamodb:BatchWriteItem",
         "dynamodb:PutItem",
         "dynamodb:UpdateItem",
@@ -4181,7 +4464,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-773079261320-us-east-2",
-     "S3Key": "08a724276e6a6a713a5a4db17b2d8ddab1c48bb92a70f6c21fbbd6fc6c722c3f.zip"
+     "S3Key": "4aab150ce74eb5b2e2d5877479fc49bd39f10f9ffedf6d2a366b8175990f85c8.zip"
     },
     "Environment": {
      "Variables": {
@@ -4215,6 +4498,9 @@
       },
       "CERTIFICATES_BUCKET": {
        "Ref": "CertificatesBucketE5F004DB"
+      },
+      "DONATION_IDENTIFIER_LIMITS_TABLE": {
+       "Ref": "DonationIdentifierLimitsTable82DEC796"
       }
      }
     },
@@ -4235,7 +4521,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "CxumStack/Donations/Resource",
-    "aws:asset:path": "asset.08a724276e6a6a713a5a4db17b2d8ddab1c48bb92a70f6c21fbbd6fc6c722c3f",
+    "aws:asset:path": "asset.4aab150ce74eb5b2e2d5877479fc49bd39f10f9ffedf6d2a366b8175990f85c8",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -8094,7 +8380,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/3WQy07DMBBFv4W9a6q0QmzTIB4rqhTWleO4YdrEE3nGrYqVf0d2+hKI1T13PL6ecSaz+aOc3qkDTXS9m7RQybBipXdCHWgdNDYWGGX4JOOWiK0oNvbCZyhaMJZvj/5WXhz6fhD10aoO60qGD1W1ZqHIiESxN8EgaCbDwuudSQEnGmWJLejjtXzyo4lhg9At+nrj0LIMT0DsoPIMaMVq9u6gAZtrbYgKtOzGff4p314eRKu6qlYyPHurU1yxsbe8NK4DotQLqpOhxHGppNe5R4pLrhWRYZJ5FKF6aBSbgzruMxlemfu8h3ghSrQrVk0KHCGWSvQ80ptl0zh1HuaXvfblnr/QwbdxKfrihkGUhtA7bUSaJz4Ctknf47n3PAiLtZFbut9nD3Iup3dbApg4bxk6I8tRfwCUm8ZIUAIAAA=="
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/3WQy27DIBBFv6V7QqMkqrp1XPWxauS06whj7E5ig8UMiVLEv1dAXmrV1T13mBkuzPhs8cind+KAE9nsJj3U3K9JyB0TB9x4aToNZLj/RGVXxvSsbPWFz1D2oDTdHv2tvFjjxsB6MdSN4L5s9UrZARDBaPbstKQIZavPHFhz1GIwTc39h6h7tRSoWKLYliAwnHO/dHKn0mUnyrIyPcjjtXzy2cRlgcneuKa1RhP3T4BkoXYpx3r+bqEDXUipEEujyea3/1O+HQ4MxMB9ZXLQpNcsmWLwjUBUhLyIwsQInSB1EMf9jPtXorEYIQ5EiXZNoksLM8RSZRxletOkOivOf/jLXvsKR1/GwreyafXFhcAqhcZZqVjKEy8B3aUnOxodBaZNo/gW7/ezB77g07stAkys0wSD4lXWH8aDth1QAgAA"
    },
    "Metadata": {
     "aws:cdk:path": "CxumStack/CDKMetadata/Default"

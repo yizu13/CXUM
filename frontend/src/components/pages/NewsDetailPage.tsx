@@ -132,7 +132,7 @@ export default function NewsDetailPage() {
     description: news.description,
     keywords: `${news.category}, noticias CXUM, ${news.author}, actividades educativas RD`,
     ogImage: news.image,
-    canonical: `https://d1ykljkzezf4zd.cloudfront.net/Noticias/${news.slug}`
+    canonical: `https://cuadernosxunmanana.org/Noticias/${news.slug}`
   } : undefined);
 
   // Noticias relacionadas: misma categoría, excluyendo la actual (máx 3)
@@ -243,7 +243,7 @@ export default function NewsDetailPage() {
                 "name": "Cuadernos X un Mañana",
                 "logo": {
                   "@type": "ImageObject",
-                  "url": "https://d1ykljkzezf4zd.cloudfront.net/cxum.png"
+                  "url": "https://cuadernosxunmanana.org/cxum.png"
                 }
               },
               "articleSection": news.category,

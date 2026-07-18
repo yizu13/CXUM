@@ -1,4 +1,4 @@
-import { type ChangeEvent, type FormEvent, useEffect, useMemo, useState } from "react";
+import { type ChangeEvent, useEffect, useMemo, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useSnackbar } from "notistack";
@@ -8,8 +8,10 @@ import Footer from "../layout/Footer";
 import Iconify from "../modularUI/IconsMock";
 import type { DonationField, DonationForm } from "../../platform/donations/types";
 import { getPublicDonationForm, submitDonationResponse } from "../../platform/APIs/donations";
-import { visibleFields } from "../../platform/donations/analytics";
+import { getGuidedFormSteps, visibleFields } from "../../platform/donations/analytics";
 import DonationOptionPicker from "../../platform/donations/DonationOptionPicker";
+import { formatDonationDate } from "../../platform/donations/dates";
+import { resolveDonationFormIcon } from "../../platform/donations/icons";
 
 function inputType(field: DonationField) {
   if (field.type === "email") return "email";
@@ -23,6 +25,39 @@ function emptyValue() {
   return "";
 }
 
+type DonationValues = Record<string, string | number | boolean>;
+
+function getFieldErrors(fields: DonationField[], values: DonationValues) {
+  const fieldErrors: Record<string, string> = {};
+  fields.forEach((field) => {
+    const value = values[field.id] ?? emptyValue();
+    const isEmpty = value === "" || value === undefined || value === null;
+    if (field.required && isEmpty) {
+      fieldErrors[field.id] = "Este campo es obligatorio.";
+      return;
+    }
+    if (isEmpty) return;
+    if (field.maxLength && String(value).length > field.maxLength) {
+      fieldErrors[field.id] = `Maximo ${field.maxLength} caracteres.`;
+    }
+    if (field.type === "number") {
+      const numberValue = Number(value);
+      if (field.min !== undefined && numberValue < field.min) fieldErrors[field.id] = `Minimo ${field.min}.`;
+      if (field.max !== undefined && numberValue > field.max) fieldErrors[field.id] = `Maximo ${field.max}.`;
+    }
+    if (field.type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value))) {
+      fieldErrors[field.id] = "Correo invalido.";
+    }
+    if (field.type === "phone" && String(value).replace(/\D/g, "").length < 7) {
+      fieldErrors[field.id] = "Telefono demasiado corto.";
+    }
+    if (field.type === "date" && Number.isNaN(new Date(String(value)).getTime())) {
+      fieldErrors[field.id] = "Fecha invalida.";
+    }
+  });
+  return fieldErrors;
+}
+
 export default function PublicDonationFormPage() {
   const { slug } = useParams();
   const [searchParams] = useSearchParams();
@@ -33,12 +68,13 @@ export default function PublicDonationFormPage() {
   const [form, setForm] = useState<DonationForm | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
-  const [values, setValues] = useState<Record<string, string | number | boolean>>({});
+  const [values, setValues] = useState<DonationValues>({});
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [currentStep, setCurrentStep] = useState(0);
   const [pendingSection, setPendingSection] = useState("");
+  const [visitedStepKeys, setVisitedStepKeys] = useState<Set<string>>(() => new Set());
 
   useEffect(() => {
     if (!slug) return;
@@ -51,6 +87,7 @@ export default function PublicDonationFormPage() {
         setErrors({});
         setCurrentStep(0);
         setPendingSection("");
+        setVisitedStepKeys(new Set());
         setSubmitted(false);
       })
       .catch((err: unknown) => {
@@ -60,7 +97,7 @@ export default function PublicDonationFormPage() {
   }, [slug]);
 
   const fields = useMemo(() => (form ? visibleFields(form, values) : []), [form, values]);
-  const primaryField = form?.primaryFieldId ? fields.find((field) => field.id === form.primaryFieldId) : undefined;
+  const primaryField = form?.primaryFieldId ? form.fields.find((field) => field.id === form.primaryFieldId) : undefined;
   const groupedFields = useMemo(() => {
     const regularFields = form?.mode === "guided"
       ? fields.filter((field) => field.id !== primaryField?.id)
@@ -71,16 +108,9 @@ export default function PublicDonationFormPage() {
     }, {});
   }, [fields, form?.mode, primaryField]);
   const guidedSteps = useMemo(() => {
-    if (!form || form.mode !== "guided") return [];
-    const steps: { key: string; title: string; fields: DonationField[] }[] = [];
-    if (primaryField) {
-      steps.push({ key: `priority-${primaryField.id}`, title: "Dato prioritario", fields: [primaryField] });
-    }
-    Object.entries(groupedFields).forEach(([section, sectionFields]) => {
-      if (sectionFields.length > 0) steps.push({ key: section, title: section || "General", fields: sectionFields });
-    });
-    return steps;
-  }, [form, groupedFields, primaryField]);
+    if (!form) return [];
+    return getGuidedFormSteps(form, fields);
+  }, [fields, form]);
   const activeStep = guidedSteps[Math.min(currentStep, Math.max(0, guidedSteps.length - 1))];
 
   useEffect(() => {
@@ -93,11 +123,14 @@ export default function PublicDonationFormPage() {
     if (!pendingSection) return;
     const destinationIndex = guidedSteps.findIndex((step) => step.title === pendingSection);
     if (destinationIndex >= 0) {
+      if (activeStep) {
+        setVisitedStepKeys((current) => new Set(current).add(activeStep.key));
+      }
       setCurrentStep(destinationIndex);
       setPendingSection("");
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
-  }, [guidedSteps, pendingSection]);
+  }, [activeStep, guidedSteps, pendingSection]);
 
   const pageBg = isDark ? "#05070b" : "#f7fafc";
   const text = isDark ? "#fff" : "#0f172a";
@@ -116,38 +149,16 @@ export default function PublicDonationFormPage() {
     const nextValue = field.type === "number" && value !== "" ? Number(value) : value;
     setValues((current) => ({ ...current, [field.id]: nextValue }));
     setErrors((current) => ({ ...current, [field.id]: "" }));
+    const changedStepIndex = guidedSteps.findIndex((step) => step.fields.some((stepField) => stepField.id === field.id));
+    if (changedStepIndex >= 0) {
+      setVisitedStepKeys((current) => new Set(
+        [...current].filter((key) => guidedSteps.findIndex((step) => step.key === key) < changedStepIndex),
+      ));
+    }
   }
 
   function validateFields(fieldsToValidate: DonationField[]) {
-    const nextErrors: Record<string, string> = {};
-    fieldsToValidate.forEach((field) => {
-      const value = values[field.id] ?? emptyValue();
-      const isEmpty = value === "" || value === undefined || value === null;
-      if (field.required && isEmpty) {
-        nextErrors[field.id] = "Este campo es obligatorio.";
-        return;
-      }
-      if (isEmpty) return;
-      if (field.maxLength && String(value).length > field.maxLength) {
-        nextErrors[field.id] = `Maximo ${field.maxLength} caracteres.`;
-      }
-      if (field.type === "number") {
-        const numberValue = Number(value);
-        if (field.min !== undefined && numberValue < field.min) nextErrors[field.id] = `Minimo ${field.min}.`;
-        if (field.max !== undefined && numberValue > field.max) nextErrors[field.id] = `Maximo ${field.max}.`;
-      }
-      if (field.type === "email" && value) {
-        const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value));
-        if (!validEmail) nextErrors[field.id] = "Correo invalido.";
-      }
-      if (field.type === "phone" && value) {
-        const digits = String(value).replace(/\D/g, "");
-        if (digits.length < 7) nextErrors[field.id] = "Telefono demasiado corto.";
-      }
-      if (field.type === "date" && value && Number.isNaN(new Date(String(value)).getTime())) {
-        nextErrors[field.id] = "Fecha invalida.";
-      }
-    });
+    const nextErrors = getFieldErrors(fieldsToValidate, values);
     setErrors((current) => {
       const next = { ...current };
       fieldsToValidate.forEach((field) => delete next[field.id]);
@@ -158,13 +169,39 @@ export default function PublicDonationFormPage() {
 
   function nextStep() {
     if (!activeStep || !validateFields(activeStep.fields)) return;
+    setVisitedStepKeys((current) => new Set(current).add(activeStep.key));
     setCurrentStep((step) => Math.min(guidedSteps.length - 1, step + 1));
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!form || !validateFields(fields)) return;
+  async function submitForm() {
+    if (!form || submitting) return;
+    if (form.mode === "guided") {
+      const firstUnvisitedIndex = guidedSteps.findIndex((step, index) =>
+        step.fields.length > 0 && index !== currentStep && !visitedStepKeys.has(step.key),
+      );
+      if (firstUnvisitedIndex >= 0) {
+        setCurrentStep(firstUnvisitedIndex);
+        enqueueSnackbar("Completa todos los pasos antes de enviar", { variant: "warning" });
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+    }
+
+    const allErrors = getFieldErrors(fields, values);
+    setErrors(allErrors);
+    if (Object.keys(allErrors).length > 0) {
+      if (form.mode === "guided") {
+        const invalidStepIndex = guidedSteps.findIndex((step) =>
+          step.fields.some((field) => Boolean(allErrors[field.id])),
+        );
+        if (invalidStepIndex >= 0) setCurrentStep(invalidStepIndex);
+      }
+      enqueueSnackbar("Revisa los campos pendientes antes de enviar", { variant: "warning" });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
     const sourceParam = searchParams.get("source");
     setSubmitting(true);
     try {
@@ -256,6 +293,12 @@ export default function PublicDonationFormPage() {
         )}
 
         {field.helper && <p className="text-xs mt-2" style={{ color: muted }}>{field.helper}</p>}
+        {field.id === form?.respondentFieldId && form.respondentSubmissionLimit && (
+          <p className="mt-2 flex items-center gap-1.5 text-xs font-bold" style={{ color: "#f59e0b" }}>
+            <Iconify IconString="solar:shield-check-bold-duotone" Size={15} />
+            Maximo {form.respondentSubmissionLimit} {form.respondentSubmissionLimit === 1 ? "registro" : "registros"} con este identificador.
+          </p>
+        )}
         {errors[field.id] && <p className="text-xs font-bold mt-2" style={{ color: "#ef4444" }}>{errors[field.id]}</p>}
       </div>
     );
@@ -290,7 +333,7 @@ export default function PublicDonationFormPage() {
         <motion.form
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
-          onSubmit={handleSubmit}
+          onSubmit={(event) => event.preventDefault()}
           className="max-w-3xl mx-auto"
         >
           <Link to="/formularios" className="inline-flex items-center gap-2 text-xs font-black mb-5" style={{ color: muted }}>
@@ -308,11 +351,17 @@ export default function PublicDonationFormPage() {
                   <h1 className="text-2xl sm:text-4xl font-black tracking-tight mt-2" style={{ color: text }}>
                     {form.title}
                   </h1>
+                  {form.eventDate && (
+                    <p className="inline-flex items-center gap-1.5 text-xs font-black mt-3" style={{ color: "#f59e0b" }}>
+                      <Iconify IconString="solar:calendar-date-bold-duotone" Size={16} />
+                      {formatDonationDate(form.eventDate)}
+                    </p>
+                  )}
                   <p className="text-sm mt-3 max-w-2xl" style={{ color: muted }}>{form.description}</p>
                 </div>
-                <div className="hidden sm:flex w-12 h-12 rounded-2xl items-center justify-center shrink-0"
+                <div className="flex w-10 h-10 sm:w-12 sm:h-12 rounded-2xl items-center justify-center shrink-0"
                   style={{ background: "rgba(245,158,11,0.14)", border: "1px solid rgba(245,158,11,0.24)" }}>
-                  <Iconify IconString="solar:file-text-bold-duotone" Size={26} Style={{ color: "#f59e0b" }} />
+                  <Iconify IconString={resolveDonationFormIcon(form.headerIcon)} Size={26} Style={{ color: "#f59e0b" }} />
                 </div>
               </div>
             </div>
@@ -354,7 +403,13 @@ export default function PublicDonationFormPage() {
                         <p className="text-xs mt-1" style={{ color: muted }}>Completa esta etapa para continuar.</p>
                       </div>
                       <div className="grid gap-5">
-                        {activeStep.fields.map((field) => renderField(field, field.id === primaryField?.id))}
+                        {activeStep.fields.length > 0 ? (
+                          activeStep.fields.map((field) => renderField(field, field.id === primaryField?.id))
+                        ) : (
+                          <div className="rounded-xl border border-dashed px-4 py-5 text-center text-xs font-bold" style={{ color: muted, borderColor: panel.borderColor }}>
+                            Esta etapa se habilitara segun las respuestas de los pasos anteriores.
+                          </div>
+                        )}
                       </div>
                     </motion.section>
 
@@ -381,13 +436,14 @@ export default function PublicDonationFormPage() {
                         </button>
                       ) : (
                         <button
-                          type="submit"
+                          type="button"
+                          onClick={submitForm}
                           disabled={submitting}
                           className="rounded-2xl py-4 text-sm font-black text-white flex items-center justify-center gap-2 disabled:opacity-60"
                           style={{ background: "linear-gradient(135deg, #ef4444, #f59e0b)" }}
                         >
                           <Iconify IconString="solar:send-square-bold-duotone" Size={19} />
-                          {submitting ? "Enviando" : "Enviar donacion"}
+                          {submitting ? "Enviando" : "Enviar"}
                         </button>
                       )}
                     </div>
@@ -402,13 +458,14 @@ export default function PublicDonationFormPage() {
                       </section>
                     ))}
                     <button
-                      type="submit"
+                      type="button"
+                      onClick={submitForm}
                       disabled={submitting}
                       className="w-full rounded-2xl py-4 text-sm font-black text-white flex items-center justify-center gap-2 disabled:opacity-60"
                       style={{ background: "linear-gradient(135deg, #ef4444, #f59e0b)" }}
                     >
                       <Iconify IconString="solar:send-square-bold-duotone" Size={19} />
-                      {submitting ? "Enviando" : "Enviar donacion"}
+                      {submitting ? "Enviando" : "Enviar"}
                     </button>
                   </>
                 )}

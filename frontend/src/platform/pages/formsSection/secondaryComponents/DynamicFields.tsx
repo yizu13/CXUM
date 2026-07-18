@@ -1,8 +1,9 @@
 import type { ChangeEvent, CSSProperties } from "react";
 import { motion } from "framer-motion";
 import Iconify from "../../../../components/modularUI/IconsMock";
-import { AdminSelect, ConfigLabel, ConfigSectionHeader } from "../secondaryComponents/minorsComponents";
+import { AdminSelect, ConfigLabel, ConfigSectionHeader } from "../secondaryComponents/MinorsComponents";
 import { CONFIG_DESCRIPTIONS, FIELD_TYPES, MODE_OPTIONS, OPERATORS, SELECT_DISPLAY_OPTIONS, STATUS_OPTIONS, type dynamicFieldObject } from "../types";
+import IconifyPicker from "./IconifyPicker";
 
 function fieldInput(
   inputStyle: CSSProperties | undefined,
@@ -47,6 +48,18 @@ export default function DynamicFields( { cardStyle, inputStyle, text, muted, sel
               <div className="grid md:grid-cols-2 gap-4">
                 {fieldInput(inputStyle, muted, "Titulo", selectedForm.title, (value) => updateForm({ title: value }))}
                 {fieldInput(inputStyle, muted, "Slug publico", selectedForm.slug, (value) => updateForm({ slug: value.toLowerCase().replaceAll(" ", "-") }))}
+                {fieldInput(inputStyle, muted, "Fecha del evento", selectedForm.eventDate, (value) => updateForm({ eventDate: value || undefined }), "date")}
+                <div className="grid gap-1.5">
+                  <ConfigLabel title="Icono del encabezado" description={CONFIG_DESCRIPTIONS["Icono del encabezado"]} muted={muted} />
+                  <IconifyPicker
+                    value={selectedForm.headerIcon}
+                    onChange={(value) => updateForm({ headerIcon: value })}
+                    inputStyle={inputStyle}
+                    text={text}
+                    muted={muted}
+                    isDark={isDark}
+                  />
+                </div>
                 <label className="grid gap-1.5 md:col-span-2">
                   <ConfigLabel title="Descripcion" description="Aparece debajo del titulo y explica el objetivo, destino o condiciones de la donacion." muted={muted} />
                   <textarea
@@ -81,7 +94,13 @@ export default function DynamicFields( { cardStyle, inputStyle, text, muted, sel
                   <ConfigLabel title="Identifica quien responde" description="Su respuesta se mostrara como identificador principal en el bucket y las exportaciones." muted={muted} />
                   <AdminSelect
                     value={selectedForm.respondentFieldId ?? ""}
-                    onChange={(value) => updateForm({ respondentFieldId: value || undefined })}
+                    onChange={(value) => updateForm({
+                      respondentFieldId: value || undefined,
+                      respondentSubmissionLimit: value ? selectedForm.respondentSubmissionLimit : undefined,
+                      fields: value && selectedForm.respondentSubmissionLimit
+                        ? selectedForm.fields.map((field) => field.id === value ? { ...field, required: true } : field)
+                        : selectedForm.fields,
+                    })}
                     options={[
                       { label: "Sin identificador", value: "", description: "Las respuestas apareceran como no especificadas." },
                       ...selectedForm.fields.map((field) => ({ label: field.label, value: field.id, description: `Tipo ${FIELD_TYPES.find((type) => type.value === field.type)?.label ?? field.type}` })),
@@ -89,6 +108,40 @@ export default function DynamicFields( { cardStyle, inputStyle, text, muted, sel
                     className="text-sm"
                     style={inputStyle}
                   />
+                </label>
+                <label className="grid gap-1.5">
+                  <ConfigLabel title="Limite por identificador" description={CONFIG_DESCRIPTIONS["Limite por identificador"]} muted={muted} />
+                  <div className="relative">
+                    <input
+                      type="number"
+                      min={1}
+                      max={100000}
+                      step={1}
+                      disabled={!selectedForm.respondentFieldId}
+                      value={selectedForm.respondentSubmissionLimit ?? ""}
+                      placeholder={selectedForm.respondentFieldId ? "Sin limite" : "Selecciona un identificador"}
+                      onChange={(event) => {
+                        const rawValue = event.target.value;
+                        const parsedValue = Number(rawValue);
+                        const limit = rawValue && Number.isFinite(parsedValue)
+                          ? Math.min(100000, Math.max(1, Math.floor(parsedValue)))
+                          : undefined;
+                        updateForm({
+                          respondentSubmissionLimit: limit,
+                          fields: limit
+                            ? selectedForm.fields.map((field) => field.id === selectedForm.respondentFieldId ? { ...field, required: true } : field)
+                            : selectedForm.fields,
+                        });
+                      }}
+                      className="w-full rounded-xl border px-3 py-2 pr-12 text-sm outline-none disabled:cursor-not-allowed disabled:opacity-55 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      style={inputStyle}
+                    />
+                    {selectedForm.respondentSubmissionLimit && (
+                      <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-black uppercase" style={{ color: muted }}>
+                        veces
+                      </span>
+                    )}
+                  </div>
                 </label>
                 <label className="grid gap-1.5">
                   <ConfigLabel title="Campo de ubicacion" description="Alimenta el filtro de lugar y la columna de ubicacion en reportes y bucket." muted={muted} />
@@ -185,8 +238,10 @@ export default function DynamicFields( { cardStyle, inputStyle, text, muted, sel
                           <input
                             type="checkbox"
                             checked={field.required}
+                            disabled={field.id === selectedForm.respondentFieldId && Boolean(selectedForm.respondentSubmissionLimit)}
                             onChange={(event) => updateField(field.id, { required: event.target.checked })}
-                            className="w-4 h-4 accent-amber-500"
+                            title={field.id === selectedForm.respondentFieldId && selectedForm.respondentSubmissionLimit ? "El identificador limitado debe ser obligatorio" : undefined}
+                            className="w-4 h-4 accent-amber-500 disabled:cursor-not-allowed disabled:opacity-60"
                           />
                         </span>
                       </label>

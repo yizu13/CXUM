@@ -88,7 +88,7 @@ Allow: /
 Disallow: /admin
 Disallow: /platform
 
-Sitemap: https://d1ykljkzezf4zd.cloudfront.net/sitemap.xml
+Sitemap: https://cuadernosxunmanana.org/sitemap.xml
 ```
 
 #### sitemap.xml

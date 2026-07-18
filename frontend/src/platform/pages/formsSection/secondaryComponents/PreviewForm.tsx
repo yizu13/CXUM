@@ -5,6 +5,8 @@ import type { previewFormObject } from "../types";
 import { enqueueSnackbar } from "notistack";
 import { motion } from "framer-motion";
 import type { DonationField } from "../../../donations/types";
+import { formatDonationDate } from "../../../donations/dates";
+import { resolveDonationFormIcon } from "../../../donations/icons";
 
 
 export default function PreviewForm({ cardStyle, inputStyle, text, muted, selectedForm, qrDataUrl, previewSteps, previewStep, previewPrimaryField, isDark, renderPreviewField, setPreviewStep, previewGroupedFields }: previewFormObject) {
@@ -101,10 +103,16 @@ export default function PreviewForm({ cardStyle, inputStyle, text, muted, select
                     <div className="min-w-0">
                       <span className="text-[10px] font-black uppercase tracking-[0.16em]" style={{ color: "#f59e0b" }}>Registro de formulario</span>
                       <h3 className="text-2xl font-black tracking-tight mt-2 wrap-break-word" style={{ color: text }}>{selectedForm.title}</h3>
+                      {selectedForm.eventDate && (
+                        <p className="inline-flex items-center gap-1.5 text-[11px] font-black mt-2" style={{ color: "#f59e0b" }}>
+                          <Iconify IconString="solar:calendar-date-bold-duotone" Size={14} />
+                          {formatDonationDate(selectedForm.eventDate)}
+                        </p>
+                      )}
                       <p className="text-xs mt-2 leading-5" style={{ color: muted }}>{selectedForm.description}</p>
                     </div>
-                    <span className="hidden sm:grid w-11 h-11 rounded-2xl place-items-center shrink-0" style={{ background: "rgba(245,158,11,0.14)", border: "1px solid rgba(245,158,11,0.24)" }}>
-                      <Iconify IconString="solar:clipboard-text-bold-duotone" Size={23} Style={{ color: "#f59e0b" }} />
+                    <span className="grid w-10 h-10 sm:w-11 sm:h-11 rounded-2xl place-items-center shrink-0" style={{ background: "rgba(245,158,11,0.14)", border: "1px solid rgba(245,158,11,0.24)" }}>
+                      <Iconify IconString={resolveDonationFormIcon(selectedForm.headerIcon)} Size={23} Style={{ color: "#f59e0b" }} />
                     </span>
                   </div>
                 </div>
@@ -134,7 +142,13 @@ export default function PreviewForm({ cardStyle, inputStyle, text, muted, select
                           <p className="text-xs mt-1" style={{ color: muted }}>Completa esta etapa para continuar.</p>
                         </div>
                         <div className="grid gap-4">
-                          {previewActiveStep.fields.map((field) => renderPreviewField(field, field.id === previewPrimaryField?.id))}
+                          {previewActiveStep.fields.length > 0 ? (
+                            previewActiveStep.fields.map((field) => renderPreviewField(field, field.id === previewPrimaryField?.id))
+                          ) : (
+                            <div className="rounded-xl border border-dashed px-4 py-5 text-center text-xs font-bold" style={{ color: muted, borderColor: cardStyle.borderColor }}>
+                              Esta etapa se habilitara segun las respuestas de los pasos anteriores.
+                            </div>
+                          )}
                         </div>
                       </motion.section>
 
@@ -155,7 +169,7 @@ export default function PreviewForm({ cardStyle, inputStyle, text, muted, select
                           className="rounded-2xl py-3 text-xs font-black text-white flex items-center justify-center gap-1.5"
                           style={{ background: previewStep === previewSteps.length - 1 ? "linear-gradient(135deg, #ef4444, #f59e0b)" : "#f59e0b" }}
                         >
-                          {previewStep === previewSteps.length - 1 ? "Enviar donacion" : "Continuar"}
+                          {previewStep === previewSteps.length - 1 ? "Enviar" : "Continuar"}
                           <Iconify IconString={previewStep === previewSteps.length - 1 ? "solar:send-square-bold-duotone" : "solar:alt-arrow-right-linear"} Size={16} />
                         </button>
                       </div>
@@ -169,7 +183,7 @@ export default function PreviewForm({ cardStyle, inputStyle, text, muted, select
                       ))}
                       <button type="button" className="w-full rounded-2xl py-3 text-xs font-black text-white flex items-center justify-center gap-2" style={{ background: "linear-gradient(135deg, #ef4444, #f59e0b)" }}>
                         <Iconify IconString="solar:send-square-bold-duotone" Size={17} />
-                        Enviar donacion
+                        Enviar
                       </button>
                     </>
                   )}

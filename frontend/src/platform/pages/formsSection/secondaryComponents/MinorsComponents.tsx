@@ -4,14 +4,18 @@ import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import { type AdminOption } from "../types";
 import { asPercent, compactNumber } from "../formUiUtils";
+import { useSettings } from "../../../../hooks/context/SettingsContext";
 
 export function BarChart({ data, color }: { data: { label: string; value: number }[]; color: string }) {
   const max = Math.max(1, ...data.map((item) => item.value));
+    const { theme } = useSettings();
+  
+  const isDark = theme === "dark"
   return (
     <div className="space-y-2">
       {data.slice(0, 7).map((item) => (
-        <div key={item.label} className="grid grid-cols-[92px_1fr_42px] items-center gap-2">
-          <span className="text-[11px] font-bold truncate opacity-70">{item.label}</span>
+        <div key={item.label} className={`grid grid-cols-[92px_1fr_42px] items-center gap-2 ${isDark ? "text-white" : "text-gray-700"}`}>
+          <span className={`text-[11px] font-bold truncate opacity-70`}>{item.label}</span>
           <div className="h-8 rounded-xl overflow-hidden bg-black/5 dark:bg-white/5">
             <div className="h-full rounded-xl" style={{ width: `${(item.value / max) * 100}%`, background: color }} />
           </div>
@@ -82,8 +86,12 @@ export function PieChart({ data }: { data: { label: string; value: number }[] })
     })
     .join(", ");
 
+    const { theme } = useSettings();
+  
+  const isDark = theme === "dark"
+
   return (
-    <div className="flex items-center gap-5">
+    <div className={`flex items-center gap-5 ${isDark ? "text-white" : "text-gray-700"}`}>
       <div className="w-32 h-32 rounded-full shrink-0" style={{ background: `conic-gradient(${gradient})` }} />
       <div className="space-y-2 min-w-0">
         {data.slice(0, 6).map((item, index) => (

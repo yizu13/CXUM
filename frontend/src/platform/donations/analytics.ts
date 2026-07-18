@@ -25,6 +25,12 @@ export type CategorySummary = {
   counts: { label: string; value: number }[];
 };
 
+export type DonationFormStep = {
+  key: string;
+  title: string;
+  fields: DonationField[];
+};
+
 export function passesCondition(field: DonationField, values: Record<string, string | number | boolean>) {
   if (!field.condition) return true;
   const value = values[field.condition.fieldId];
@@ -56,6 +62,41 @@ export function visibleFields(form: DonationForm, values: Record<string, string 
         controller.optionSubmenus?.[String(values[controller.id] ?? "")] === field.section,
       );
     });
+}
+
+export function getGuidedFormSteps(form: DonationForm, currentVisibleFields: DonationField[]) {
+  if (form.mode !== "guided") return [];
+
+  const orderedFields = [...form.fields].sort((a, b) => a.priority - b.priority);
+  const visibleFieldIds = new Set(currentVisibleFields.map((field) => field.id));
+  const primaryField = form.primaryFieldId
+    ? orderedFields.find((field) => field.id === form.primaryFieldId)
+    : undefined;
+  const sections = new Map<string, DonationField[]>();
+
+  orderedFields.forEach((field) => {
+    if (field.id === primaryField?.id) return;
+    const section = field.section || "General";
+    sections.set(section, [...(sections.get(section) ?? []), field]);
+  });
+
+  const steps: DonationFormStep[] = [];
+  if (primaryField) {
+    steps.push({
+      key: `priority-${primaryField.id}`,
+      title: "Dato prioritario",
+      fields: visibleFieldIds.has(primaryField.id) ? [primaryField] : [],
+    });
+  }
+  sections.forEach((sectionFields, section) => {
+    steps.push({
+      key: `section-${section}`,
+      title: section,
+      fields: sectionFields.filter((field) => visibleFieldIds.has(field.id)),
+    });
+  });
+
+  return steps;
 }
 
 export function filterResponses(

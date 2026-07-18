@@ -23,12 +23,13 @@ import {
 } from "../../../APIs/donations";
 import {
   filterResponses,
+  getGuidedFormSteps,
   visibleFields,
 } from "../../../donations/analytics";
 import DynamicFields from "../secondaryComponents/DynamicFields";
-import { AdminSelect } from "../secondaryComponents/minorsComponents";
+import { AdminSelect } from "../secondaryComponents/MinorsComponents";
 import type { AdminOption, TabKey } from "../types";
-import PreviewForm from "../secondaryComponents/previewForm";
+import PreviewForm from "../secondaryComponents/PreviewForm";
 import ReportsTab from "../secondaryComponents/ReportsTab";
 import BucketTab from "../secondaryComponents/bucketTab";
 
@@ -100,7 +101,7 @@ export default function AdminDonationsPage() {
     [previewValues, selectedForm],
   );
   const previewPrimaryField = selectedForm?.primaryFieldId
-    ? previewFields.find((field) => field.id === selectedForm.primaryFieldId)
+    ? selectedForm.fields.find((field) => field.id === selectedForm.primaryFieldId)
     : undefined;
   const previewGroupedFields = useMemo(() => {
     if (!selectedForm) return {} as Record<string, DonationField[]>;
@@ -114,14 +115,9 @@ export default function AdminDonationsPage() {
     }, {});
   }, [previewFields, previewPrimaryField?.id, selectedForm]);
   const previewSteps = useMemo(() => {
-    if (!selectedForm || selectedForm.mode !== "guided") return [];
-    const steps: { key: string; title: string; fields: DonationField[] }[] = [];
-    if (previewPrimaryField) steps.push({ key: `priority-${previewPrimaryField.id}`, title: "Dato prioritario", fields: [previewPrimaryField] });
-    Object.entries(previewGroupedFields).forEach(([section, fields]) => {
-      if (fields.length > 0) steps.push({ key: section, title: section, fields });
-    });
-    return steps;
-  }, [previewGroupedFields, previewPrimaryField, selectedForm]);
+    if (!selectedForm) return [];
+    return getGuidedFormSteps(selectedForm, previewFields);
+  }, [previewFields, selectedForm]);
 
   const text = isDark ? "#ffffff" : "#0f172a";
   const muted = isDark ? "rgba(255,255,255,0.48)" : "#64748b";
@@ -337,6 +333,7 @@ export default function AdminDonationsPage() {
       }),
       primaryFieldId: selectedForm.primaryFieldId === fieldId ? undefined : selectedForm.primaryFieldId,
       respondentFieldId: selectedForm.respondentFieldId === fieldId ? undefined : selectedForm.respondentFieldId,
+      respondentSubmissionLimit: selectedForm.respondentFieldId === fieldId ? undefined : selectedForm.respondentSubmissionLimit,
       locationFieldId: selectedForm.locationFieldId === fieldId ? undefined : selectedForm.locationFieldId,
     });
   }
@@ -429,6 +426,12 @@ export default function AdminDonationsPage() {
         )}
 
         {field.helper && <p className="text-xs mt-2 leading-5" style={{ color: muted }}>{field.helper}</p>}
+        {field.id === selectedForm?.respondentFieldId && selectedForm.respondentSubmissionLimit && (
+          <p className="mt-2 flex items-center gap-1.5 text-xs font-bold" style={{ color: "#f59e0b" }}>
+            <Iconify IconString="solar:shield-check-bold-duotone" Size={15} />
+            Maximo {selectedForm.respondentSubmissionLimit} {selectedForm.respondentSubmissionLimit === 1 ? "registro" : "registros"} con este identificador.
+          </p>
+        )}
       </div>
     );
   }

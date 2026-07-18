@@ -21,12 +21,17 @@ export class CxumStack extends cdk.Stack {
     // ─── Cognito User Pool ────────────────────────────────────────────────────
     const userPool = new cognito.UserPool(this, "CxumUserPool", {
       userPoolName: "cxum-user-pool",
-      selfSignUpEnabled: false,          // solo por invitación
+      // Cognito debe aceptar SignUp para ejecutar el flujo del frontend. El
+      // trigger PreSignUp mantiene el acceso restringido a invitaciones validas.
+      selfSignUpEnabled: true,
       signInAliases: { email: true },
       autoVerify: { email: true },
       standardAttributes: {
         email:    { required: true,  mutable: true },
         fullname: { required: false, mutable: true },
+      },
+      customAttributes: {
+        municipio: new cognito.StringAttribute({ mutable: true, minLen: 2, maxLen: 100 }),
       },
       passwordPolicy: {
         minLength: 8,
@@ -117,6 +122,13 @@ export class CxumStack extends cdk.Stack {
       indexName: "formId-index",
       partitionKey: { name: "formId", type: dynamodb.AttributeType.STRING },
       projectionType: dynamodb.ProjectionType.ALL,
+    });
+
+    const donationIdentifierLimitsTable = new dynamodb.Table(this, "DonationIdentifierLimitsTable", {
+      tableName: "cxum-donation-identifier-limits",
+      partitionKey: { name: "key", type: dynamodb.AttributeType.STRING },
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
 
     // ─── S3 Buckets ───────────────────────────────────────────────────────────
@@ -256,10 +268,22 @@ export class CxumStack extends cdk.Stack {
     const generateInviteTokenFn = makeFn("GenerateInviteToken", "generateInviteTokenCXUM", "generateInviteToken");
     const validateInviteTokenFn = makeFn("ValidateInviteToken", "validateInviteTokenCXUM", "validateInviteToken");
     const consumeInviteTokenFn  = makeFn("ConsumeInviteToken",  "consumeInviteTokenCXUM",  "consumeInviteToken");
+    const preSignUpInviteFn = new lambda.Function(this, "PreSignUpInvite", {
+      functionName: "preSignUpInviteCXUM",
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: "index.handler",
+      code: lambda.Code.fromAsset(path.join(__dirname, "../lambdas/preSignUpInvite")),
+      timeout: cdk.Duration.seconds(10),
+      environment: {
+        INVITE_TOKENS_TABLE: inviteTokensTable.tableName,
+      },
+    });
     const uploadImageFn         = makeFn("UploadImage",         "uploadImageCXUM",         "uploadImage");
     const listImagesFn          = makeFn("ListImages",          "listImagesCXUM",          "listImages");
     const certificatesFn        = makeFn("Certificates",        "certificatesCXUM",        "certificates");
-    const donationsFn           = makeFn("Donations",           "donationsCXUM",           "donations");
+    const donationsFn           = makeFn("Donations",           "donationsCXUM",           "donations", {
+      DONATION_IDENTIFIER_LIMITS_TABLE: donationIdentifierLimitsTable.tableName,
+    });
     const getTempPasswordFn     = makeFn("GetTempPassword",     "getTempPasswordCXUM",     "getTempPassword");
 
     // ─── Permisos S3 ──────────────────────────────────────────────────────────
@@ -275,6 +299,9 @@ export class CxumStack extends cdk.Stack {
 
     donationFormsTable.grantReadWriteData(donationsFn);
     donationResponsesTable.grantReadWriteData(donationsFn);
+    donationIdentifierLimitsTable.grantReadWriteData(donationsFn);
+    donationResponsesTable.grant(donationsFn, "dynamodb:TransactWriteItems");
+    donationIdentifierLimitsTable.grant(donationsFn, "dynamodb:TransactWriteItems");
 
     // ─── Permisos DynamoDB ────────────────────────────────────────────────────
     centrosTable.grantReadData(getCentrosFn);
@@ -298,6 +325,8 @@ export class CxumStack extends cdk.Stack {
     // Profiles — modifyUserRole escribe, listUsers lee
     profilesTable.grantReadData(listUsersFn);
     profilesTable.grantReadWriteData(modifyUserRoleFn);
+    profilesTable.grant(inviteUserFn, "dynamodb:PutItem");
+    solicitudesTable.grant(inviteUserFn, "dynamodb:GetItem", "dynamodb:UpdateItem");
 
     // listUsers necesita listar usuarios y grupos de Cognito
     listUsersFn.addToRolePolicy(
@@ -313,6 +342,8 @@ export class CxumStack extends cdk.Stack {
     inviteTokensTable.grantReadWriteData(generateInviteTokenFn);
     inviteTokensTable.grantReadWriteData(validateInviteTokenFn);
     inviteTokensTable.grantReadWriteData(consumeInviteTokenFn);
+    inviteTokensTable.grant(preSignUpInviteFn, "dynamodb:UpdateItem");
+    userPool.addTrigger(cognito.UserPoolOperation.PRE_SIGN_UP, preSignUpInviteFn);
 
     // Activity — lectura para getActivity, escritura para todas las lambdas que loguean
     activityTable.grantReadData(getActivityFn);

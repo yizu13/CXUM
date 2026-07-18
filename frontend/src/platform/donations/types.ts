@@ -41,10 +41,13 @@ export type DonationForm = {
   title: string;
   slug: string;
   description: string;
+  headerIcon?: string;
+  eventDate?: string;
   status: DonationFormStatus;
   mode: DonationFormMode;
   primaryFieldId?: string;
   respondentFieldId?: string;
+  respondentSubmissionLimit?: number;
   locationFieldId?: string;
   thankYouMessage: string;
   fields: DonationField[];

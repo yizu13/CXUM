@@ -1,4 +1,5 @@
 import type { DonationField, DonationForm } from "./types";
+import { DEFAULT_DONATION_FORM_ICON } from "./icons";
 
 export function createDonationField(index: number): DonationField {
   return {
@@ -19,6 +20,8 @@ export function createDonationForm(): DonationForm {
     title: "Nueva campana de donacion",
     slug: `nueva-campana-${Date.now()}`,
     description: "Describe que se va a recolectar y como se usaran los datos.",
+    headerIcon: DEFAULT_DONATION_FORM_ICON,
+    eventDate: undefined,
     status: "draft",
     mode: "guided",
     thankYouMessage: "Gracias por apoyar esta iniciativa.",

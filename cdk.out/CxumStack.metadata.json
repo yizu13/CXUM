@@ -55,6 +55,14 @@
       }
     }
   ],
+  "/CxumStack/DonationIdentifierLimitsTable": [
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "DonationIdentifierLimitsTable82DEC796"
+      }
+    }
+  ],
   "/CxumStack/UserPoolId": [
     {
       "type": "aws:cdk:logicalId",
@@ -127,6 +135,12 @@
       "data": "CxumUserPool8AB7B167"
     }
   ],
+  "/CxumStack/CxumUserPool/PreSignUpCognito": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CxumUserPoolPreSignUpCognito54C0490E"
+    }
+  ],
   "/CxumStack/CxumUserPoolClient/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -155,6 +169,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "DonationResponsesTableA05AE85F"
+    }
+  ],
+  "/CxumStack/DonationIdentifierLimitsTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DonationIdentifierLimitsTable82DEC796"
     }
   ],
   "/CxumStack/ImagesBucket/Resource": [
@@ -281,6 +301,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ConsumeInviteTokenF32D0436"
+    }
+  ],
+  "/CxumStack/PreSignUpInvite/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PreSignUpInvite85BED78C"
     }
   ],
   "/CxumStack/UploadImage/Resource": [
@@ -449,6 +475,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ConsumeInviteTokenServiceRoleE6525164"
+    }
+  ],
+  "/CxumStack/PreSignUpInvite/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PreSignUpInviteServiceRole897C6716"
     }
   ],
   "/CxumStack/UploadImage/ServiceRole/Resource": [
@@ -1169,6 +1201,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ConsumeInviteTokenServiceRoleDefaultPolicy8205FA3E"
+    }
+  ],
+  "/CxumStack/PreSignUpInvite/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PreSignUpInviteServiceRoleDefaultPolicyC074B276"
     }
   ],
   "/CxumStack/UploadImage/ServiceRole/DefaultPolicy/Resource": [

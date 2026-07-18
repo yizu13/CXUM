@@ -7,7 +7,9 @@ import Footer from "../layout/Footer";
 import Iconify from "../modularUI/IconsMock";
 import LogoCXUM from "../../assets/LogoCXUM.png";
 import type { DonationForm } from "../../platform/donations/types";
+import { donationDateKey, formatDonationDate } from "../../platform/donations/dates";
 import { getPublicDonationForms } from "../../platform/APIs/donations";
+import { resolveDonationFormIcon } from "../../platform/donations/icons";
 
 export default function PublicDonationFormsPage() {
   const { theme } = useSettings();
@@ -16,6 +18,10 @@ export default function PublicDonationFormsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
+  const [eventDateFrom, setEventDateFrom] = useState("");
+  const [eventDateTo, setEventDateTo] = useState("");
+  const [createdDateFrom, setCreatedDateFrom] = useState("");
+  const [createdDateTo, setCreatedDateTo] = useState("");
 
   const loadForms = useCallback(() => {
     getPublicDonationForms()
@@ -35,9 +41,20 @@ export default function PublicDonationFormsPage() {
 
   const visibleForms = useMemo(() => {
     const term = search.trim().toLowerCase();
-    if (!term) return forms;
-    return forms.filter((form) => `${form.title} ${form.description}`.toLowerCase().includes(term));
-  }, [forms, search]);
+    return forms.filter((form) => {
+      if (term && !`${form.title} ${form.description}`.toLowerCase().includes(term)) return false;
+      const eventDate = donationDateKey(form.eventDate);
+      const createdDate = donationDateKey(form.createdAt);
+      if ((eventDateFrom || eventDateTo) && !eventDate) return false;
+      if (eventDateFrom && eventDate < eventDateFrom) return false;
+      if (eventDateTo && eventDate > eventDateTo) return false;
+      if (createdDateFrom && createdDate < createdDateFrom) return false;
+      if (createdDateTo && createdDate > createdDateTo) return false;
+      return true;
+    });
+  }, [createdDateFrom, createdDateTo, eventDateFrom, eventDateTo, forms, search]);
+
+  const hasFilters = Boolean(search || eventDateFrom || eventDateTo || createdDateFrom || createdDateTo);
 
   const pageBg = isDark ? "#05070b" : "#f7fafc";
   const text = isDark ? "#fff" : "#0f172a";
@@ -72,17 +89,109 @@ export default function PublicDonationFormsPage() {
           </motion.div>
 
           {!loading && !error && forms.length > 0 && (
-            <label className="relative block mb-4">
-              <Iconify IconString="solar:magnifer-linear" Size={18} Style={{ color: muted, position: "absolute", left: 14, top: 13 }} />
-              <input
-                type="search"
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder="Buscar una campana de donacion"
-                className="w-full rounded-2xl border py-3 pl-11 pr-4 text-sm outline-none"
-                style={{ ...card, color: text }}
-              />
-            </label>
+            <div className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(170px,0.9fr)_minmax(250px,1.15fr)_minmax(250px,1.15fr)_auto]">
+              <label className="grid gap-1.5 self-end sm:col-span-2 lg:col-span-1">
+                <span className="text-[11px] font-black" style={{ color: muted }}>Nombre del evento</span>
+                <span className="relative block">
+                  <Iconify IconString="solar:magnifer-linear" Size={18} Style={{ color: muted, position: "absolute", left: 14, bottom: 13 }} />
+                  <input
+                    type="search"
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
+                    placeholder="Buscar por nombre"
+                    className="w-full rounded-xl border py-3 pl-11 pr-4 text-sm outline-none"
+                    style={{ ...card, color: text }}
+                  />
+                </span>
+              </label>
+              <fieldset className="grid min-w-0 gap-1.5">
+                <legend className="text-[11px] font-black" style={{ color: muted }}>Rango del evento</legend>
+                <div className="grid grid-cols-2 gap-2">
+                  <label className="grid min-w-0 gap-1">
+                    <span className="text-[10px] font-bold" style={{ color: muted }}>Desde</span>
+                    <input
+                      type="date"
+                      value={eventDateFrom}
+                      max={eventDateTo || undefined}
+                      onChange={(event) => {
+                        const value = event.target.value;
+                        setEventDateFrom(value);
+                        if (value && eventDateTo && value > eventDateTo) setEventDateTo(value);
+                      }}
+                      className="min-w-0 w-full rounded-xl border px-2 py-2.5 text-xs outline-none"
+                      style={{ ...card, color: text, colorScheme: isDark ? "dark" : "light" }}
+                    />
+                  </label>
+                  <label className="grid min-w-0 gap-1">
+                    <span className="text-[10px] font-bold" style={{ color: muted }}>Hasta</span>
+                    <input
+                      type="date"
+                      value={eventDateTo}
+                      min={eventDateFrom || undefined}
+                      onChange={(event) => {
+                        const value = event.target.value;
+                        setEventDateTo(value);
+                        if (value && eventDateFrom && value < eventDateFrom) setEventDateFrom(value);
+                      }}
+                      className="min-w-0 w-full rounded-xl border px-2 py-2.5 text-xs outline-none"
+                      style={{ ...card, color: text, colorScheme: isDark ? "dark" : "light" }}
+                    />
+                  </label>
+                </div>
+              </fieldset>
+              <fieldset className="grid min-w-0 gap-1.5">
+                <legend className="text-[11px] font-black" style={{ color: muted }}>Rango de creacion</legend>
+                <div className="grid grid-cols-2 gap-2">
+                  <label className="grid min-w-0 gap-1">
+                    <span className="text-[10px] font-bold" style={{ color: muted }}>Desde</span>
+                    <input
+                      type="date"
+                      value={createdDateFrom}
+                      max={createdDateTo || undefined}
+                      onChange={(event) => {
+                        const value = event.target.value;
+                        setCreatedDateFrom(value);
+                        if (value && createdDateTo && value > createdDateTo) setCreatedDateTo(value);
+                      }}
+                      className="min-w-0 w-full rounded-xl border px-2 py-2.5 text-xs outline-none"
+                      style={{ ...card, color: text, colorScheme: isDark ? "dark" : "light" }}
+                    />
+                  </label>
+                  <label className="grid min-w-0 gap-1">
+                    <span className="text-[10px] font-bold" style={{ color: muted }}>Hasta</span>
+                    <input
+                      type="date"
+                      value={createdDateTo}
+                      min={createdDateFrom || undefined}
+                      onChange={(event) => {
+                        const value = event.target.value;
+                        setCreatedDateTo(value);
+                        if (value && createdDateFrom && value < createdDateFrom) setCreatedDateFrom(value);
+                      }}
+                      className="min-w-0 w-full rounded-xl border px-2 py-2.5 text-xs outline-none"
+                      style={{ ...card, color: text, colorScheme: isDark ? "dark" : "light" }}
+                    />
+                  </label>
+                </div>
+              </fieldset>
+              <button
+                type="button"
+                title="Limpiar filtros"
+                aria-label="Limpiar filtros"
+                disabled={!hasFilters}
+                onClick={() => {
+                  setSearch("");
+                  setEventDateFrom("");
+                  setEventDateTo("");
+                  setCreatedDateFrom("");
+                  setCreatedDateTo("");
+                }}
+                className="h-11 w-11 self-end rounded-xl border grid place-items-center disabled:opacity-35"
+                style={{ ...card, color: muted }}
+              >
+                <Iconify IconString="solar:restart-bold" Size={18} />
+              </button>
+            </div>
           )}
 
           <div className="grid gap-3">
@@ -124,7 +233,7 @@ export default function PublicDonationFormsPage() {
                   >
                     <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
                       style={{ background: "rgba(245,158,11,0.14)", border: "1px solid rgba(245,158,11,0.24)" }}>
-                      <Iconify IconString="solar:clipboard-heart-bold-duotone" Size={24} Style={{ color: "#f59e0b" }} />
+                      <Iconify IconString={resolveDonationFormIcon(form.headerIcon)} Size={24} Style={{ color: "#f59e0b" }} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2 mb-1">
@@ -135,6 +244,18 @@ export default function PublicDonationFormsPage() {
                         </span>
                       </div>
                       <p className="text-sm leading-relaxed" style={{ color: muted }}>{form.description}</p>
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3">
+                        {form.eventDate && (
+                          <span className="inline-flex items-center gap-1.5 text-xs font-bold" style={{ color: text }}>
+                            <Iconify IconString="solar:calendar-date-bold-duotone" Size={15} Style={{ color: "#f59e0b" }} />
+                            Evento: {formatDonationDate(form.eventDate)}
+                          </span>
+                        )}
+                        <span className="inline-flex items-center gap-1.5 text-xs font-bold" style={{ color: muted }}>
+                          <Iconify IconString="solar:calendar-add-bold-duotone" Size={15} Style={{ color: muted }} />
+                          Creado: {formatDonationDate(form.createdAt)}
+                        </span>
+                      </div>
                     </div>
                     <div className="grid grid-cols-2 sm:flex sm:flex-col gap-2 sm:text-right">
                       <span className="text-xs font-bold" style={{ color: muted }}>{form.fields.length} campos</span>

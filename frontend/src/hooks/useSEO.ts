@@ -14,29 +14,29 @@ const seoConfigs: Record<string, SEOConfig> = {
     title: 'Cuadernos X un Mañana | Donación de Útiles Escolares en República Dominicana',
     description: 'Recolectamos, reutilizamos y entregamos cuadernos y útiles escolares a estudiantes de comunidades vulnerables en República Dominicana. Únete como voluntario o centro de acopio.',
     keywords: 'donación útiles escolares, cuadernos República Dominicana, voluntariado educativo RD, centros de acopio, educación solidaria, reciclaje cuadernos',
-    ogImage: 'https://d1ykljkzezf4zd.cloudfront.net/cxum.png',
-    canonical: 'https://d1ykljkzezf4zd.cloudfront.net/'
+    ogImage: 'https://cuadernosxunmanana.org/cxum.png',
+    canonical: 'https://cuadernosxunmanana.org/'
   },
   '/Noticias': {
     title: 'Noticias y Actividades | Cuadernos X un Mañana',
     description: 'Conoce las últimas entregas, eventos y actividades de nuestra iniciativa. Historias de impacto real en comunidades de República Dominicana.',
     keywords: 'noticias CXUM, actividades educativas RD, entregas cuadernos, eventos solidarios, impacto social República Dominicana',
-    ogImage: 'https://d1ykljkzezf4zd.cloudfront.net/cxum.png',
-    canonical: 'https://d1ykljkzezf4zd.cloudfront.net/Noticias'
+    ogImage: 'https://cuadernosxunmanana.org/cxum.png',
+    canonical: 'https://cuadernosxunmanana.org/Noticias'
   },
   '/Voluntarios': {
     title: 'Únete como Voluntario | Cuadernos X un Mañana',
     description: 'Forma parte del cambio. Conviértete en voluntario y ayuda a clasificar, organizar y entregar útiles escolares a estudiantes que lo necesitan en República Dominicana.',
     keywords: 'voluntariado RD, ser voluntario República Dominicana, ayuda social educación, voluntariado jóvenes, trabajo comunitario',
-    ogImage: 'https://d1ykljkzezf4zd.cloudfront.net/cxum.png',
-    canonical: 'https://d1ykljkzezf4zd.cloudfront.net/Voluntarios'
+    ogImage: 'https://cuadernosxunmanana.org/cxum.png',
+    canonical: 'https://cuadernosxunmanana.org/Voluntarios'
   },
   '/Contacto': {
     title: 'Contacto y Centros de Acopio | Cuadernos X un Mañana',
     description: 'Contáctanos para donar, ser centro de acopio o colaborar con nuestra iniciativa. Encuentra el punto de recolección más cercano en República Dominicana.',
     keywords: 'contacto CXUM, centros de acopio RD, donar cuadernos, puntos de recolección, ser centro de acopio',
-    ogImage: 'https://d1ykljkzezf4zd.cloudfront.net/cxum.png',
-    canonical: 'https://d1ykljkzezf4zd.cloudfront.net/Contacto'
+    ogImage: 'https://cuadernosxunmanana.org/cxum.png',
+    canonical: 'https://cuadernosxunmanana.org/Contacto'
   }
 };
 

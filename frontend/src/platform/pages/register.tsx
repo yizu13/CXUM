@@ -131,7 +131,7 @@ export default function RegisterPage() {
     setApiError("");
     setLoading(true);
     try {
-      await signUp(name, formEmail, password);
+      await signUp(name, formEmail, password, inviteToken);
       setEmail(formEmail);
       setOtpSent(true);
       setStep("otp");
@@ -140,6 +140,7 @@ export default function RegisterPage() {
       const msg: Record<string, string> = {
         UsernameExistsException:  "Ya existe una cuenta con ese correo.",
         InvalidPasswordException: "La contraseña no cumple los requisitos de seguridad.",
+        UserLambdaValidationException: "El código de invitación no es válido, expiró o está reservado para otra cuenta.",
       };
       setApiError(msg[err.code] ?? err.message ?? "Error al registrar. Intenta de nuevo.");
     } finally {

@@ -8,6 +8,9 @@ export type TabKey = "builder" | "reports" | "bucket";
 export const CONFIG_DESCRIPTIONS: Record<string, string> = {
   Titulo: "Es el nombre principal que vera la persona al abrir el formulario.",
   "Slug publico": "Define la parte final del enlace unico que se compartira y codificara en el QR.",
+  "Fecha del evento": "Indica cuando se realizara la actividad y habilita la busqueda por fecha en el directorio publico.",
+  "Icono del encabezado": "Identifica visualmente la iniciativa en el encabezado, la vista previa y el directorio publico.",
+  "Limite por identificador": "Define cuantas respuestas puede registrar una misma persona usando el valor del campo identificador. Vacio significa sin limite.",
   "Mensaje final": "Se muestra despues de registrar correctamente la donacion.",
   Etiqueta: "Es la pregunta o nombre visible encima del control en el formulario final.",
   "Submenu / seccion": "En modo guiado crea una etapa; en modo plano agrupa y ordena el contenido.",

@@ -1,5 +1,15 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? "";
 
+async function responseError(response: Response) {
+  const text = await response.text();
+  try {
+    const payload = JSON.parse(text) as { message?: string };
+    return payload.message || `Error ${response.status}`;
+  } catch {
+    return text || `Error ${response.status}`;
+  }
+}
+
 function getCognitoAccessToken(): string | null {
   const clientId = import.meta.env.VITE_COGNITO_CLIENT_ID;
   if (!clientId) throw new Error("Falta VITE_COGNITO_CLIENT_ID");
@@ -22,8 +32,7 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
   });
 
   if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Error ${response.status}: ${text}`);
+    throw new Error(await responseError(response));
   }
   return response.json() as Promise<T>;
 }
@@ -34,8 +43,7 @@ export async function publicFetch<T>(path: string, options: RequestInit = {}): P
     headers: { "Content-Type": "application/json", ...(options.headers ?? {}) },
   });
   if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Error ${response.status}: ${text}`);
+    throw new Error(await responseError(response));
   }
   return response.json() as Promise<T>;
 }
