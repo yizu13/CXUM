@@ -140,6 +140,15 @@ export const InfoCards = [
                         path: "/Voluntarios"
 
                     },
+                    {
+                        cardType: 1,
+                        cardTitle: "Catalog",
+                        CardSubtitle: "",
+                        IconsString: "solar:file-text-bold-duotone",
+                        link: "#inicio",
+                        path: "/formularios"
+
+                    },
                 ],
             },
            

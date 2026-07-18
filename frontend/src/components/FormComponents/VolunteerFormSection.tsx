@@ -93,7 +93,6 @@ export default function VolunteerFormSection() {
   const educationOptions = EDUCATION_OPTIONS.map((option, index) => ({ ...option, label: volunteerText.options.education[index] }));
   const referralOptions = REFERRAL_OPTIONS.map((option, index) => ({ ...option, label: volunteerText.options.referral[index] }));
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const methods = useForm<VolunteerFormValues>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: yupResolver(volunteerSchema) as any,
@@ -157,12 +156,21 @@ export default function VolunteerFormSection() {
               />
             </div>
 
-            <RHFTextField<VolunteerFormValues>
-              name="address"
-              label={volunteerText.address}
-              placeholder={volunteerText.addressPlaceholder}
-              autoComplete="street-address"
-            />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <RHFTextField<VolunteerFormValues>
+                name="address"
+                label={volunteerText.address}
+                placeholder={volunteerText.addressPlaceholder}
+                autoComplete="street-address"
+              />
+              <RHFTextField<VolunteerFormValues>
+                name="municipio"
+                label={volunteerText.municipio}
+                placeholder={volunteerText.municipioPlaceholder}
+                required
+                autoComplete="address-level2"
+              />
+            </div>
           </div>
 
           <Divider isDark={isDark} />

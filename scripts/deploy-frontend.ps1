@@ -5,6 +5,7 @@
 $ErrorActionPreference = "Stop"
 $REGION = "us-east-2"
 $STACK_NAME = "CxumStack"
+$PUBLIC_SITE_URL = "https://cuadernosxunmanana.org/"
 
 Write-Host "[INICIO] Deployment del frontend..." -ForegroundColor Cyan
 
@@ -40,7 +41,8 @@ $CF_URL          = Get-StackOutput "CloudFrontUrl"
 Write-Host "   Bucket:       $BUCKET_NAME"     -ForegroundColor Gray
 Write-Host "   Distribution: $DISTRIBUTION_ID" -ForegroundColor Gray
 Write-Host "   API URL:      $API_URL"          -ForegroundColor Gray
-Write-Host "   Frontend URL: $CF_URL"           -ForegroundColor Gray
+Write-Host "   Dominio publico: $PUBLIC_SITE_URL" -ForegroundColor Gray
+Write-Host "   CloudFront tecnico: $CF_URL"        -ForegroundColor DarkGray
 
 # --- 3. Actualizar VITE_API_URL en frontend/.env si cambio ------------------
 $envFile = "frontend/.env"
@@ -105,5 +107,6 @@ if ($LASTEXITCODE -ne 0) { throw "Fallo la invalidacion de CloudFront." }
 
 # --- 6. Resumen -------------------------------------------------------------
 Write-Host "[5/5] Deployment completado!" -ForegroundColor Green
-Write-Host "Frontend: $CF_URL" -ForegroundColor Cyan
+Write-Host "Frontend:  $PUBLIC_SITE_URL" -ForegroundColor Cyan
+Write-Host "CloudFront: $CF_URL" -ForegroundColor DarkGray
 Write-Host "API:      $API_URL" -ForegroundColor Cyan

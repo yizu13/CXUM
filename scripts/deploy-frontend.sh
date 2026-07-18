@@ -5,6 +5,8 @@
 
 set -e
 
+PUBLIC_SITE_URL="https://cuadernosxunmanana.org/"
+
 echo "🚀 Iniciando deployment del frontend..."
 
 # 1. Build del frontend
@@ -24,6 +26,12 @@ BUCKET_NAME=$(aws cloudformation describe-stacks \
 DISTRIBUTION_ID=$(aws cloudformation describe-stacks \
   --stack-name CxumStack \
   --query "Stacks[0].Outputs[?OutputKey=='CloudFrontDistributionId'].OutputValue" \
+  --output text \
+  --region us-east-2)
+
+CF_URL=$(aws cloudformation describe-stacks \
+  --stack-name CxumStack \
+  --query "Stacks[0].Outputs[?OutputKey=='CloudFrontUrl'].OutputValue" \
   --output text \
   --region us-east-2)
 
@@ -55,8 +63,5 @@ aws cloudfront create-invalidation \
 echo "✅ Deployment completado!"
 echo ""
 echo "🌐 URL del frontend:"
-aws cloudformation describe-stacks \
-  --stack-name CxumStack \
-  --query "Stacks[0].Outputs[?OutputKey=='CloudFrontUrl'].OutputValue" \
-  --output text \
-  --region us-east-2
+echo "Frontend:  $PUBLIC_SITE_URL"
+echo "CloudFront: $CF_URL"

@@ -32,6 +32,7 @@ export const volunteerSchema = yup.object({
     return age > 16 || (age === 16 && m >= 0);
   }),
   address:           yup.string().trim().max(150).optional(),
+  municipio:         yup.string().trim().min(2, "Municipio invalido").max(100).required("El municipio es requerido"),
   email:             yup.string().trim().email("Correo inválido").required("El correo es requerido"),
   phone:             yup.string().trim().min(8, "Teléfono inválido").max(20).required("El teléfono es requerido"),
   socialMedia:       yup.string().trim().max(100).optional(),
@@ -51,7 +52,7 @@ export const volunteerSchema = yup.object({
 
 export type VolunteerFormValues = yup.InferType<typeof volunteerSchema>;
 export const volunteerDefaultValues: VolunteerFormValues = {
-  firstName: "", lastName: "", idDocument: "", birthDate: "", address: "",
+  firstName: "", lastName: "", idDocument: "", birthDate: "", address: "", municipio: "",
   email: "", phone: "", socialMedia: "", occupation: "", educationLevel: "",
   skills: "", areas: [], availability: "", weeklyHours: "", motivation: "",
   referral: "", emergencyName: "", emergencyRelation: "", emergencyPhone: "", acceptTerms: false,
@@ -109,6 +110,7 @@ export const noticiaDefaultValues: NoticiaFormValues = {
 // ─────────────────────────────────────────────
 
 export const voluntarioEditSchema = yup.object({
+  name:      yup.string().trim().min(2, "Nombre invalido").max(100).required("El nombre es requerido"),
   // "administradores" matches the UserRole type defined in auth.ts
   role:      yup.string().oneOf(["voluntario", "escritor", "colaborador", "administradores"]).required("El rol es requerido"),
   status:    yup.string().oneOf(["activo", "pendiente", "suspendido"]).required("El estado es requerido"),

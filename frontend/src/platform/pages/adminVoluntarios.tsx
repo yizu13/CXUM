@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { createPortal } from "react-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
@@ -9,7 +10,7 @@ import {
   voluntarioEditSchema,
   type VoluntarioEditFormValues,
 } from "../../components/FormComponents/schemas";
-import { ROLE_LABELS, ROLE_COLORS } from "../../platform/components/auth";
+import { ROLE_LABELS, ROLE_COLORS, ROLE_ICONS } from "../../platform/components/auth";
 import type { UserRole } from "../../platform/components/auth";
 import Iconify from "../../components/modularUI/IconsMock";
 import AdminButton from "../components/AdminButton";
@@ -60,8 +61,8 @@ function TempPasswordModal({
   const textPrimary = isDark ? "#fff" : "#0f172a";
   const textMuted   = isDark ? "rgba(255,255,255,0.4)" : "#64748b";
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+  return createPortal(
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4"
       style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(10px)" }}>
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -114,7 +115,8 @@ function TempPasswordModal({
           Cerrar
         </AdminButton>
       </motion.div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -171,8 +173,8 @@ function IncluirModal({
   const textPrimary = isDark ? "#fff" : "#0f172a";
   const textMuted   = isDark ? "rgba(255,255,255,0.4)" : "#64748b";
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+  return createPortal(
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4"
       style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(10px)" }}>
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -261,7 +263,8 @@ function IncluirModal({
           </>
         )}
       </motion.div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -333,12 +336,14 @@ function VoluntarioModal({
 }) {
   const { user } = useAuth();
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
   const roleColor = ROLE_COLORS[v.role];
 
   const methods = useForm<VoluntarioEditFormValues>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: yupResolver(voluntarioEditSchema) as any,
     defaultValues: {
+      name:      v.name,
       role:      v.role as VoluntarioEditFormValues["role"],
       status:    v.status,
       telefono:  v.telefono,
@@ -349,9 +354,12 @@ function VoluntarioModal({
   const handleSubmit = async (data: VoluntarioEditFormValues) => {
     if (saving) return;
     setSaving(true);
+    setSaveError("");
     try {
       await onSave({ ...v, ...data } as Voluntario);
       onClose();
+    } catch (error) {
+      setSaveError(error instanceof Error ? error.message : "No se pudieron guardar los cambios");
     } finally {
       setSaving(false);
     }
@@ -360,9 +368,9 @@ function VoluntarioModal({
   const modalBg     = isDark ? "#0f1117" : "#ffffff";
   const modalBorder = isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)";
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-[1000] flex items-center justify-center p-4"
       style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(10px)" }}
     >
       <motion.div
@@ -397,6 +405,13 @@ function VoluntarioModal({
 
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
         <FormManaged methods={methods as any} onSubmit={handleSubmit} className="space-y-4">
+          <RHFTextField<VoluntarioEditFormValues>
+            name="name"
+            label="Nombre completo"
+            placeholder="Nombre y apellido"
+            required
+            autoComplete="name"
+          />
           <RHFSelect<VoluntarioEditFormValues>
             name="role"
             label="Rol"
@@ -415,6 +430,7 @@ function VoluntarioModal({
             label="Teléfono"
             placeholder="809-555-0000"
             required
+            phoneMode
           />
           <RHFTextField<VoluntarioEditFormValues>
             name="municipio"
@@ -422,6 +438,12 @@ function VoluntarioModal({
             placeholder="Santo Domingo Norte..."
             required
           />
+
+          {saveError && (
+            <p className="rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs font-semibold text-red-500">
+              {saveError}
+            </p>
+          )}
 
           <div className="flex gap-3 pt-2">
             <AdminButton type="button" variant="ghost" fullWidth disabled={saving} onClick={onClose}>
@@ -433,7 +455,8 @@ function VoluntarioModal({
           </div>
         </FormManaged>
       </motion.div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -484,8 +507,8 @@ function DetalleSolicitudModal({
 
   const statusCfg = SOL_STATUS_CONFIG[s.status];
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+  return createPortal(
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4"
       style={{ background: "rgba(0,0,0,0.78)", backdropFilter: "blur(12px)" }}>
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -523,6 +546,7 @@ function DetalleSolicitudModal({
             <SolicitudRow label="Documento" value={s.idDocument} textPrimary={textPrimary} textMuted={textMuted} />
             <SolicitudRow label="Fecha de nacimiento" value={s.birthDate} textPrimary={textPrimary} textMuted={textMuted} />
             <SolicitudRow label="Dirección" value={s.address} textPrimary={textPrimary} textMuted={textMuted} />
+            <SolicitudRow label="Municipio" value={s.municipio} textPrimary={textPrimary} textMuted={textMuted} />
             <SolicitudRow label="Redes sociales" value={s.socialMedia} textPrimary={textPrimary} textMuted={textMuted} />
             <SolicitudRow label="Ocupación" value={s.occupation} textPrimary={textPrimary} textMuted={textMuted} />
             <SolicitudRow label="Nivel educativo" value={s.educationLevel} textPrimary={textPrimary} textMuted={textMuted} />
@@ -598,7 +622,8 @@ function DetalleSolicitudModal({
           </div>
         )}
       </motion.div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -636,7 +661,7 @@ export default function AdminVoluntariosPage() {
             name: u.name,
             email: u.email,
             role,
-            status: (u.attributes?.["custom:status"] as Voluntario["status"]) ?? (u.enabled ? "activo" : "suspendido"),
+            status: (u.attributes?.status as Voluntario["status"]) ?? (u.enabled ? "activo" : "suspendido"),
             municipio: u.attributes?.municipio ?? "",
             telefono: u.attributes?.telefono ?? "",
             joinedAt: u.attributes?.joinedAt ?? "",
@@ -690,11 +715,23 @@ export default function AdminVoluntariosPage() {
   };
 
   async function handleInviteUser(solicitud: Solicitud): Promise<{ tempPassword: string }> {
-    const result = await inviteUserToSystem(solicitud.email, solicitud.nombre);
-    // Marcar localmente como incluida (no hay campo en DynamoDB para esto aún)
+    const result = await inviteUserToSystem(solicitud.id);
     setExternos((prev) => prev.map((s) =>
-      s.id === solicitud.id ? { ...s, sistemaIncluido: true } as Solicitud & { sistemaIncluido: boolean } : s
+      s.id === solicitud.id ? result.solicitud : s
     ));
+    setVoluntarios((prev) => prev.some((v) => v.id === result.user.username)
+      ? prev
+      : [...prev, {
+          id: result.user.username,
+          name: result.user.name,
+          email: result.user.email,
+          role: result.user.role,
+          status: result.user.status,
+          municipio: result.user.municipio,
+          telefono: result.user.telefono,
+          joinedAt: result.solicitud.includedAt ?? "",
+          userStatus: result.user.userStatus,
+        }]);
     return result;
   }
 
@@ -713,6 +750,10 @@ export default function AdminVoluntariosPage() {
   const tableHeaderColor = isDark ? "rgba(255,255,255,0.3)" : "#94a3b8";
   const tableBorderColor = isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.05)";
   const tableRowHover    = isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)";
+
+  const roleIcon = user
+      ? ROLE_ICONS[user.role]
+      : "solar:user-bold-duotone";
 
   return (
     <div className="p-4 sm:p-6 max-w-7xl mx-auto">
@@ -762,9 +803,9 @@ export default function AdminVoluntariosPage() {
         </TabButton>
         <TabButton active={tab === "externos"} onClick={() => setTab("externos")} isDark={isDark}>
           Fuera del Sistema
-          {externosFiltrados.filter((s) => !(s as Solicitud & { sistemaIncluido?: boolean }).sistemaIncluido).length > 0 && (
+          {externosFiltrados.filter((s) => !s.sistemaIncluido).length > 0 && (
             <span className="ml-2 px-1.5 py-0.5 rounded-md text-[10px] font-black" style={{ background: "rgba(99,102,241,0.2)", color: "#6366f1" }}>
-              {externosFiltrados.filter((s) => !(s as Solicitud & { sistemaIncluido?: boolean }).sistemaIncluido).length}
+              {externosFiltrados.filter((s) => !s.sistemaIncluido).length}
             </span>
           )}
         </TabButton>
@@ -946,7 +987,8 @@ export default function AdminVoluntariosPage() {
                                   className="w-8 h-8 rounded-xl flex items-center justify-center text-white font-black text-xs shrink-0"
                                   style={{ background: `${roleColor}20`, border: `1px solid ${roleColor}30` }}
                                 >
-                                  {v.name.charAt(0)}
+                                <Iconify IconString={roleIcon} Size={20} Style={{ color: roleColor }} />
+                                  
                                 </div>
                                 <div>
                                   <div className="flex items-center gap-2 flex-wrap">
@@ -1058,7 +1100,7 @@ export default function AdminVoluntariosPage() {
             ) : (
               <div className="space-y-3">
                 {externosFiltrados.map((s) => {
-                  const yaIncluido = (s as Solicitud & { sistemaIncluido?: boolean }).sistemaIncluido;
+                  const yaIncluido = s.sistemaIncluido;
                   return (
                     <div key={s.id} className="rounded-2xl p-5 border" style={cardStyle}>
                       <div className="flex items-start justify-between gap-4 flex-wrap">
@@ -1116,13 +1158,14 @@ export default function AdminVoluntariosPage() {
           <VoluntarioModal            v={editModal}
             onClose={() => setEditModal(null)}
             onSave={async (updated) => {
-              try {
-                await updateUserRole(updated.id, updated.role, updated.status);
-                setVoluntarios((prev) => prev.map((v) => v.id === updated.id ? updated : v));
-              } catch (err) {
-                console.error(err);
-              }
-              setEditModal(null);
+              await updateUserRole(updated.id, {
+                name: updated.name,
+                role: updated.role,
+                status: updated.status,
+                telefono: updated.telefono,
+                municipio: updated.municipio,
+              });
+              setVoluntarios((prev) => prev.map((v) => v.id === updated.id ? updated : v));
             }}
             isDark={isDark}
           />

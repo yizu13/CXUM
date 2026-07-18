@@ -21,13 +21,21 @@ export function getCurrentUser(): CognitoUser | null {
   return userPool.getCurrentUser();
 }
 
-export function signUp(name: string, email: string, password: string): Promise<void> {
+export function signUp(
+  name: string,
+  email: string,
+  password: string,
+  inviteToken: string
+): Promise<void> {
   return new Promise((resolve, reject) => {
     const attrs = [
       new CognitoUserAttribute({ Name: "email", Value: email }),
       new CognitoUserAttribute({ Name: "name",  Value: name  }),
     ];
-    userPool.signUp(email, password, attrs, [], (err) => {
+    const validationData = [
+      new CognitoUserAttribute({ Name: "inviteToken", Value: inviteToken.trim().toUpperCase() }),
+    ];
+    userPool.signUp(email, password, attrs, validationData, (err) => {
       if (err) reject(err);
       else resolve();
     });
@@ -79,7 +87,7 @@ export function completeNewPassword(email: string, tempPassword: string, newPass
     user.authenticateUser(authDetails, {
       onSuccess: () => resolve(),
       onFailure: (err) => reject(err),
-      newPasswordRequired: (_userAttributes, _requiredAttributes) => {
+      newPasswordRequired: () => {
         user.completeNewPasswordChallenge(newPassword, {}, {
           onSuccess: () => resolve(),
           onFailure: (err) => reject(err),

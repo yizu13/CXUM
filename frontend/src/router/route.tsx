@@ -5,6 +5,8 @@ import VolunteersPage from "../components/pages/VolunteersPage";
 import NewsPage from "../components/pages/NewsPage";
 import NewsDetailPage from "../components/pages/NewsDetailPage";
 import PublicCertificatePage from "../components/pages/PublicCertificatePage";
+import PublicDonationFormsPage from "../components/pages/PublicDonationFormsPage";
+import PublicDonationFormPage from "../components/pages/PublicDonationFormPage";
 import NotFoundPage from "../components/pages/NotFoundPage";
 import ScrollToTop from "../hooks/ScrollToTop";
 
@@ -22,7 +24,7 @@ import AdminNoticiasPage   from "../platform/pages/adminNoticias";
 import AdminVoluntariosPage from "../platform/pages/adminVoluntarios";
 import AdminMediaPage      from "../platform/pages/adminMedia";
 import CertifificationGeneratorPage from "../platform/pages/CertifificationGeneratorPage";
-
+import AdminDonationsPage from "../platform/pages/formsSection/mainComponent/adminDonations";
 // Layout & guards
 import AdminLayout    from "../platform/components/AdminLayout";
 import ProtectedRoute from "../platform/components/ProtectedRoute";
@@ -42,6 +44,8 @@ export default function AppRouter() {
           <Route path="/Noticias/:slug" element={<NewsDetailPage />} />
           <Route path="/certificates" element={<PublicCertificatePage />} />
           <Route path="/certificates/:certificateId" element={<PublicCertificatePage />} />
+          <Route path="/formularios" element={<PublicDonationFormsPage />} />
+          <Route path="/formularios/:slug" element={<PublicDonationFormPage />} />
 
           {/* ── Plataforma / Auth ── */}
           <Route path="/plataforma/login"              element={<LoginPage />} />
@@ -108,6 +112,15 @@ export default function AppRouter() {
               element={
                 <ProtectedRoute>
                   <CertifificationGeneratorPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="formularios"
+              element={
+                <ProtectedRoute>
+                  <AdminDonationsPage />
                 </ProtectedRoute>
               }
             />

@@ -16,6 +16,7 @@ export interface Solicitud {
   idDocument?: string;
   birthDate?: string;
   address?: string;
+  municipio?: string;
   socialMedia?: string;
   occupation?: string;
   educationLevel?: string;
@@ -28,6 +29,9 @@ export interface Solicitud {
   emergencyName?: string;
   emergencyRelation?: string;
   emergencyPhone?: string;
+  sistemaIncluido?: boolean;
+  systemUsername?: string;
+  includedAt?: string;
 }
 
 export interface ListSolicitudesResponse { count: number; solicitudes: Solicitud[] }
@@ -44,12 +48,23 @@ export interface InviteUserResponse {
   message: string;
   email: string;
   tempPassword: string;
+  solicitud: Solicitud;
+  user: {
+    username: string;
+    name: string;
+    email: string;
+    role: "voluntario";
+    status: "activo";
+    telefono: string;
+    municipio: string;
+    userStatus: "FORCE_CHANGE_PASSWORD";
+  };
 }
 
-export const inviteUserToSystem = (email: string, name: string) =>
+export const inviteUserToSystem = (solicitudId: string) =>
   apiFetch<InviteUserResponse>("/admin/invite-user", {
     method: "POST",
-    body: JSON.stringify({ email, name }),
+    body: JSON.stringify({ solicitudId }),
   });
 
 export interface GetTempPasswordResponse {

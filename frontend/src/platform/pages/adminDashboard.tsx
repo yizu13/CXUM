@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useSettings } from "../../hooks/context/SettingsContext";
 import Iconify from "../../components/modularUI/IconsMock";
-import { ROLE_COLORS, ROLE_LABELS } from "../components/auth";
+import { ROLE_COLORS, ROLE_ICONS, ROLE_LABELS } from "../components/auth";
 import { useAuth } from "../components/AuthContextComps";
 import { generateInviteToken } from "../APIs/inviteTokens";
 import type { InviteTokenResponse } from "../APIs/inviteTokens";
@@ -47,6 +47,14 @@ const QUICK_LINKS = [  {
     color: "#8b5cf6",
     permission: null,
   },
+  {
+    label: "Formularios",
+    desc: "Formularios, QR, reportes y bucket",
+    path: "/plataforma/admin/formularios",
+    icon: "solar:file-text-bold-duotone",
+    color: "#ef4444",
+    permission: null,
+  },
 ];
 
 export default function AdminDashboardPage() {
@@ -54,10 +62,17 @@ export default function AdminDashboardPage() {
   const { theme } = useSettings();
   const isDark = theme === "dark";
 
+  const roleIcon = user
+    ? ROLE_ICONS[user.role]
+    : "solar:user-bold-duotone";
+  
+
   const roleColor = user ? ROLE_COLORS[user.role] : "#f59e0b";
   const roleLabel = user ? ROLE_LABELS[user.role] : "";
 
   const { events: activityEvents, loading: activityLoading } = useActivity();
+
+  console.log(activityEvents)
 
   const [kpis, setKpis] = useState({ centros: "—", voluntarios: "—", noticias: "—", solicitudes: "—" });
   const [inviteData, setInviteData]   = useState<InviteTokenResponse | null>(null);
@@ -132,7 +147,7 @@ export default function AdminDashboardPage() {
             className="w-10 h-10 rounded-xl flex items-center justify-center font-black"
             style={{ background: `${roleColor}25`, border: `1px solid ${roleColor}40`, color: roleColor }}
           >
-            {user?.name?.charAt(0) ?? "U"}
+            <Iconify IconString={roleIcon} Size={26} Style={{ color: roleColor }} />
           </div>
           <div>
             <p className="text-sm flex gap-1 items-center mb-1" style={{ color: textSecondary }}>
