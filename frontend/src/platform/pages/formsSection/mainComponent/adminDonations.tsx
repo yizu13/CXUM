@@ -24,6 +24,7 @@ import {
 import {
   filterResponses,
   getGuidedFormSteps,
+  shouldDeferCardNavigation,
   visibleFields,
 } from "../../../donations/analytics";
 import DynamicFields from "../secondaryComponents/DynamicFields";
@@ -375,6 +376,7 @@ export default function AdminDonationsPage() {
             display={field.selectDisplay ?? "autocomplete"}
             optionSubmenus={field.optionSubmenus}
             onNavigate={selectedForm?.mode === "guided" ? setPreviewPendingSection : undefined}
+            shouldDeferNavigation={(option) => Boolean(selectedForm && shouldDeferCardNavigation(selectedForm, field.id, option, previewValues))}
             style={inputStyle}
             featured={featured}
           />

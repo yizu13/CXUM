@@ -64,6 +64,23 @@ export function visibleFields(form: DonationForm, values: Record<string, string 
     });
 }
 
+export function shouldDeferCardNavigation(
+  form: DonationForm,
+  controllerFieldId: string,
+  selectedOption: string,
+  values: Record<string, string | number | boolean>,
+) {
+  const currentlyVisibleIds = new Set(visibleFields(form, values).map((field) => field.id));
+  const nextValues = { ...values, [controllerFieldId]: selectedOption };
+
+  return visibleFields(form, nextValues).some((field) => {
+    if (field.condition?.fieldId !== controllerFieldId) return false;
+    const value = nextValues[field.id];
+    const isEmpty = value === undefined || value === null || value === "";
+    return !currentlyVisibleIds.has(field.id) || (field.required && isEmpty);
+  });
+}
+
 export function getGuidedFormSteps(form: DonationForm, currentVisibleFields: DonationField[]) {
   if (form.mode !== "guided") return [];
 

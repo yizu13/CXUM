@@ -11,6 +11,7 @@ type DonationOptionPickerProps = {
   optionSubmenus?: Record<string, string>;
   onChange: (value: string) => void;
   onNavigate?: (section: string) => void;
+  shouldDeferNavigation?: (option: string, section: string) => boolean;
   style?: CSSProperties;
   featured?: boolean;
 };
@@ -22,6 +23,7 @@ export default function DonationOptionPicker({
   optionSubmenus,
   onChange,
   onNavigate,
+  shouldDeferNavigation,
   style,
   featured = false,
 }: DonationOptionPickerProps) {
@@ -59,7 +61,7 @@ export default function DonationOptionPicker({
     setOpen(false);
     if (navigate) {
       const section = optionSubmenus?.[option];
-      if (section) onNavigate?.(section);
+      if (section && !shouldDeferNavigation?.(option, section)) onNavigate?.(section);
     }
   }
 
@@ -69,6 +71,7 @@ export default function DonationOptionPicker({
         {options.map((option) => {
           const selected = option === value;
           const destination = optionSubmenus?.[option];
+          const deferredNavigation = destination ? shouldDeferNavigation?.(option, destination) : false;
           return (
             <button
               key={option}
@@ -88,10 +91,12 @@ export default function DonationOptionPicker({
               <span className="min-w-0 flex-1">
                 <span className={`${featured ? "text-base" : "text-sm"} block font-black wrap-break-word`} style={{ color: style?.color }}>{option}</span>
                 <span className="block mt-1 text-[11px] leading-4 opacity-60 wrap-break-word" style={{ color: style?.color }}>
-                  {destination ? `Abrir submenu ${destination}` : "Seleccionar esta opcion"}
+                  {destination
+                    ? deferredNavigation ? "Mostrar campos relacionados" : `Abrir submenu ${destination}`
+                    : "Seleccionar esta opcion"}
                 </span>
               </span>
-              <Iconify IconString="solar:alt-arrow-right-linear" Size={17} Style={{ color: selected ? "#f59e0b" : style?.color, opacity: selected ? 1 : 0.45 }} />
+              <Iconify IconString={deferredNavigation ? "solar:document-add-bold-duotone" : "solar:alt-arrow-right-linear"} Size={17} Style={{ color: selected ? "#f59e0b" : style?.color, opacity: selected ? 1 : 0.45 }} />
             </button>
           );
         })}
