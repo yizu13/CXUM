@@ -11,6 +11,9 @@ export type DonationFieldType =
 export type DonationFormStatus = "draft" | "published" | "private" | "hidden";
 export type DonationFormMode = "flat" | "guided";
 export type DonationSelectDisplay = "autocomplete" | "cards";
+export type DonationSelectMode = "single" | "multiple";
+export type DonationValue = string | number | boolean | string[];
+export type DonationRepeatedValues = Record<string, Record<string, Record<string, DonationValue>>>;
 
 export type ConditionalRule = {
   fieldId: string;
@@ -32,6 +35,9 @@ export type DonationField = {
   max?: number;
   options?: string[];
   selectDisplay?: DonationSelectDisplay;
+  selectionMode?: DonationSelectMode;
+  createRecordPerSelection?: boolean;
+  repeatSubmenuPerSelection?: boolean;
   optionSubmenus?: Record<string, string>;
   condition?: ConditionalRule;
 };
@@ -50,6 +56,7 @@ export type DonationForm = {
   respondentSubmissionLimit?: number;
   locationFieldId?: string;
   thankYouMessage: string;
+  allowRepeatSubmissions?: boolean;
   fields: DonationField[];
   createdAt: string;
   updatedAt: string;
@@ -64,7 +71,12 @@ export type DonationResponse = {
   locationLabel: string;
   device?: "mobile" | "tablet" | "desktop" | "unknown";
   userAgent?: string;
-  values: Record<string, string | number | boolean>;
+  submissionGroupId?: string;
+  splitFieldId?: string;
+  splitOption?: string;
+  splitRecordIndex?: number;
+  splitRecordCount?: number;
+  values: Record<string, DonationValue>;
 };
 
 export type DonationFilters = {

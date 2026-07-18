@@ -2,7 +2,7 @@ import type { ChangeEvent, CSSProperties } from "react";
 import { motion } from "framer-motion";
 import Iconify from "../../../../components/modularUI/IconsMock";
 import { AdminSelect, ConfigLabel, ConfigSectionHeader } from "../secondaryComponents/MinorsComponents";
-import { CONFIG_DESCRIPTIONS, FIELD_TYPES, MODE_OPTIONS, OPERATORS, SELECT_DISPLAY_OPTIONS, STATUS_OPTIONS, type dynamicFieldObject } from "../types";
+import { CONFIG_DESCRIPTIONS, FIELD_TYPES, MODE_OPTIONS, OPERATORS, SELECT_DISPLAY_OPTIONS, SELECT_MODE_OPTIONS, STATUS_OPTIONS, type dynamicFieldObject } from "../types";
 import IconifyPicker from "./IconifyPicker";
 
 function fieldInput(
@@ -34,6 +34,9 @@ function fieldInput(
 }
 
 export default function DynamicFields( { cardStyle, inputStyle, text, muted, selectedForm, updateForm, addField, removeField, updateField, updateFieldSection, sectionOptions, isDark }: dynamicFieldObject ) {
+    const splitRecordField = selectedForm.fields.find((field) =>
+      field.type === "select" && field.selectionMode === "multiple" && field.createRecordPerSelection,
+    );
     
     return (
          <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
@@ -103,23 +106,31 @@ export default function DynamicFields( { cardStyle, inputStyle, text, muted, sel
                     })}
                     options={[
                       { label: "Sin identificador", value: "", description: "Las respuestas apareceran como no especificadas." },
-                      ...selectedForm.fields.map((field) => ({ label: field.label, value: field.id, description: `Tipo ${FIELD_TYPES.find((type) => type.value === field.type)?.label ?? field.type}` })),
+                      ...selectedForm.fields
+                        .filter((field) => field.type !== "select" || field.selectionMode !== "multiple")
+                        .map((field) => ({ label: field.label, value: field.id, description: `Tipo ${FIELD_TYPES.find((type) => type.value === field.type)?.label ?? field.type}` })),
                     ]}
                     className="text-sm"
                     style={inputStyle}
                   />
                 </label>
                 <label className="grid gap-1.5">
-                  <ConfigLabel title="Limite por identificador" description={CONFIG_DESCRIPTIONS["Limite por identificador"]} muted={muted} />
+                  <ConfigLabel
+                    title="Limite por identificador"
+                    description={splitRecordField
+                      ? `Desactiva "Registro por seleccion" en ${splitRecordField.label} para configurar un limite.`
+                      : CONFIG_DESCRIPTIONS["Limite por identificador"]}
+                    muted={muted}
+                  />
                   <div className="relative">
                     <input
                       type="number"
                       min={1}
                       max={100000}
                       step={1}
-                      disabled={!selectedForm.respondentFieldId}
+                      disabled={!selectedForm.respondentFieldId || Boolean(splitRecordField)}
                       value={selectedForm.respondentSubmissionLimit ?? ""}
-                      placeholder={selectedForm.respondentFieldId ? "Sin limite" : "Selecciona un identificador"}
+                      placeholder={splitRecordField ? "Requiere modo ilimitado" : selectedForm.respondentFieldId ? "Sin limite" : "Selecciona un identificador"}
                       onChange={(event) => {
                         const rawValue = event.target.value;
                         const parsedValue = Number(rawValue);
@@ -159,6 +170,21 @@ export default function DynamicFields( { cardStyle, inputStyle, text, muted, sel
                 <div className="md:col-span-2">
                   {fieldInput(inputStyle, muted, "Mensaje final", selectedForm.thankYouMessage, (value) => updateForm({ thankYouMessage: value }))}
                 </div>
+                <label className="grid gap-1.5 md:col-span-2">
+                  <ConfigLabel title="Llenado recurrente" description={CONFIG_DESCRIPTIONS["Llenado recurrente"]} muted={muted} />
+                  <span className="min-h-11 rounded-xl border px-3 flex items-center justify-between gap-3" style={inputStyle}>
+                    <span>
+                      <span className="block text-xs font-black" style={{ color: text }}>{selectedForm.allowRepeatSubmissions ? "Permitir otra respuesta" : "Finalizar despues del envio"}</span>
+                      <span className="block text-[11px] mt-0.5" style={{ color: muted }}>El registro enviado se conserva; solo se limpian los controles para comenzar uno nuevo.</span>
+                    </span>
+                    <input
+                      type="checkbox"
+                      checked={Boolean(selectedForm.allowRepeatSubmissions)}
+                      onChange={(event) => updateForm({ allowRepeatSubmissions: event.target.checked })}
+                      className="w-4 h-4 shrink-0 accent-amber-500"
+                    />
+                  </span>
+                </label>
               </div>
             </div>
 
@@ -187,6 +213,8 @@ export default function DynamicFields( { cardStyle, inputStyle, text, muted, sel
                           <div className="flex flex-wrap items-center gap-2">
                             <h3 className="font-black truncate" style={{ color: text }}>{field.label || "Campo sin titulo"}</h3>
                             {field.required && <span className="px-2 py-0.5 rounded-md text-[10px] font-black" style={{ color: "#ef4444", background: "rgba(239,68,68,0.1)" }}>Obligatorio</span>}
+                            {field.createRecordPerSelection && <span className="px-2 py-0.5 rounded-md text-[10px] font-black" style={{ color: "#2563eb", background: "rgba(37,99,235,0.1)" }}>Una fila por seleccion</span>}
+                            {field.repeatSubmenuPerSelection && <span className="px-2 py-0.5 rounded-md text-[10px] font-black" style={{ color: "#7c3aed", background: "rgba(124,58,237,0.1)" }}>Submenu repetido</span>}
                           </div>
                           <p className="text-xs mt-1 leading-5" style={{ color: muted }}>
                             Se mostrara como {FIELD_TYPES.find((type) => type.value === field.type)?.label.toLowerCase() ?? field.type} en la seccion “{field.section || "General"}”, posicion {field.priority}.
@@ -203,7 +231,16 @@ export default function DynamicFields( { cardStyle, inputStyle, text, muted, sel
                         <ConfigLabel title="Tipo de campo" description="Cambia el control, teclado y validaciones que vera la persona." muted={muted} />
                         <AdminSelect
                           value={field.type}
-                          onChange={(value) => updateField(field.id, { type: value })}
+                          onChange={(value) => updateField(field.id, {
+                            type: value,
+                            ...(value !== "select" ? {
+                              selectDisplay: undefined,
+                              selectionMode: undefined,
+                              createRecordPerSelection: undefined,
+                              repeatSubmenuPerSelection: undefined,
+                              optionSubmenus: undefined,
+                            } : {}),
+                          })}
                           options={FIELD_TYPES}
                           className="text-sm"
                           style={inputStyle}
@@ -257,14 +294,22 @@ export default function DynamicFields( { cardStyle, inputStyle, text, muted, sel
                               const optionSubmenus = Object.fromEntries(
                                 Object.entries(field.optionSubmenus ?? {}).filter(([option]) => options.includes(option)),
                               );
-                              updateField(field.id, { options, optionSubmenus });
+                              updateField(field.id, {
+                                options,
+                                optionSubmenus,
+                                repeatSubmenuPerSelection: Object.keys(optionSubmenus).length > 0 ? field.repeatSubmenuPerSelection : undefined,
+                              });
                             }}
                             onBlur={() => {
                               const options = (field.options ?? []).map((item) => item.trim()).filter(Boolean);
                               const optionSubmenus = Object.fromEntries(
                                 Object.entries(field.optionSubmenus ?? {}).filter(([option]) => options.includes(option)),
                               );
-                              updateField(field.id, { options, optionSubmenus });
+                              updateField(field.id, {
+                                options,
+                                optionSubmenus,
+                                repeatSubmenuPerSelection: Object.keys(optionSubmenus).length > 0 ? field.repeatSubmenuPerSelection : undefined,
+                              });
                             }}
                             className="rounded-xl border px-3 py-2 text-sm outline-none"
                             style={inputStyle}
@@ -275,24 +320,124 @@ export default function DynamicFields( { cardStyle, inputStyle, text, muted, sel
 
                     {field.type === "select" && (
                       <div className="mt-4 rounded-2xl border p-4" style={{ borderColor: cardStyle.borderColor, background: isDark ? "rgba(255,255,255,0.02)" : "#ffffff" }}>
-                        <div className="grid md:grid-cols-[minmax(0,260px)_1fr] gap-4 items-start">
-                          <label className="grid gap-1.5">
-                            <ConfigLabel title="Diseño de opciones" description="El autocomplete filtra una lista; las tarjetas pueden abrir ramas del formulario." muted={muted} />
-                            <AdminSelect
-                              value={field.selectDisplay ?? "autocomplete"}
-                              onChange={(value) => updateField(field.id, {
-                                selectDisplay: value,
-                                optionSubmenus: value === "cards" ? field.optionSubmenus : undefined,
-                              })}
-                              options={SELECT_DISPLAY_OPTIONS}
-                              className="text-sm"
-                              style={inputStyle}
-                            />
-                          </label>
+                        <div className="grid md:grid-cols-[minmax(0,300px)_1fr] gap-4 items-start">
+                          <div className="grid gap-3">
+                            <label className="grid gap-1.5">
+                              <ConfigLabel title="Diseño de opciones" description="Cambia la presentacion visual sin alterar las alternativas almacenadas." muted={muted} />
+                              <AdminSelect
+                                value={field.selectDisplay ?? "autocomplete"}
+                                onChange={(value) => updateField(field.id, { selectDisplay: value })}
+                                options={SELECT_DISPLAY_OPTIONS}
+                                className="text-sm"
+                                style={inputStyle}
+                              />
+                            </label>
+                            <label className="grid gap-1.5">
+                              <ConfigLabel title="Cantidad de selecciones" description="Define si la respuesta guarda una alternativa o una lista de varias alternativas." muted={muted} />
+                              <AdminSelect
+                                value={field.selectionMode ?? "single"}
+                                onChange={(value) => {
+                                  const nextFields = selectedForm.fields.map((item) => item.id === field.id
+                                    ? {
+                                        ...item,
+                                        selectionMode: value,
+                                        createRecordPerSelection: value === "multiple" ? item.createRecordPerSelection : undefined,
+                                        repeatSubmenuPerSelection: value === "multiple" ? item.repeatSubmenuPerSelection : undefined,
+                                      }
+                                    : item);
+                                  updateForm({
+                                    fields: nextFields,
+                                    ...(value === "multiple" && selectedForm.respondentFieldId === field.id
+                                      ? { respondentFieldId: undefined, respondentSubmissionLimit: undefined }
+                                      : {}),
+                                  });
+                                }}
+                                options={SELECT_MODE_OPTIONS}
+                                className="text-sm"
+                                style={inputStyle}
+                              />
+                            </label>
+                            {field.selectionMode === "multiple" && (
+                              <label className="grid gap-1.5">
+                                <ConfigLabel
+                                  title="Registro por seleccion"
+                                  description={selectedForm.respondentSubmissionLimit
+                                    ? "No está disponible porque el formulario tiene un limite por identificador."
+                                    : splitRecordField && splitRecordField.id !== field.id
+                                      ? "Otro campo ya divide las respuestas; solo puede existir uno para evitar combinaciones ambiguas."
+                                      : CONFIG_DESCRIPTIONS["Registro por seleccion"]}
+                                  muted={muted}
+                                />
+                                <span className="min-h-11 rounded-xl border px-3 flex items-center justify-between gap-3" style={inputStyle}>
+                                  <span>
+                                    <span className="block text-xs font-black" style={{ color: text }}>{field.createRecordPerSelection ? "Crear filas independientes" : "Conservar una sola respuesta"}</span>
+                                    <span className="block text-[11px] mt-0.5" style={{ color: muted }}>{field.repeatSubmenuPerSelection ? "Cada fila usara los datos completados para su opcion." : "Los demas campos se repetiran en cada fila creada."}</span>
+                                  </span>
+                                  <input
+                                    type="checkbox"
+                                    checked={Boolean(field.createRecordPerSelection)}
+                                    disabled={!field.createRecordPerSelection && (
+                                      Boolean(selectedForm.respondentSubmissionLimit)
+                                      || Boolean(splitRecordField && splitRecordField.id !== field.id)
+                                    )}
+                                    onChange={(event) => updateField(field.id, {
+                                      createRecordPerSelection: event.target.checked || undefined,
+                                      repeatSubmenuPerSelection: event.target.checked ? field.repeatSubmenuPerSelection : undefined,
+                                    })}
+                                    className="w-4 h-4 shrink-0 accent-amber-500 disabled:cursor-not-allowed disabled:opacity-55"
+                                  />
+                                </span>
+                              </label>
+                            )}
+                            {field.createRecordPerSelection && (
+                              <label className="grid gap-1.5">
+                                <ConfigLabel
+                                  title="Repetir submenu por seleccion"
+                                  description={Object.keys(field.optionSubmenus ?? {}).length === 0
+                                    ? "Asigna primero al menos una opcion a un submenu para habilitar esta estrategia."
+                                    : CONFIG_DESCRIPTIONS["Repetir submenu por seleccion"]}
+                                  muted={muted}
+                                />
+                                <span className="min-h-11 rounded-xl border px-3 flex items-center justify-between gap-3" style={inputStyle}>
+                                  <span>
+                                    <span className="block text-xs font-black" style={{ color: text }}>{field.repeatSubmenuPerSelection ? "Un paso para cada opcion" : "Un solo paso compartido"}</span>
+                                    <span className="block text-[11px] mt-0.5" style={{ color: muted }}>Funciona igual con autocomplete y tarjetas.</span>
+                                  </span>
+                                  <input
+                                    type="checkbox"
+                                    checked={Boolean(field.repeatSubmenuPerSelection)}
+                                    disabled={!field.repeatSubmenuPerSelection && Object.keys(field.optionSubmenus ?? {}).length === 0}
+                                    onChange={(event) => {
+                                      const enabled = event.target.checked;
+                                      const repeatedSections = new Set(Object.values(field.optionSubmenus ?? {}));
+                                      const primaryField = selectedForm.fields.find((item) => item.id === selectedForm.primaryFieldId);
+                                      updateForm({
+                                        fields: selectedForm.fields.map((item) => item.id === field.id
+                                          ? { ...item, repeatSubmenuPerSelection: enabled || undefined }
+                                          : item),
+                                        primaryFieldId: enabled && selectedForm.mode === "guided" && primaryField && repeatedSections.has(primaryField.section)
+                                          ? undefined
+                                          : selectedForm.primaryFieldId,
+                                      });
+                                    }}
+                                    className="w-4 h-4 shrink-0 accent-amber-500 disabled:cursor-not-allowed disabled:opacity-55"
+                                  />
+                                </span>
+                              </label>
+                            )}
+                          </div>
 
-                          {field.selectDisplay === "cards" ? (
+                          {field.selectDisplay === "cards" || field.createRecordPerSelection ? (
                             <div>
-                              <ConfigLabel title="Destino de cada tarjeta" description="Al pulsarla se mostrara solamente su rama y se navegara al submenu configurado." muted={muted} />
+                              <ConfigLabel
+                                title={field.selectDisplay === "cards" ? "Destino de cada tarjeta" : "Destino de cada opcion"}
+                                description={field.repeatSubmenuPerSelection
+                                  ? "El submenu configurado se repetira como un paso independiente para cada opcion marcada."
+                                  : field.selectionMode === "multiple"
+                                    ? "Cada alternativa marcada habilita su rama; la persona avanza por los submenus seleccionados con Continuar."
+                                    : "Al elegirla se mostrara el submenu configurado."}
+                                muted={muted}
+                              />
                               <div className="grid sm:grid-cols-2 gap-2 mt-2">
                                 {(field.options ?? []).filter(Boolean).map((option) => (
                                   <div key={option} className="rounded-xl border p-3" style={{ borderColor: cardStyle.borderColor }}>
@@ -303,10 +448,13 @@ export default function DynamicFields( { cardStyle, inputStyle, text, muted, sel
                                         const nextMappings = { ...(field.optionSubmenus ?? {}) };
                                         if (section) nextMappings[option] = section;
                                         else delete nextMappings[option];
-                                        updateField(field.id, { optionSubmenus: nextMappings });
+                                        updateField(field.id, {
+                                          optionSubmenus: nextMappings,
+                                          repeatSubmenuPerSelection: Object.keys(nextMappings).length > 0 ? field.repeatSubmenuPerSelection : undefined,
+                                        });
                                       }}
                                       options={[
-                                        { label: "Sin navegacion", value: "", description: "Selecciona la tarjeta sin cambiar de submenu." },
+                                        { label: "Sin submenu", value: "", description: "La opcion no habilita ni repite campos adicionales." },
                                         ...sectionOptions
                                           .filter((section) => section.value !== field.section)
                                           .map((section) => ({ ...section, description: `Navegar a ${section.label}. ${section.description ?? ""}` })),
@@ -324,7 +472,7 @@ export default function DynamicFields( { cardStyle, inputStyle, text, muted, sel
                             </div>
                           ) : (
                             <div className="rounded-xl p-3 text-xs leading-5" style={{ color: muted, background: isDark ? "rgba(255,255,255,0.04)" : "#f8fafc" }}>
-                              La persona podra escribir para filtrar las alternativas y seleccionar una coincidencia.
+                              La persona podra escribir para filtrar y {field.selectionMode === "multiple" ? "marcar varias alternativas, visibles como etiquetas removibles." : "seleccionar una coincidencia."}
                             </div>
                           )}
                         </div>

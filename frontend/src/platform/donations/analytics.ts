@@ -1,4 +1,4 @@
-import type { DonationField, DonationFilters, DonationForm, DonationResponse } from "./types";
+import type { DonationField, DonationFilters, DonationForm, DonationRepeatedValues, DonationResponse, DonationValue } from "./types";
 
 export type NumericSummary = {
   field: DonationField;
@@ -29,24 +29,43 @@ export type DonationFormStep = {
   key: string;
   title: string;
   fields: DonationField[];
+  repeatContext?: {
+    controllerFieldId: string;
+    option: string;
+  };
 };
 
-export function passesCondition(field: DonationField, values: Record<string, string | number | boolean>) {
+export function donationValueItems(value: DonationValue | undefined) {
+  if (Array.isArray(value)) return value.map((item) => String(item));
+  if (value === undefined || value === null || value === "") return [];
+  return [String(value)];
+}
+
+export function formatDonationValue(value: DonationValue | undefined, emptyLabel = "") {
+  const items = donationValueItems(value);
+  return items.length > 0 ? items.join(" | ") : emptyLabel;
+}
+
+function matchesExpectedValue(value: DonationValue | undefined, expected: string) {
+  return donationValueItems(value).some((item) => item.toLowerCase() === expected.toLowerCase());
+}
+
+export function passesCondition(field: DonationField, values: Record<string, DonationValue>) {
   if (!field.condition) return true;
   const value = values[field.condition.fieldId];
   const expected = field.condition.value.toLowerCase();
-  const actualText = String(value ?? "").toLowerCase();
+  const actualItems = donationValueItems(value).map((item) => item.toLowerCase());
   const actualNumber = Number(value);
   const expectedNumber = Number(field.condition.value);
 
-  if (field.condition.operator === "equals") return actualText === expected;
-  if (field.condition.operator === "notEquals") return actualText !== expected;
-  if (field.condition.operator === "contains") return actualText.includes(expected);
+  if (field.condition.operator === "equals") return actualItems.includes(expected);
+  if (field.condition.operator === "notEquals") return !actualItems.includes(expected);
+  if (field.condition.operator === "contains") return actualItems.some((item) => item.includes(expected));
   if (field.condition.operator === "greaterThan") return Number.isFinite(actualNumber) && actualNumber > expectedNumber;
   return Number.isFinite(actualNumber) && actualNumber < expectedNumber;
 }
 
-export function visibleFields(form: DonationForm, values: Record<string, string | number | boolean>) {
+export function visibleFields(form: DonationForm, values: Record<string, DonationValue>) {
   const submenuControllers = form.fields.filter(
     (field) => field.type === "select" && field.optionSubmenus && Object.keys(field.optionSubmenus).length > 0,
   );
@@ -58,9 +77,9 @@ export function visibleFields(form: DonationForm, values: Record<string, string 
         Object.values(controller.optionSubmenus ?? {}).includes(field.section),
       );
       if (controllers.length === 0) return true;
-      return controllers.some((controller) =>
-        controller.optionSubmenus?.[String(values[controller.id] ?? "")] === field.section,
-      );
+      return controllers.some((controller) => donationValueItems(values[controller.id]).some(
+        (option) => controller.optionSubmenus?.[option] === field.section,
+      ));
     });
 }
 
@@ -68,8 +87,10 @@ export function shouldDeferCardNavigation(
   form: DonationForm,
   controllerFieldId: string,
   selectedOption: string,
-  values: Record<string, string | number | boolean>,
+  values: Record<string, DonationValue>,
 ) {
+  const controller = form.fields.find((field) => field.id === controllerFieldId);
+  if (controller?.selectionMode === "multiple") return true;
   const currentlyVisibleIds = new Set(visibleFields(form, values).map((field) => field.id));
   const nextValues = { ...values, [controllerFieldId]: selectedOption };
 
@@ -81,7 +102,62 @@ export function shouldDeferCardNavigation(
   });
 }
 
-export function getGuidedFormSteps(form: DonationForm, currentVisibleFields: DonationField[]) {
+function getSectionSteps(
+  form: DonationForm,
+  currentVisibleFields: DonationField[],
+  values: Record<string, DonationValue>,
+  repeatedValues: DonationRepeatedValues,
+  excludedFieldId?: string,
+) {
+  const orderedFields = [...form.fields].sort((a, b) => a.priority - b.priority);
+  const visibleFieldIds = new Set(currentVisibleFields.map((field) => field.id));
+  const sections = new Map<string, DonationField[]>();
+  const repeatedController = orderedFields.find((field) => field.repeatSubmenuPerSelection);
+  const repeatedSections = new Set(Object.values(repeatedController?.optionSubmenus ?? {}));
+
+  orderedFields.forEach((field) => {
+    if (field.id === excludedFieldId) return;
+    const section = field.section || "General";
+    sections.set(section, [...(sections.get(section) ?? []), field]);
+  });
+
+  const steps: DonationFormStep[] = [];
+  sections.forEach((sectionFields, section) => {
+    if (repeatedController && repeatedSections.has(section)) {
+      donationValueItems(values[repeatedController.id])
+        .filter((option) => repeatedController.optionSubmenus?.[option] === section)
+        .forEach((option) => {
+          const repeatContext = { controllerFieldId: repeatedController.id, option };
+          const contextValues = {
+            ...values,
+            ...(repeatedValues[repeatedController.id]?.[option] ?? {}),
+            [repeatedController.id]: option,
+          };
+          steps.push({
+            key: `section-${section}-option-${option}`,
+            title: `${section} · ${option}`,
+            fields: sectionFields.filter((field) => passesCondition(field, contextValues)),
+            repeatContext,
+          });
+        });
+      return;
+    }
+
+    steps.push({
+      key: `section-${section}`,
+      title: section,
+      fields: sectionFields.filter((field) => visibleFieldIds.has(field.id)),
+    });
+  });
+  return steps;
+}
+
+export function getGuidedFormSteps(
+  form: DonationForm,
+  currentVisibleFields: DonationField[],
+  values: Record<string, DonationValue> = {},
+  repeatedValues: DonationRepeatedValues = {},
+) {
   if (form.mode !== "guided") return [];
 
   const orderedFields = [...form.fields].sort((a, b) => a.priority - b.priority);
@@ -89,14 +165,6 @@ export function getGuidedFormSteps(form: DonationForm, currentVisibleFields: Don
   const primaryField = form.primaryFieldId
     ? orderedFields.find((field) => field.id === form.primaryFieldId)
     : undefined;
-  const sections = new Map<string, DonationField[]>();
-
-  orderedFields.forEach((field) => {
-    if (field.id === primaryField?.id) return;
-    const section = field.section || "General";
-    sections.set(section, [...(sections.get(section) ?? []), field]);
-  });
-
   const steps: DonationFormStep[] = [];
   if (primaryField) {
     steps.push({
@@ -105,15 +173,16 @@ export function getGuidedFormSteps(form: DonationForm, currentVisibleFields: Don
       fields: visibleFieldIds.has(primaryField.id) ? [primaryField] : [],
     });
   }
-  sections.forEach((sectionFields, section) => {
-    steps.push({
-      key: `section-${section}`,
-      title: section,
-      fields: sectionFields.filter((field) => visibleFieldIds.has(field.id)),
-    });
-  });
+  return [...steps, ...getSectionSteps(form, currentVisibleFields, values, repeatedValues, primaryField?.id)];
+}
 
-  return steps;
+export function getFlatFormGroups(
+  form: DonationForm,
+  currentVisibleFields: DonationField[],
+  values: Record<string, DonationValue> = {},
+  repeatedValues: DonationRepeatedValues = {},
+) {
+  return getSectionSteps(form, currentVisibleFields, values, repeatedValues);
 }
 
 export function filterResponses(
@@ -132,7 +201,7 @@ export function filterResponses(
       if (response.submittedAt > until.toISOString()) return false;
     }
     if (filters.fieldId && filters.fieldValue) {
-      const value = String(response.values[filters.fieldId] ?? "").toLowerCase();
+      const value = formatDonationValue(response.values[filters.fieldId]).toLowerCase();
       if (!value.includes(filters.fieldValue.toLowerCase())) return false;
     }
     if (filters.search) {
@@ -221,9 +290,8 @@ export function getConditionalProbability(
   if (!conditionFieldId || !conditionValue || !outcomeFieldId) {
     return { conditionedCount: 0, successCount: 0, probability: 0 };
   }
-  const expected = conditionValue.toLowerCase();
   const conditioned = responses.filter(
-    (response) => String(response.values[conditionFieldId] ?? "").toLowerCase() === expected,
+    (response) => matchesExpectedValue(response.values[conditionFieldId], conditionValue),
   );
   const successCount = conditioned.filter((response) => {
     const value = Number(response.values[outcomeFieldId]);
@@ -273,8 +341,10 @@ export function getCategorySummaries(form: DonationForm | undefined, responses: 
     .map<CategorySummary>((field) => {
       const counts = new Map<string, number>();
       responses.forEach((response) => {
-        const label = String(response.values[field.id] ?? "Sin dato");
-        counts.set(label, (counts.get(label) ?? 0) + 1);
+        const labels = donationValueItems(response.values[field.id]);
+        (labels.length > 0 ? labels : ["Sin dato"]).forEach((label) => {
+          counts.set(label, (counts.get(label) ?? 0) + 1);
+        });
       });
       return {
         field,

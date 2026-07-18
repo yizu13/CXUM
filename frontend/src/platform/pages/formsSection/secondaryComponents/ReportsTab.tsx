@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import type { reportsTabObject } from "../types";
 import Iconify from "../../../../components/modularUI/IconsMock";
 import { useMemo} from "react";
-import { getCategorySummaries, getConditionalProbability, getHistogram, getNumericSummaries, getTimeSeries } from "../../../donations/analytics";
+import { donationValueItems, getCategorySummaries, getConditionalProbability, getHistogram, getNumericSummaries, getTimeSeries } from "../../../donations/analytics";
 import { AdminSelect, BarChart, BoxPlot, LineChart, PieChart, ScatterChart } from "../secondaryComponents/MinorsComponents";
 import { asPercent, compactNumber } from "../formUiUtils";
 
@@ -15,7 +15,7 @@ export default function ReportsTab({ renderFilters, cardStyle, text, muted, sele
       const timeSeries = useMemo(() => getTimeSeries(selectedResponses), [selectedResponses]);
       const conditionValues = useMemo(() => {
           if (!conditionFieldId) return [];
-          return [...new Set(selectedResponses.map((response) => String(response.values[conditionFieldId] ?? "")).filter(Boolean))]
+          return [...new Set(selectedResponses.flatMap((response) => donationValueItems(response.values[conditionFieldId])).filter(Boolean))]
             .sort((a, b) => a.localeCompare(b));
         }, [conditionFieldId, selectedResponses]);
       const conditionalProbability = useMemo(

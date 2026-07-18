@@ -1,5 +1,6 @@
 import type { CSSProperties, Dispatch, JSX, SetStateAction } from "react";
-import type { ConditionalRule, DonationField, DonationFieldType, DonationForm, DonationFormMode, DonationFormStatus, DonationResponse, DonationSelectDisplay } from "../../donations/types";
+import type { ConditionalRule, DonationField, DonationFieldType, DonationForm, DonationFormMode, DonationFormStatus, DonationResponse, DonationSelectDisplay, DonationSelectMode } from "../../donations/types";
+import type { DonationFormStep } from "../../donations/analytics";
 
 export type AdminOption<T extends string> = { label: string; value: T; description?: string };
 
@@ -12,6 +13,9 @@ export const CONFIG_DESCRIPTIONS: Record<string, string> = {
   "Icono del encabezado": "Identifica visualmente la iniciativa en el encabezado, la vista previa y el directorio publico.",
   "Limite por identificador": "Define cuantas respuestas puede registrar una misma persona usando el valor del campo identificador. Vacio significa sin limite.",
   "Mensaje final": "Se muestra despues de registrar correctamente la donacion.",
+  "Llenado recurrente": "Muestra una accion despues del envio para limpiar las respuestas y comenzar nuevamente desde el primer paso.",
+  "Registro por seleccion": "En una seleccion multiple crea una fila independiente por alternativa, conservando los datos comunes y un grupo de envio compartido.",
+  "Repetir submenu por seleccion": "Solicita los campos del submenu una vez por cada alternativa marcada y asigna esas respuestas a su registro correspondiente.",
   Etiqueta: "Es la pregunta o nombre visible encima del control en el formulario final.",
   "Submenu / seccion": "En modo guiado crea una etapa; en modo plano agrupa y ordena el contenido.",
   Prioridad: "Un numero menor coloca el campo antes que los de prioridad mayor.",
@@ -51,6 +55,11 @@ export const SELECT_DISPLAY_OPTIONS: AdminOption<DonationSelectDisplay>[] = [
   { label: "Tarjetas con navegacion", value: "cards", description: "Cada opcion se presenta como tarjeta y puede abrir un submenu." },
 ];
 
+export const SELECT_MODE_OPTIONS: AdminOption<DonationSelectMode>[] = [
+  { label: "Seleccion unica", value: "single", description: "La persona puede elegir solamente una alternativa." },
+  { label: "Seleccion multiple", value: "multiple", description: "La persona puede marcar varias alternativas en el mismo campo." },
+];
+
 export const OPERATORS: AdminOption<ConditionalRule["operator"]>[] = [
   { label: "Igual a", value: "equals", description: "El campo aparece cuando la respuesta coincide exactamente." },
   { label: "Distinto de", value: "notEquals", description: "El campo aparece cuando la respuesta es diferente." },
@@ -81,13 +90,14 @@ export interface previewFormObject {
         muted: string;
         selectedForm: DonationForm;
         qrDataUrl?: string;
-        previewSteps?:  { key: string; title: string; fields: DonationField[] }[] | undefined;
+        previewSteps?: DonationFormStep[] | undefined;
         previewStep: number;
         previewPrimaryField?: DonationField | undefined;
         isDark: boolean;
-        renderPreviewField: (field: DonationField, featured?: boolean) => JSX.Element;
+        renderPreviewField: (field: DonationField, featured?: boolean, repeatContext?: DonationFormStep["repeatContext"]) => JSX.Element;
         setPreviewStep: (fun: (prev: number) => number) => void;
-        previewGroupedFields: { [s: string]: DonationField[]; } | ArrayLike<DonationField[]>;
+        resetPreview: () => void;
+        previewFlatGroups: DonationFormStep[];
 }
 
 export interface reportsTabObject {

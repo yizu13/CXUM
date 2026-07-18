@@ -6,9 +6,9 @@ import { useSettings } from "../../hooks/context/SettingsContext";
 import NavBar from "../layout/NavBar";
 import Footer from "../layout/Footer";
 import Iconify from "../modularUI/IconsMock";
-import type { DonationField, DonationForm } from "../../platform/donations/types";
+import type { DonationField, DonationForm, DonationRepeatedValues, DonationValue } from "../../platform/donations/types";
 import { getPublicDonationForm, submitDonationResponse } from "../../platform/APIs/donations";
-import { getGuidedFormSteps, shouldDeferCardNavigation, visibleFields } from "../../platform/donations/analytics";
+import { getFlatFormGroups, getGuidedFormSteps, shouldDeferCardNavigation, visibleFields, type DonationFormStep } from "../../platform/donations/analytics";
 import DonationOptionPicker from "../../platform/donations/DonationOptionPicker";
 import { formatDonationDate } from "../../platform/donations/dates";
 import { resolveDonationFormIcon } from "../../platform/donations/icons";
@@ -21,17 +21,26 @@ function inputType(field: DonationField) {
   return "text";
 }
 
-function emptyValue() {
-  return "";
+function emptyValue(field?: DonationField): DonationValue {
+  return field?.type === "select" && field.selectionMode === "multiple" ? [] : "";
 }
 
-type DonationValues = Record<string, string | number | boolean>;
+type DonationValues = Record<string, DonationValue>;
+type RepeatContext = DonationFormStep["repeatContext"];
+
+function errorKey(fieldId: string, repeatContext?: RepeatContext) {
+  return repeatContext ? `${repeatContext.controllerFieldId}::${repeatContext.option}::${fieldId}` : fieldId;
+}
+
+function sameRepeatContext(left?: RepeatContext, right?: RepeatContext) {
+  return left?.controllerFieldId === right?.controllerFieldId && left?.option === right?.option;
+}
 
 function getFieldErrors(fields: DonationField[], values: DonationValues) {
   const fieldErrors: Record<string, string> = {};
   fields.forEach((field) => {
-    const value = values[field.id] ?? emptyValue();
-    const isEmpty = value === "" || value === undefined || value === null;
+    const value = values[field.id] ?? emptyValue(field);
+    const isEmpty = value === "" || value === undefined || value === null || (Array.isArray(value) && value.length === 0);
     if (field.required && isEmpty) {
       fieldErrors[field.id] = "Este campo es obligatorio.";
       return;
@@ -69,6 +78,7 @@ export default function PublicDonationFormPage() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [values, setValues] = useState<DonationValues>({});
+  const [repeatedValues, setRepeatedValues] = useState<DonationRepeatedValues>({});
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -84,6 +94,7 @@ export default function PublicDonationFormPage() {
         setForm(data);
         setLoadError("");
         setValues({});
+        setRepeatedValues({});
         setErrors({});
         setCurrentStep(0);
         setPendingSection("");
@@ -98,19 +109,14 @@ export default function PublicDonationFormPage() {
 
   const fields = useMemo(() => (form ? visibleFields(form, values) : []), [form, values]);
   const primaryField = form?.primaryFieldId ? form.fields.find((field) => field.id === form.primaryFieldId) : undefined;
-  const groupedFields = useMemo(() => {
-    const regularFields = form?.mode === "guided"
-      ? fields.filter((field) => field.id !== primaryField?.id)
-      : fields;
-    return regularFields.reduce<Record<string, DonationField[]>>((groups, field) => {
-      groups[field.section] = [...(groups[field.section] ?? []), field];
-      return groups;
-    }, {});
-  }, [fields, form?.mode, primaryField]);
   const guidedSteps = useMemo(() => {
     if (!form) return [];
-    return getGuidedFormSteps(form, fields);
-  }, [fields, form]);
+    return getGuidedFormSteps(form, fields, values, repeatedValues);
+  }, [fields, form, repeatedValues, values]);
+  const flatGroups = useMemo(() => {
+    if (!form) return [];
+    return getFlatFormGroups(form, fields, values, repeatedValues);
+  }, [fields, form, repeatedValues, values]);
   const activeStep = guidedSteps[Math.min(currentStep, Math.max(0, guidedSteps.length - 1))];
 
   useEffect(() => {
@@ -145,11 +151,36 @@ export default function PublicDonationFormPage() {
     color: text,
   };
 
-  function setFieldValue(field: DonationField, value: string | boolean) {
+  function valuesForContext(repeatContext?: RepeatContext) {
+    if (!repeatContext) return values;
+    return {
+      ...values,
+      ...(repeatedValues[repeatContext.controllerFieldId]?.[repeatContext.option] ?? {}),
+      [repeatContext.controllerFieldId]: repeatContext.option,
+    };
+  }
+
+  function setFieldValue(field: DonationField, value: DonationValue, repeatContext?: RepeatContext) {
     const nextValue = field.type === "number" && value !== "" ? Number(value) : value;
-    setValues((current) => ({ ...current, [field.id]: nextValue }));
-    setErrors((current) => ({ ...current, [field.id]: "" }));
-    const changedStepIndex = guidedSteps.findIndex((step) => step.fields.some((stepField) => stepField.id === field.id));
+    if (repeatContext) {
+      setRepeatedValues((current) => ({
+        ...current,
+        [repeatContext.controllerFieldId]: {
+          ...(current[repeatContext.controllerFieldId] ?? {}),
+          [repeatContext.option]: {
+            ...(current[repeatContext.controllerFieldId]?.[repeatContext.option] ?? {}),
+            [field.id]: nextValue,
+          },
+        },
+      }));
+    } else {
+      setValues((current) => ({ ...current, [field.id]: nextValue }));
+    }
+    setErrors((current) => ({ ...current, [errorKey(field.id, repeatContext)]: "" }));
+    const changedStepIndex = guidedSteps.findIndex((step) =>
+      sameRepeatContext(step.repeatContext, repeatContext)
+      && step.fields.some((stepField) => stepField.id === field.id),
+    );
     if (changedStepIndex >= 0) {
       setVisitedStepKeys((current) => new Set(
         [...current].filter((key) => guidedSteps.findIndex((step) => step.key === key) < changedStepIndex),
@@ -157,18 +188,33 @@ export default function PublicDonationFormPage() {
     }
   }
 
-  function validateFields(fieldsToValidate: DonationField[]) {
-    const nextErrors = getFieldErrors(fieldsToValidate, values);
+  function startAnotherResponse() {
+    if (!form) return;
+    setValues(Object.fromEntries(form.fields.map((field) => [field.id, emptyValue(field)])));
+    setRepeatedValues({});
+    setErrors({});
+    setCurrentStep(0);
+    setPendingSection("");
+    setVisitedStepKeys(new Set());
+    setSubmitted(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function validateFields(fieldsToValidate: DonationField[], repeatContext?: RepeatContext) {
+    const fieldErrors = getFieldErrors(fieldsToValidate, valuesForContext(repeatContext));
+    const nextErrors = Object.fromEntries(
+      Object.entries(fieldErrors).map(([fieldId, message]) => [errorKey(fieldId, repeatContext), message]),
+    );
     setErrors((current) => {
       const next = { ...current };
-      fieldsToValidate.forEach((field) => delete next[field.id]);
+      fieldsToValidate.forEach((field) => delete next[errorKey(field.id, repeatContext)]);
       return { ...next, ...nextErrors };
     });
     return Object.keys(nextErrors).length === 0;
   }
 
   function nextStep() {
-    if (!activeStep || !validateFields(activeStep.fields)) return;
+    if (!activeStep || !validateFields(activeStep.fields, activeStep.repeatContext)) return;
     setVisitedStepKeys((current) => new Set(current).add(activeStep.key));
     setCurrentStep((step) => Math.min(guidedSteps.length - 1, step + 1));
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -188,12 +234,19 @@ export default function PublicDonationFormPage() {
       }
     }
 
-    const allErrors = getFieldErrors(fields, values);
+    const responseGroups = form.mode === "guided" ? guidedSteps : flatGroups;
+    const allErrors = responseGroups.reduce<Record<string, string>>((result, group) => {
+      const groupErrors = getFieldErrors(group.fields, valuesForContext(group.repeatContext));
+      Object.entries(groupErrors).forEach(([fieldId, message]) => {
+        result[errorKey(fieldId, group.repeatContext)] = message;
+      });
+      return result;
+    }, {});
     setErrors(allErrors);
     if (Object.keys(allErrors).length > 0) {
       if (form.mode === "guided") {
         const invalidStepIndex = guidedSteps.findIndex((step) =>
-          step.fields.some((field) => Boolean(allErrors[field.id])),
+          step.fields.some((field) => Boolean(allErrors[errorKey(field.id, step.repeatContext)])),
         );
         if (invalidStepIndex >= 0) setCurrentStep(invalidStepIndex);
       }
@@ -205,14 +258,27 @@ export default function PublicDonationFormPage() {
     const sourceParam = searchParams.get("source");
     setSubmitting(true);
     try {
-      const visibleValues = Object.fromEntries(fields.map((field) => [field.id, values[field.id] ?? emptyValue()]));
-      await submitDonationResponse(form.id, {
+      const repeatedFieldIds = new Set(
+        responseGroups.filter((group) => group.repeatContext).flatMap((group) => group.fields.map((field) => field.id)),
+      );
+      const visibleValues = Object.fromEntries(
+        fields
+          .filter((field) => !repeatedFieldIds.has(field.id))
+          .map((field) => [field.id, values[field.id] ?? emptyValue(field)]),
+      );
+      const result = await submitDonationResponse(form.id, {
         source: sourceParam === "qr" || sourceParam === "link" ? sourceParam : "direct",
         values: visibleValues,
+        repeatedValues,
         userAgent: navigator.userAgent,
       });
       setSubmitted(true);
-      enqueueSnackbar("Registro recibido correctamente", { variant: "success" });
+      enqueueSnackbar(
+        result.recordsCreated && result.recordsCreated > 1
+          ? `${result.recordsCreated} registros creados correctamente`
+          : "Registro recibido correctamente",
+        { variant: "success" },
+      );
     } catch (err: unknown) {
       enqueueSnackbar(err instanceof Error ? err.message : "No se pudo enviar el registro", { variant: "error" });
     } finally {
@@ -220,8 +286,11 @@ export default function PublicDonationFormPage() {
     }
   }
 
-  function renderField(field: DonationField, featured = false) {
-    const value = values[field.id] ?? emptyValue();
+  function renderField(field: DonationField, featured = false, repeatContext?: RepeatContext) {
+    const scopedValues = repeatContext
+      ? repeatedValues[repeatContext.controllerFieldId]?.[repeatContext.option]
+      : values;
+    const value = scopedValues?.[field.id] ?? emptyValue(field);
     const commonClass = `w-full rounded-2xl border px-4 ${featured ? "py-4 text-lg font-black" : "py-3 text-sm"} outline-none transition-all`;
 
     return (
@@ -231,7 +300,7 @@ export default function PublicDonationFormPage() {
             {field.label}
             {field.required && <span style={{ color: "#ef4444" }}> *</span>}
           </label>
-          {field.maxLength && (
+          {field.type !== "select" && field.maxLength && (
             <span className="text-[10px] font-bold" style={{ color: muted }}>
               {String(value).length}/{field.maxLength}
             </span>
@@ -240,12 +309,13 @@ export default function PublicDonationFormPage() {
 
         {field.type === "select" ? (
           <DonationOptionPicker
-            value={String(value)}
+            value={Array.isArray(value) ? value : String(value)}
             options={field.options ?? []}
             display={field.selectDisplay ?? "autocomplete"}
+            selectionMode={field.selectionMode ?? "single"}
             optionSubmenus={field.optionSubmenus}
-            onChange={(nextValue) => setFieldValue(field, nextValue)}
-            shouldDeferNavigation={(option) => Boolean(form && shouldDeferCardNavigation(form, field.id, option, values))}
+            onChange={(nextValue) => setFieldValue(field, nextValue, repeatContext)}
+            shouldDeferNavigation={(option) => Boolean(form && shouldDeferCardNavigation(form, field.id, option, valuesForContext(repeatContext)))}
             onNavigate={(section) => {
               if (form?.mode === "guided") setPendingSection(section);
             }}
@@ -257,7 +327,7 @@ export default function PublicDonationFormPage() {
             value={String(value)}
             maxLength={field.maxLength}
             placeholder={field.placeholder}
-            onChange={(event: ChangeEvent<HTMLTextAreaElement>) => setFieldValue(field, event.target.value)}
+            onChange={(event: ChangeEvent<HTMLTextAreaElement>) => setFieldValue(field, event.target.value, repeatContext)}
             className={`${commonClass} min-h-28 resize-y`}
             style={control}
           />
@@ -269,7 +339,7 @@ export default function PublicDonationFormPage() {
                 <button
                   key={option.label}
                   type="button"
-                  onClick={() => setFieldValue(field, option.value)}
+                  onClick={() => setFieldValue(field, option.value, repeatContext)}
                   className="rounded-2xl border px-4 py-3 flex items-center justify-center gap-2 text-sm font-black"
                   style={{ ...control, borderColor: selected ? "#f59e0b" : control.borderColor, background: selected ? "rgba(245,158,11,0.1)" : control.background }}
                 >
@@ -287,7 +357,7 @@ export default function PublicDonationFormPage() {
             max={field.max}
             maxLength={field.maxLength}
             placeholder={field.placeholder}
-            onChange={(event: ChangeEvent<HTMLInputElement>) => setFieldValue(field, event.target.value)}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => setFieldValue(field, event.target.value, repeatContext)}
             className={commonClass}
             style={control}
           />
@@ -300,7 +370,7 @@ export default function PublicDonationFormPage() {
             Maximo {form.respondentSubmissionLimit} {form.respondentSubmissionLimit === 1 ? "registro" : "registros"} con este identificador.
           </p>
         )}
-        {errors[field.id] && <p className="text-xs font-bold mt-2" style={{ color: "#ef4444" }}>{errors[field.id]}</p>}
+        {errors[errorKey(field.id, repeatContext)] && <p className="text-xs font-bold mt-2" style={{ color: "#ef4444" }}>{errors[errorKey(field.id, repeatContext)]}</p>}
       </div>
     );
   }
@@ -372,9 +442,22 @@ export default function PublicDonationFormPage() {
                 <Iconify IconString="solar:check-circle-bold-duotone" Size={52} Style={{ color: "#22c55e", margin: "0 auto 14px" }} />
                 <h2 className="text-2xl font-black" style={{ color: text }}>Registro recibido</h2>
                 <p className="text-sm mt-3 max-w-md mx-auto" style={{ color: muted }}>{form.thankYouMessage}</p>
-                <Link to="/formularios" className="inline-flex mt-6 px-4 py-2 rounded-xl text-sm font-black text-white" style={{ background: "#f59e0b" }}>
-                  Ver mas formularios
-                </Link>
+                <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-2.5">
+                  {form.allowRepeatSubmissions && (
+                    <button
+                      type="button"
+                      onClick={startAnotherResponse}
+                      className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-black text-white"
+                      style={{ background: "#f59e0b" }}
+                    >
+                      <Iconify IconString="solar:restart-bold-duotone" Size={18} />
+                      Llenar otra respuesta
+                    </button>
+                  )}
+                  <Link to="/formularios" className="inline-flex min-h-11 items-center justify-center rounded-xl border px-4 py-2 text-sm font-black" style={{ color: text, borderColor: panel.borderColor }}>
+                    Ver mas formularios
+                  </Link>
+                </div>
               </div>
             ) : (
               <div className="p-5 sm:p-8 space-y-6">
@@ -401,11 +484,15 @@ export default function PublicDonationFormPage() {
                     >
                       <div>
                         <h2 className="text-xl font-black" style={{ color: text }}>{activeStep.title}</h2>
-                        <p className="text-xs mt-1" style={{ color: muted }}>Completa esta etapa para continuar.</p>
+                        <p className="text-xs mt-1" style={{ color: muted }}>
+                          {activeStep.repeatContext
+                            ? `Completa la informacion correspondiente a ${activeStep.repeatContext.option}.`
+                            : "Completa esta etapa para continuar."}
+                        </p>
                       </div>
                       <div className="grid gap-5">
                         {activeStep.fields.length > 0 ? (
-                          activeStep.fields.map((field) => renderField(field, field.id === primaryField?.id))
+                          activeStep.fields.map((field) => renderField(field, field.id === primaryField?.id, activeStep.repeatContext))
                         ) : (
                           <div className="rounded-xl border border-dashed px-4 py-5 text-center text-xs font-bold" style={{ color: muted, borderColor: panel.borderColor }}>
                             Esta etapa se habilitara segun las respuestas de los pasos anteriores.
@@ -451,10 +538,16 @@ export default function PublicDonationFormPage() {
                   </>
                 ) : (
                   <>
-                    {Object.entries(groupedFields).map(([section, sectionFields]) => (
-                      <section key={section} className="space-y-4">
+                    {flatGroups.map((group) => (
+                      <section key={group.key} className="space-y-4">
+                        {group.repeatContext && (
+                          <div className="rounded-xl border px-4 py-3" style={{ borderColor: panel.borderColor, background: "rgba(245,158,11,0.07)" }}>
+                            <h2 className="text-base font-black" style={{ color: text }}>{group.title}</h2>
+                            <p className="text-xs mt-1" style={{ color: muted }}>Información correspondiente a {group.repeatContext.option}.</p>
+                          </div>
+                        )}
                         <div className="grid gap-4">
-                          {sectionFields.map((field) => renderField(field))}
+                          {group.fields.map((field) => renderField(field, false, group.repeatContext))}
                         </div>
                       </section>
                     ))}

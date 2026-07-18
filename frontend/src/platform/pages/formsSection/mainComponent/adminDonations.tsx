@@ -7,7 +7,9 @@ import type {
   DonationField,
   DonationFilters,
   DonationForm,
+  DonationRepeatedValues,
   DonationResponse,
+  DonationValue,
 } from "../../../donations/types";
 import DonationOptionPicker from "../../../donations/DonationOptionPicker";
 import {
@@ -23,9 +25,11 @@ import {
 } from "../../../APIs/donations";
 import {
   filterResponses,
+  getFlatFormGroups,
   getGuidedFormSteps,
   shouldDeferCardNavigation,
   visibleFields,
+  type DonationFormStep,
 } from "../../../donations/analytics";
 import DynamicFields from "../secondaryComponents/DynamicFields";
 import { AdminSelect } from "../secondaryComponents/MinorsComponents";
@@ -34,6 +38,12 @@ import PreviewForm from "../secondaryComponents/PreviewForm";
 import ReportsTab from "../secondaryComponents/ReportsTab";
 import BucketTab from "../secondaryComponents/bucketTab";
 
+function emptyPreviewValues(form: DonationForm) {
+  return Object.fromEntries(form.fields.map((field) => [
+    field.id,
+    field.type === "select" && field.selectionMode === "multiple" ? [] : "",
+  ])) as Record<string, DonationValue>;
+}
 
 
 export default function AdminDonationsPage() {
@@ -56,7 +66,8 @@ export default function AdminDonationsPage() {
   const [bucketPage, setBucketPage] = useState(1);
   const [previewStep, setPreviewStep] = useState(0);
   const [previewPendingSection, setPreviewPendingSection] = useState("");
-  const [previewValues, setPreviewValues] = useState<Record<string, string | number | boolean>>({});
+  const [previewValues, setPreviewValues] = useState<Record<string, DonationValue>>({});
+  const [previewRepeatedValues, setPreviewRepeatedValues] = useState<DonationRepeatedValues>({});
   const [filters, setFilters] = useState<DonationFilters>({
     formId: forms[0]?.id ?? "all",
     search: "",
@@ -104,21 +115,14 @@ export default function AdminDonationsPage() {
   const previewPrimaryField = selectedForm?.primaryFieldId
     ? selectedForm.fields.find((field) => field.id === selectedForm.primaryFieldId)
     : undefined;
-  const previewGroupedFields = useMemo(() => {
-    if (!selectedForm) return {} as Record<string, DonationField[]>;
-    const regularFields = selectedForm.mode === "guided"
-      ? previewFields.filter((field) => field.id !== previewPrimaryField?.id)
-      : previewFields;
-    return regularFields.reduce<Record<string, DonationField[]>>((groups, field) => {
-      const section = field.section || "General";
-      groups[section] = [...(groups[section] ?? []), field];
-      return groups;
-    }, {});
-  }, [previewFields, previewPrimaryField?.id, selectedForm]);
   const previewSteps = useMemo(() => {
     if (!selectedForm) return [];
-    return getGuidedFormSteps(selectedForm, previewFields);
-  }, [previewFields, selectedForm]);
+    return getGuidedFormSteps(selectedForm, previewFields, previewValues, previewRepeatedValues);
+  }, [previewFields, previewRepeatedValues, previewValues, selectedForm]);
+  const previewFlatGroups = useMemo(() => {
+    if (!selectedForm) return [];
+    return getFlatFormGroups(selectedForm, previewFields, previewValues, previewRepeatedValues);
+  }, [previewFields, previewRepeatedValues, previewValues, selectedForm]);
 
   const text = isDark ? "#ffffff" : "#0f172a";
   const muted = isDark ? "rgba(255,255,255,0.48)" : "#64748b";
@@ -162,14 +166,19 @@ export default function AdminDonationsPage() {
   }, [qrUrl, selectedForm]);
 
   useEffect(() => {
-    const values: Record<string, string | number | boolean> = {};
-    selectedForm?.fields.forEach((field) => {
-      values[field.id] = "";
-    });
-    setPreviewValues(values);
+    setPreviewValues(selectedForm ? emptyPreviewValues(selectedForm) : {});
+    setPreviewRepeatedValues({});
     setPreviewStep(0);
     setPreviewPendingSection("");
   }, [selectedForm]);
+
+  function resetPreview() {
+    if (!selectedForm) return;
+    setPreviewValues(emptyPreviewValues(selectedForm));
+    setPreviewRepeatedValues({});
+    setPreviewStep(0);
+    setPreviewPendingSection("");
+  }
 
   useEffect(() => {
     if (previewSteps.length > 0 && previewStep >= previewSteps.length) {
@@ -325,11 +334,13 @@ export default function AdminDonationsPage() {
     updateForm({
       fields: remainingFields.map((field) => {
         if (!sectionWasRemoved || !field.optionSubmenus) return field;
+        const optionSubmenus = Object.fromEntries(
+          Object.entries(field.optionSubmenus).filter(([, section]) => section !== removedSection),
+        );
         return {
           ...field,
-          optionSubmenus: Object.fromEntries(
-            Object.entries(field.optionSubmenus).filter(([, section]) => section !== removedSection),
-          ),
+          optionSubmenus,
+          repeatSubmenuPerSelection: Object.keys(optionSubmenus).length > 0 ? field.repeatSubmenuPerSelection : undefined,
         };
       }),
       primaryFieldId: selectedForm.primaryFieldId === fieldId ? undefined : selectedForm.primaryFieldId,
@@ -349,11 +360,30 @@ export default function AdminDonationsPage() {
     }
   }
 
-  function renderPreviewField(field: DonationField, featured = false) {
-    const value = previewValues[field.id] ?? "";
-    const setValue = (nextValue: string | number | boolean) => {
-      setPreviewValues((current) => ({ ...current, [field.id]: nextValue }));
+  function renderPreviewField(field: DonationField, featured = false, repeatContext?: DonationFormStep["repeatContext"]) {
+    const scopedValues = repeatContext
+      ? previewRepeatedValues[repeatContext.controllerFieldId]?.[repeatContext.option]
+      : previewValues;
+    const value = scopedValues?.[field.id] ?? (field.type === "select" && field.selectionMode === "multiple" ? [] : "");
+    const setValue = (nextValue: DonationValue) => {
+      if (repeatContext) {
+        setPreviewRepeatedValues((current) => ({
+          ...current,
+          [repeatContext.controllerFieldId]: {
+            ...(current[repeatContext.controllerFieldId] ?? {}),
+            [repeatContext.option]: {
+              ...(current[repeatContext.controllerFieldId]?.[repeatContext.option] ?? {}),
+              [field.id]: nextValue,
+            },
+          },
+        }));
+      } else {
+        setPreviewValues((current) => ({ ...current, [field.id]: nextValue }));
+      }
     };
+    const contextValues = repeatContext
+      ? { ...previewValues, ...(scopedValues ?? {}), [repeatContext.controllerFieldId]: repeatContext.option }
+      : previewValues;
     const controlClass = `w-full rounded-2xl border px-4 ${featured ? "py-4 text-base font-black" : "py-3 text-sm"} outline-none`;
 
     return (
@@ -363,20 +393,21 @@ export default function AdminDonationsPage() {
             {field.label}
             {field.required && <span style={{ color: "#ef4444" }}> *</span>}
           </label>
-          {field.maxLength && (
+          {field.type !== "select" && field.maxLength && (
             <span className="text-[10px] font-bold" style={{ color: muted }}>{String(value).length}/{field.maxLength}</span>
           )}
         </div>
 
         {field.type === "select" ? (
           <DonationOptionPicker
-            value={String(value)}
+            value={Array.isArray(value) ? value : String(value)}
             onChange={setValue}
             options={field.options ?? []}
             display={field.selectDisplay ?? "autocomplete"}
+            selectionMode={field.selectionMode ?? "single"}
             optionSubmenus={field.optionSubmenus}
             onNavigate={selectedForm?.mode === "guided" ? setPreviewPendingSection : undefined}
-            shouldDeferNavigation={(option) => Boolean(selectedForm && shouldDeferCardNavigation(selectedForm, field.id, option, previewValues))}
+            shouldDeferNavigation={(option) => Boolean(selectedForm && shouldDeferCardNavigation(selectedForm, field.id, option, contextValues))}
             style={inputStyle}
             featured={featured}
           />
@@ -612,7 +643,7 @@ export default function AdminDonationsPage() {
         <div className="grid xl:grid-cols-[minmax(0,1fr)_430px] gap-4 items-start">
          <DynamicFields  cardStyle={cardStyle} inputStyle={inputStyle} text={text} muted={muted} selectedForm={selectedForm} updateForm={updateForm} addField={addField} removeField={removeField} updateField={updateField} updateFieldSection={updateFieldSection} sectionOptions={sectionOptions} isDark={isDark} />
 
-          <PreviewForm  cardStyle={cardStyle} inputStyle={inputStyle} text={text} muted={muted} selectedForm={selectedForm} qrDataUrl={qrDataUrl} previewSteps={previewSteps} previewStep={previewStep} previewPrimaryField={previewPrimaryField} isDark={isDark} renderPreviewField={renderPreviewField} setPreviewStep={setPreviewStep} previewGroupedFields={previewGroupedFields} />
+          <PreviewForm key={`${selectedForm.id}-${selectedForm.updatedAt}`} cardStyle={cardStyle} inputStyle={inputStyle} text={text} muted={muted} selectedForm={selectedForm} qrDataUrl={qrDataUrl} previewSteps={previewSteps} previewStep={previewStep} previewPrimaryField={previewPrimaryField} isDark={isDark} renderPreviewField={renderPreviewField} setPreviewStep={setPreviewStep} resetPreview={resetPreview} previewFlatGroups={previewFlatGroups} />
           
         </div>
       )}
