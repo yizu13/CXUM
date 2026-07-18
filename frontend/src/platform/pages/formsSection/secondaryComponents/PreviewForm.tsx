@@ -7,12 +7,19 @@ import { motion } from "framer-motion";
 import type { DonationField } from "../../../donations/types";
 import { formatDonationDate } from "../../../donations/dates";
 import { resolveDonationFormIcon } from "../../../donations/icons";
+import { useState } from "react";
 
 
-export default function PreviewForm({ cardStyle, inputStyle, text, muted, selectedForm, qrDataUrl, previewSteps, previewStep, previewPrimaryField, isDark, renderPreviewField, setPreviewStep, previewGroupedFields }: previewFormObject) {
+export default function PreviewForm({ cardStyle, inputStyle, text, muted, selectedForm, qrDataUrl, previewSteps, previewStep, previewPrimaryField, isDark, renderPreviewField, setPreviewStep, resetPreview, previewFlatGroups }: previewFormObject) {
 
       const publicUrl = selectedForm ? `${window.location.origin}/formularios/${selectedForm.slug}?source=link` : "";
       const previewActiveStep = previewSteps?.[Math.min(previewStep, Math.max(0, previewSteps.length - 1))];
+      const [previewSubmitted, setPreviewSubmitted] = useState(false);
+
+      function restartPreview() {
+        resetPreview();
+        setPreviewSubmitted(false);
+      }
 
 
 
@@ -118,7 +125,19 @@ export default function PreviewForm({ cardStyle, inputStyle, text, muted, select
                 </div>
 
                 <div className="p-5 space-y-5">
-                  {selectedForm.mode === "guided" && previewActiveStep ? (
+                  {previewSubmitted ? (
+                    <div className="py-6 text-center">
+                      <Iconify IconString="solar:check-circle-bold-duotone" Size={46} Style={{ color: "#22c55e", margin: "0 auto 12px" }} />
+                      <h4 className="text-xl font-black" style={{ color: text }}>Registro recibido</h4>
+                      <p className="text-xs mt-2 leading-5" style={{ color: muted }}>{selectedForm.thankYouMessage}</p>
+                      {selectedForm.allowRepeatSubmissions && (
+                        <button type="button" onClick={restartPreview} className="inline-flex mt-5 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-black text-white" style={{ background: "#f59e0b" }}>
+                          <Iconify IconString="solar:restart-bold-duotone" Size={17} />
+                          Llenar otra respuesta
+                        </button>
+                      )}
+                    </div>
+                  ) : selectedForm.mode === "guided" && previewActiveStep ? (
                     <>
                       <div>
                         <div className="flex items-center justify-between gap-3 mb-2">
@@ -139,11 +158,15 @@ export default function PreviewForm({ cardStyle, inputStyle, text, muted, select
                       >
                         <div>
                           <h4 className="text-lg font-black" style={{ color: text }}>{previewActiveStep.title}</h4>
-                          <p className="text-xs mt-1" style={{ color: muted }}>Completa esta etapa para continuar.</p>
+                          <p className="text-xs mt-1" style={{ color: muted }}>
+                            {previewActiveStep.repeatContext
+                              ? `Completa la informacion correspondiente a ${previewActiveStep.repeatContext.option}.`
+                              : "Completa esta etapa para continuar."}
+                          </p>
                         </div>
                         <div className="grid gap-4">
                           {previewActiveStep.fields.length > 0 ? (
-                            previewActiveStep.fields.map((field) => renderPreviewField(field, field.id === previewPrimaryField?.id))
+                            previewActiveStep.fields.map((field) => renderPreviewField(field, field.id === previewPrimaryField?.id, previewActiveStep.repeatContext))
                           ) : (
                             <div className="rounded-xl border border-dashed px-4 py-5 text-center text-xs font-bold" style={{ color: muted, borderColor: cardStyle.borderColor }}>
                               Esta etapa se habilitara segun las respuestas de los pasos anteriores.
@@ -165,7 +188,10 @@ export default function PreviewForm({ cardStyle, inputStyle, text, muted, select
                         </button>
                         <button
                           type="button"
-                          onClick={() => setPreviewStep((step: number) => Math.min(previewSteps.length - 1, step + 1))}
+                          onClick={() => {
+                            if (previewStep === previewSteps.length - 1) setPreviewSubmitted(true);
+                            else setPreviewStep((step: number) => Math.min(previewSteps.length - 1, step + 1));
+                          }}
                           className="rounded-2xl py-3 text-xs font-black text-white flex items-center justify-center gap-1.5"
                           style={{ background: previewStep === previewSteps.length - 1 ? "linear-gradient(135deg, #ef4444, #f59e0b)" : "#f59e0b" }}
                         >
@@ -176,12 +202,18 @@ export default function PreviewForm({ cardStyle, inputStyle, text, muted, select
                     </>
                   ) : (
                     <>
-                      {Object.entries(previewGroupedFields).map(([section, fields]) => (
-                        <section key={section} className="space-y-4">
-                          <div className="grid gap-4">{fields.map((field: DonationField) => renderPreviewField(field))}</div>
+                      {previewFlatGroups.map((group) => (
+                        <section key={group.key} className="space-y-4">
+                          {group.repeatContext && (
+                            <div className="rounded-xl border px-3 py-2.5" style={{ borderColor: cardStyle.borderColor, background: "rgba(245,158,11,0.07)" }}>
+                              <h4 className="text-sm font-black" style={{ color: text }}>{group.title}</h4>
+                              <p className="text-[11px] mt-1" style={{ color: muted }}>Informacion correspondiente a {group.repeatContext.option}.</p>
+                            </div>
+                          )}
+                          <div className="grid gap-4">{group.fields.map((field: DonationField) => renderPreviewField(field, false, group.repeatContext))}</div>
                         </section>
                       ))}
-                      <button type="button" className="w-full rounded-2xl py-3 text-xs font-black text-white flex items-center justify-center gap-2" style={{ background: "linear-gradient(135deg, #ef4444, #f59e0b)" }}>
+                      <button type="button" onClick={() => setPreviewSubmitted(true)} className="w-full rounded-2xl py-3 text-xs font-black text-white flex items-center justify-center gap-2" style={{ background: "linear-gradient(135deg, #ef4444, #f59e0b)" }}>
                         <Iconify IconString="solar:send-square-bold-duotone" Size={17} />
                         Enviar
                       </button>

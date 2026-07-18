@@ -25,6 +25,7 @@ export function createDonationForm(): DonationForm {
     status: "draft",
     mode: "guided",
     thankYouMessage: "Gracias por apoyar esta iniciativa.",
+    allowRepeatSubmissions: false,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     fields: [

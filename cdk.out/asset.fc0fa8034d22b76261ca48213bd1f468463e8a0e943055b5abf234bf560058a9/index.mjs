@@ -341,7 +341,7 @@ function validateResponse(form, rawValues, rawRepeatedValues = {}) {
     visibleFields.filter((field) => !repeatedSections.has(field.section)),
     rawValues,
   );
-  const repeatedValues = repeatedController ? { [repeatedController.id]: {} } : {};
+  const repeatedValues = {};
   const errors = [...baseValidation.errors];
 
   if (repeatedController) {
@@ -354,7 +354,7 @@ function validateResponse(form, rawValues, rawRepeatedValues = {}) {
         .sort((a, b) => a.priority - b.priority)
         .filter((field) => field.section === section && passesCondition(field, contextValues));
       const scopedValidation = validateFieldValues(scopedFields, contextValues);
-      repeatedValues[repeatedController.id][option] = scopedValidation.values;
+      repeatedValues[option] = scopedValidation.values;
       errors.push(...scopedValidation.errors.map((error) => `${section} (${option}): ${error}`));
     }
   }
@@ -619,19 +619,12 @@ function createResponseRecords(form, response, repeatedValues = {}) {
   if (!splitField || selectedOptions.length === 0) return [response];
 
   const submissionGroupId = randomUUID();
-  const fieldsById = new Map(form.fields.map((field) => [field.id, field]));
   return selectedOptions.map((option, index) => {
-    const mergedValues = {
+    const values = {
       ...response.values,
       ...(repeatedValues?.[splitField.id]?.[option] ?? {}),
       [splitField.id]: option,
     };
-    const values = Object.fromEntries(
-      Object.entries(mergedValues).filter(([fieldId]) => {
-        const field = fieldsById.get(fieldId);
-        return !field || passesCondition(field, mergedValues);
-      }),
-    );
     return {
       ...response,
       id: randomUUID(),

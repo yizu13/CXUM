@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import Iconify from "../../../../components/modularUI/IconsMock";
 import type { bucketTabObject } from "../types";
 import type { DonationResponse } from "../../../donations/types";
+import { formatDonationValue } from "../../../donations/analytics";
 
 export default function BucketTab({ renderFilters, cardStyle, text, muted, selectedResponses, selectedForm, inputStyle, bucketPage, refreshResponses, setBucketPage } : bucketTabObject ){
       const bucketPageSize = 20;
@@ -19,7 +20,7 @@ export default function BucketTab({ renderFilters, cardStyle, text, muted, selec
       response.source,
       response.device ?? "unknown",
       response.locationLabel,
-      ...selectedForm.fields.map((field) => String(response.values[field.id] ?? "")),
+      ...selectedForm.fields.map((field) => formatDonationValue(response.values[field.id])),
     ]);
     const csv = [headers, ...rows]
       .map((row) => row.map((cell) => `"${cell.replaceAll('"', '""')}"`).join(","))
@@ -80,7 +81,7 @@ export default function BucketTab({ renderFilters, cardStyle, text, muted, selec
                       <td className="px-4 py-3 whitespace-nowrap">{response.device ?? "unknown"}</td>
                       <td className="px-4 py-3 whitespace-nowrap">{response.locationLabel}</td>
                       {selectedForm.fields.map((field) => (
-                        <td key={field.id} className="px-4 py-3 whitespace-nowrap">{String(response.values[field.id] ?? "-")}</td>
+                        <td key={field.id} className="px-4 py-3 whitespace-nowrap">{formatDonationValue(response.values[field.id], "-")}</td>
                       ))}
                     </tr>
                   ))}

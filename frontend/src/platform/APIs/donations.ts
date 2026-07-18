@@ -1,5 +1,5 @@
 import { apiFetch, publicFetch } from "./api";
-import type { DonationForm, DonationResponse } from "../donations/types";
+import type { DonationForm, DonationRepeatedValues, DonationResponse, DonationValue } from "../donations/types";
 
 export interface ListDonationFormsResponse {
   count: number;
@@ -13,8 +13,13 @@ export interface ListDonationResponsesResponse {
 
 export type SubmitDonationPayload = {
   source: DonationResponse["source"];
-  values: Record<string, string | number | boolean>;
+  values: Record<string, DonationValue>;
+  repeatedValues?: DonationRepeatedValues;
   userAgent?: string;
+};
+
+export type SubmitDonationResult = DonationResponse & {
+  recordsCreated?: number;
 };
 
 export const getPublicDonationForms = () =>
@@ -24,7 +29,7 @@ export const getPublicDonationForm = (slug: string) =>
   publicFetch<DonationForm>(`/donation-forms/${encodeURIComponent(slug)}`);
 
 export const submitDonationResponse = (formId: string, data: SubmitDonationPayload) =>
-  publicFetch<DonationResponse>(`/donation-forms/${encodeURIComponent(formId)}/responses`, {
+  publicFetch<SubmitDonationResult>(`/donation-forms/${encodeURIComponent(formId)}/responses`, {
     method: "POST",
     body: JSON.stringify(data),
   });

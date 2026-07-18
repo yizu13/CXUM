@@ -113,9 +113,6 @@ function normalizeField(field, index) {
         .map(([option, section]) => [option, String(section).trim().slice(0, 80)]);
       if (mappings.length > 0) normalized.optionSubmenus = Object.fromEntries(mappings);
     }
-    if (normalized.createRecordPerSelection && field.repeatSubmenuPerSelection && normalized.optionSubmenus) {
-      normalized.repeatSubmenuPerSelection = true;
-    }
   }
   if (field.condition?.fieldId && CONDITION_OPERATORS.has(field.condition.operator)) {
     normalized.condition = {
@@ -178,15 +175,6 @@ function normalizeForm(body, existing = undefined, actor = "") {
   }
   if (respondentSubmissionLimit && splitRecordFields.length > 0) {
     return { error: "El registro por seleccion requiere que el limite por identificador sea ilimitado" };
-  }
-  const repeatedSubmenuField = splitRecordFields.find((field) => field.repeatSubmenuPerSelection);
-  if (repeatedSubmenuField && Object.keys(repeatedSubmenuField.optionSubmenus ?? {}).length === 0) {
-    return { error: `${repeatedSubmenuField.label} necesita al menos un submenu para repetirlo por seleccion` };
-  }
-  const repeatedSections = new Set(Object.values(repeatedSubmenuField?.optionSubmenus ?? {}));
-  const configuredPrimaryField = fields.find((field) => field.id === body.primaryFieldId);
-  if (body.mode === "guided" && configuredPrimaryField && repeatedSections.has(configuredPrimaryField.section)) {
-    return { error: "El campo prioritario no puede pertenecer a un submenu repetido por seleccion" };
   }
   const primaryField = fields.find((field) => field.id === body.primaryFieldId);
   const primaryCanIdentify = primaryField?.type !== "select" || primaryField.selectionMode !== "multiple";
@@ -259,11 +247,26 @@ function passesCondition(field, values) {
   return true;
 }
 
-function validateFieldValues(fields, rawValues) {
+function validateResponse(form, rawValues) {
   const values = {};
   const errors = [];
+  const submenuControllers = form.fields.filter(
+    (field) => field.type === "select" && field.optionSubmenus && Object.keys(field.optionSubmenus).length > 0,
+  );
+  const visibleFields = [...form.fields]
+    .sort((a, b) => a.priority - b.priority)
+    .filter((field) => passesCondition(field, rawValues ?? {}))
+    .filter((field) => {
+      const controllers = submenuControllers.filter((controller) =>
+        Object.values(controller.optionSubmenus ?? {}).includes(field.section),
+      );
+      if (controllers.length === 0) return true;
+      return controllers.some((controller) => valueItems(rawValues?.[controller.id]).some(
+        (option) => controller.optionSubmenus?.[option] === field.section,
+      ));
+    });
 
-  for (const field of fields) {
+  for (const field of visibleFields) {
     const raw = rawValues?.[field.id];
     const empty = raw === undefined || raw === null || raw === "" || (Array.isArray(raw) && raw.length === 0);
     if (field.required && empty) {
@@ -316,50 +319,6 @@ function validateFieldValues(fields, rawValues) {
   }
 
   return { values, errors };
-}
-
-function validateResponse(form, rawValues, rawRepeatedValues = {}) {
-  const submenuControllers = form.fields.filter(
-    (field) => field.type === "select" && field.optionSubmenus && Object.keys(field.optionSubmenus).length > 0,
-  );
-  const repeatedController = form.fields.find((field) => field.repeatSubmenuPerSelection);
-  const repeatedSections = new Set(Object.values(repeatedController?.optionSubmenus ?? {}));
-  const visibleFields = [...form.fields]
-    .sort((a, b) => a.priority - b.priority)
-    .filter((field) => passesCondition(field, rawValues ?? {}))
-    .filter((field) => {
-      const controllers = submenuControllers.filter((controller) =>
-        Object.values(controller.optionSubmenus ?? {}).includes(field.section),
-      );
-      if (controllers.length === 0) return true;
-      return controllers.some((controller) => valueItems(rawValues?.[controller.id]).some(
-        (option) => controller.optionSubmenus?.[option] === field.section,
-      ));
-    });
-
-  const baseValidation = validateFieldValues(
-    visibleFields.filter((field) => !repeatedSections.has(field.section)),
-    rawValues,
-  );
-  const repeatedValues = repeatedController ? { [repeatedController.id]: {} } : {};
-  const errors = [...baseValidation.errors];
-
-  if (repeatedController) {
-    for (const option of valueItems(rawValues?.[repeatedController.id])) {
-      const section = repeatedController.optionSubmenus?.[option];
-      if (!section) continue;
-      const scopedRawValues = rawRepeatedValues?.[repeatedController.id]?.[option] ?? {};
-      const contextValues = { ...rawValues, ...scopedRawValues, [repeatedController.id]: option };
-      const scopedFields = [...form.fields]
-        .sort((a, b) => a.priority - b.priority)
-        .filter((field) => field.section === section && passesCondition(field, contextValues));
-      const scopedValidation = validateFieldValues(scopedFields, contextValues);
-      repeatedValues[repeatedController.id][option] = scopedValidation.values;
-      errors.push(...scopedValidation.errors.map((error) => `${section} (${option}): ${error}`));
-    }
-  }
-
-  return { values: baseValidation.values, repeatedValues, errors };
 }
 
 async function getFormBySlug(slug) {
@@ -611,7 +570,7 @@ function detectDevice(userAgent = "") {
   return "desktop";
 }
 
-function createResponseRecords(form, response, repeatedValues = {}) {
+function createResponseRecords(form, response) {
   const splitField = form.fields.find((field) => field.createRecordPerSelection);
   const selectedOptions = splitField && Array.isArray(response.values[splitField.id])
     ? response.values[splitField.id]
@@ -619,32 +578,16 @@ function createResponseRecords(form, response, repeatedValues = {}) {
   if (!splitField || selectedOptions.length === 0) return [response];
 
   const submissionGroupId = randomUUID();
-  const fieldsById = new Map(form.fields.map((field) => [field.id, field]));
-  return selectedOptions.map((option, index) => {
-    const mergedValues = {
-      ...response.values,
-      ...(repeatedValues?.[splitField.id]?.[option] ?? {}),
-      [splitField.id]: option,
-    };
-    const values = Object.fromEntries(
-      Object.entries(mergedValues).filter(([fieldId]) => {
-        const field = fieldsById.get(fieldId);
-        return !field || passesCondition(field, mergedValues);
-      }),
-    );
-    return {
-      ...response,
-      id: randomUUID(),
-      submissionGroupId,
-      splitFieldId: splitField.id,
-      splitOption: option,
-      splitRecordIndex: index + 1,
-      splitRecordCount: selectedOptions.length,
-      respondentLabel: form.respondentFieldId ? formatResponseValue(values[form.respondentFieldId]).slice(0, 160) : response.respondentLabel,
-      locationLabel: form.locationFieldId ? formatResponseValue(values[form.locationFieldId]).slice(0, 120) : response.locationLabel,
-      values,
-    };
-  });
+  return selectedOptions.map((option, index) => ({
+    ...response,
+    id: randomUUID(),
+    submissionGroupId,
+    splitFieldId: splitField.id,
+    splitOption: option,
+    splitRecordIndex: index + 1,
+    splitRecordCount: selectedOptions.length,
+    values: { ...response.values, [splitField.id]: option },
+  }));
 }
 
 async function listForms({ admin }) {
@@ -756,7 +699,7 @@ export const handler = async (event) => {
 
       const body = parseBody(event);
       if (!body) return badRequest("JSON invalido");
-      const validation = validateResponse(form, body.values ?? {}, body.repeatedValues ?? {});
+      const validation = validateResponse(form, body.values ?? {});
       if (validation.errors.length > 0) return badRequest(validation.errors.join(". "));
 
       const respondentFieldId = form.respondentFieldId;
@@ -780,7 +723,7 @@ export const handler = async (event) => {
         userAgent,
       };
 
-      const responseRecords = createResponseRecords(form, response, validation.repeatedValues);
+      const responseRecords = createResponseRecords(form, response);
       const storageResult = await storeResponseWithIdentifierCounter(form, responseRecords);
       if (storageResult.missingIdentifier) {
         return badRequest("Debes completar el campo identificador antes de enviar el formulario");
