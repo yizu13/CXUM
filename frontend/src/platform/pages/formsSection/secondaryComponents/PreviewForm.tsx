@@ -9,7 +9,7 @@ import type { DonationField } from "../../../donations/types";
 
 export default function PreviewForm({ cardStyle, inputStyle, text, muted, selectedForm, qrDataUrl, previewSteps, previewStep, previewPrimaryField, isDark, renderPreviewField, setPreviewStep, previewGroupedFields }: previewFormObject) {
 
-      const publicUrl = selectedForm ? `${window.location.origin}/donaciones/${selectedForm.slug}?source=link` : "";
+      const publicUrl = selectedForm ? `${window.location.origin}/formularios/${selectedForm.slug}?source=link` : "";
       const previewActiveStep = previewSteps?.[Math.min(previewStep, Math.max(0, previewSteps.length - 1))];
 
 

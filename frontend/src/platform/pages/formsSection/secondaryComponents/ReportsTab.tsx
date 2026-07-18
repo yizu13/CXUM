@@ -3,7 +3,8 @@ import type { reportsTabObject } from "../types";
 import Iconify from "../../../../components/modularUI/IconsMock";
 import { useMemo} from "react";
 import { getCategorySummaries, getConditionalProbability, getHistogram, getNumericSummaries, getTimeSeries } from "../../../donations/analytics";
-import { AdminSelect, asPercent, BarChart, BoxPlot, compactNumber, LineChart, PieChart, ScatterChart } from "./minorsComponents";
+import { AdminSelect, BarChart, BoxPlot, LineChart, PieChart, ScatterChart } from "../secondaryComponents/minorsComponents";
+import { asPercent, compactNumber } from "../formUiUtils";
 
 
 

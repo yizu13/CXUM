@@ -1,20 +1,13 @@
-import { type ChangeEvent, type CSSProperties, type ReactNode, useEffect, useId, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import QRCode from "qrcode";
-import { motion } from "framer-motion";
 import { useSnackbar } from "notistack";
 import { useSettings } from "../../../../hooks/context/SettingsContext";
 import Iconify from "../../../../components/modularUI/IconsMock";
-import LogoCXUM from "../../../../assets/LogoCXUM.png";
 import type {
-  ConditionalRule,
   DonationField,
-  DonationFieldType,
   DonationFilters,
   DonationForm,
-  DonationFormMode,
-  DonationFormStatus,
   DonationResponse,
-  DonationSelectDisplay,
 } from "../../../donations/types";
 import DonationOptionPicker from "../../../donations/DonationOptionPicker";
 import {
@@ -30,15 +23,10 @@ import {
 } from "../../../APIs/donations";
 import {
   filterResponses,
-  getCategorySummaries,
-  getConditionalProbability,
-  getHistogram,
-  getNumericSummaries,
-  getTimeSeries,
   visibleFields,
 } from "../../../donations/analytics";
 import DynamicFields from "../secondaryComponents/DynamicFields";
-import { AdminSelect, asPercent, BarChart, BoxPlot, compactNumber, LineChart, PieChart, ScatterChart } from "../secondaryComponents/minorsComponents";
+import { AdminSelect } from "../secondaryComponents/minorsComponents";
 import type { AdminOption, TabKey } from "../types";
 import PreviewForm from "../secondaryComponents/previewForm";
 import ReportsTab from "../secondaryComponents/ReportsTab";
@@ -148,7 +136,7 @@ export default function AdminDonationsPage() {
     color: text,
   };
 
-  const qrUrl = selectedForm ? `${window.location.origin}/donaciones/${selectedForm.slug}?source=qr` : "";
+  const qrUrl = selectedForm ? `${window.location.origin}/formularios/${selectedForm.slug}?source=qr` : "";
 
 
 
@@ -234,7 +222,11 @@ export default function AdminDonationsPage() {
 
   function updateFieldSection(fieldId: string, nextSectionValue: string) {
     if (!selectedForm) return;
-    const nextSection = nextSectionValue.trim() || "General";
+    const requestedSection = nextSectionValue.trim().replace(/\s+/g, " ").slice(0, 80) || "General";
+    const existingSection = selectedForm.fields
+      .map((field) => field.section || "General")
+      .find((section) => section.toLocaleLowerCase("es") === requestedSection.toLocaleLowerCase("es"));
+    const nextSection = existingSection ?? requestedSection;
     const currentField = selectedForm.fields.find((field) => field.id === fieldId);
     if (!currentField) return;
     const oldSection = currentField.section || "General";

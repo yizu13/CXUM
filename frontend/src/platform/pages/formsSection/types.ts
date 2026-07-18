@@ -1,5 +1,5 @@
 import type { CSSProperties, Dispatch, JSX, SetStateAction } from "react";
-import type { ConditionalRule, DonationField, DonationFieldType, DonationForm, DonationFormMode, DonationFormStatus, DonationSelectDisplay } from "../../donations/types";
+import type { ConditionalRule, DonationField, DonationFieldType, DonationForm, DonationFormMode, DonationFormStatus, DonationResponse, DonationSelectDisplay } from "../../donations/types";
 
 export type AdminOption<T extends string> = { label: string; value: T; description?: string };
 
@@ -34,6 +34,7 @@ export const FIELD_TYPES: AdminOption<DonationFieldType>[] = [
 export const STATUS_OPTIONS: AdminOption<DonationFormStatus>[] = [
   { label: "Borrador", value: "draft", description: "Solo puede configurarse desde el panel administrativo." },
   { label: "Publicado", value: "published", description: "Aparece en el directorio publico y acepta respuestas." },
+  { label: "Privado", value: "private", description: "Acepta respuestas mediante QR o enlace directo, pero no aparece en el directorio publico." },
   { label: "Oculto", value: "hidden", description: "Conserva datos y configuracion sin mostrarse al publico." },
 ];
 
@@ -91,7 +92,7 @@ export interface reportsTabObject {
         cardStyle: CSSProperties;
         text: string;
         muted: string;
-        selectedResponses: any[];
+        selectedResponses: DonationResponse[];
         selectedForm: DonationForm;
         target: number ;
         scatterXFieldId?: string | undefined;
@@ -116,7 +117,7 @@ export interface bucketTabObject {
         cardStyle: CSSProperties;
         text: string;
         muted: string;
-        selectedResponses: any[];
+        selectedResponses: DonationResponse[];
         selectedForm: DonationForm;
         inputStyle: CSSProperties;
         bucketPage: number

@@ -50,7 +50,7 @@ const QUICK_LINKS = [  {
   {
     label: "Formularios",
     desc: "Formularios, QR, reportes y bucket",
-    path: "/plataforma/admin/donaciones",
+    path: "/plataforma/admin/formularios",
     icon: "solar:file-text-bold-duotone",
     color: "#ef4444",
     permission: null,

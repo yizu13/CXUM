@@ -8,7 +8,7 @@ export type DonationFieldType =
   | "phone"
   | "boolean";
 
-export type DonationFormStatus = "draft" | "published" | "hidden";
+export type DonationFormStatus = "draft" | "published" | "private" | "hidden";
 export type DonationFormMode = "flat" | "guided";
 export type DonationSelectDisplay = "autocomplete" | "cards";
 

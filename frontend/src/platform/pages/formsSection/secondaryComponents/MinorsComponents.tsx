@@ -1,16 +1,9 @@
-import { useEffect, useId, useMemo, useRef, useState, type ChangeEvent, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import Iconify from "../../../../components/modularUI/IconsMock";
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
-import { CONFIG_DESCRIPTIONS, type AdminOption } from "../types";
-
-export function asPercent(value: number) {
-  return `${Math.round(value * 100)}%`;
-}
-
-export function compactNumber(value: number) {
-  return Number.isInteger(value) ? value.toLocaleString("es-DO") : value.toFixed(2);
-}
+import { type AdminOption } from "../types";
+import { asPercent, compactNumber } from "../formUiUtils";
 
 export function BarChart({ data, color }: { data: { label: string; value: number }[]; color: string }) {
   const max = Math.max(1, ...data.map((item) => item.value));
@@ -142,6 +135,8 @@ export function AdminSelect<T extends string>({
   style,
   placeholder = "Buscar o seleccionar",
   allowCustom = false,
+  customCreateLabel = "Crear opcion",
+  customValueMaxLength,
 }: {
   value: T;
   options: AdminOption<T>[];
@@ -150,6 +145,8 @@ export function AdminSelect<T extends string>({
   style?: CSSProperties;
   placeholder?: string;
   allowCustom?: boolean;
+  customCreateLabel?: string;
+  customValueMaxLength?: number;
 }) {
   const listId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -157,6 +154,16 @@ export function AdminSelect<T extends string>({
   const [inputValue, setInputValue] = useState(selectedLabel);
   const [open, setOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
+  const normalizedCustomValue = inputValue.trim().replace(/\s+/g, " ");
+  const exactOption = options.find((option) => {
+    const normalizedInput = normalizedCustomValue.toLocaleLowerCase("es");
+    return option.label.trim().toLocaleLowerCase("es") === normalizedInput
+      || option.value.trim().toLocaleLowerCase("es") === normalizedInput;
+  });
+  const canCreateCustom = allowCustom
+    && normalizedCustomValue.length > 0
+    && inputValue !== selectedLabel
+    && !exactOption;
 
   const filteredOptions = useMemo(() => {
     const term = inputValue.trim().toLowerCase();
@@ -175,22 +182,25 @@ export function AdminSelect<T extends string>({
     function closeOnOutsideClick(event: MouseEvent) {
       if (!rootRef.current?.contains(event.target as Node)) {
         setOpen(false);
-        const customValue = inputValue.trim();
-        if (allowCustom && customValue) {
-          onChange(customValue as T);
-          setInputValue(customValue);
-        } else {
-          setInputValue(selectedLabel);
-        }
+        setInputValue(selectedLabel);
       }
     }
     document.addEventListener("mousedown", closeOnOutsideClick);
     return () => document.removeEventListener("mousedown", closeOnOutsideClick);
-  }, [allowCustom, inputValue, onChange, open, selectedLabel]);
+  }, [open, selectedLabel]);
 
-function choose(option: AdminOption<T>) {
+  function choose(option: AdminOption<T>) {
     onChange(option.value);
     setInputValue(option.label);
+    setOpen(false);
+    setHighlightedIndex(0);
+  }
+
+  function createCustomValue() {
+    if (!canCreateCustom) return;
+    const customValue = normalizedCustomValue.slice(0, customValueMaxLength) as T;
+    onChange(customValue);
+    setInputValue(customValue);
     setOpen(false);
     setHighlightedIndex(0);
   }
@@ -210,6 +220,7 @@ function choose(option: AdminOption<T>) {
         value={inputValue}
         placeholder={placeholder}
         autoComplete="off"
+        maxLength={customValueMaxLength}
         onFocus={(event) => {
           setOpen(true);
           setHighlightedIndex(Math.max(0, options.findIndex((option) => option.value === value)));
@@ -232,14 +243,13 @@ function choose(option: AdminOption<T>) {
           }
           if (event.key === "Enter") {
             event.preventDefault();
-            const option = filteredOptions[highlightedIndex];
-            if (option) {
-              choose(option);
-            } else if (allowCustom && inputValue.trim()) {
-              const customValue = inputValue.trim() as T;
-              onChange(customValue);
-              setInputValue(customValue);
-              setOpen(false);
+            if (inputValue !== selectedLabel && exactOption) {
+              choose(exactOption);
+            } else if (canCreateCustom) {
+              createCustomValue();
+            } else {
+              const option = filteredOptions[highlightedIndex];
+              if (option) choose(option);
             }
           }
           if (event.key === "Escape") {
@@ -283,11 +293,26 @@ function choose(option: AdminOption<T>) {
       autoHide={false}
     >
       <div className="p-1.5">
-        {filteredOptions.length === 0 ? (
+        {canCreateCustom && (
+          <button
+            type="button"
+            onMouseDown={(event) => {
+              event.preventDefault();
+              createCustomValue();
+            }}
+            className="mb-1 flex w-full items-center gap-2.5 rounded-lg border border-amber-500/25 bg-amber-500/10 px-3 py-2.5 text-left transition-colors hover:bg-amber-500/15"
+          >
+            <span className="grid size-5 shrink-0 place-items-center rounded-md text-amber-500">
+              <Iconify IconString="solar:add-circle-bold-duotone" Size={17} />
+            </span>
+            <span className="min-w-0 text-xs font-black">
+              {customCreateLabel} <span className="break-words">&quot;{normalizedCustomValue}&quot;</span>
+            </span>
+          </button>
+        )}
+        {filteredOptions.length === 0 && !canCreateCustom ? (
           <div className="px-3 py-4 text-center text-xs font-bold opacity-60">
-            {allowCustom && inputValue.trim()
-              ? "Presiona Enter para crear este submenu"
-              : "No hay coincidencias"}
+            No hay coincidencias
           </div>
         ) : (
           filteredOptions.map((option, index) => {
@@ -380,33 +405,3 @@ export function ConfigSectionHeader({ icon, title, description, text, muted, act
     </div>
   );
 }
-
-export function fieldInput(
-    inputStyle: CSSProperties | undefined,
-    muted: string,
-    label: string,
-    value: string | number | undefined,
-    onChange: (value: string) => void,
-    type = "text",
-  ) {
-    return (
-      <label className="grid gap-1.5">
-        <ConfigLabel title={label} description={CONFIG_DESCRIPTIONS[label] ?? "Configura como se comporta este valor en el formulario final."} muted={muted} />
-        <input
-          type={type}
-          value={value ?? ""}
-          onChange={(event: ChangeEvent<HTMLInputElement>) =>
-            onChange(event.target.value)
-          }
-          className={`
-            rounded-xl border px-3 py-2 text-sm outline-none
-            ${type === "number"
-              ? "[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-              : ""
-            }
-          `}
-          style={inputStyle}
-        />
-      </label>
-    );
-  }

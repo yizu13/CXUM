@@ -81,7 +81,7 @@ const NAV_ITEMS: NavItem[] = [
   },
   {
     label: "Formularios",
-    path: "/plataforma/admin/donaciones",
+    path: "/plataforma/admin/formularios",
     icon: "solar:file-text-broken",
     iconActive: "solar:file-text-bold-duotone",
   },

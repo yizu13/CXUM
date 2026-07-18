@@ -1,11 +1,36 @@
-
+import type { ChangeEvent, CSSProperties } from "react";
 import { motion } from "framer-motion";
 import Iconify from "../../../../components/modularUI/IconsMock";
-import { AdminSelect, ConfigLabel, ConfigSectionHeader, fieldInput } from "./minorsComponents";
-import { FIELD_TYPES, MODE_OPTIONS, OPERATORS, SELECT_DISPLAY_OPTIONS, STATUS_OPTIONS, type dynamicFieldObject } from "../types";
+import { AdminSelect, ConfigLabel, ConfigSectionHeader } from "../secondaryComponents/minorsComponents";
+import { CONFIG_DESCRIPTIONS, FIELD_TYPES, MODE_OPTIONS, OPERATORS, SELECT_DISPLAY_OPTIONS, STATUS_OPTIONS, type dynamicFieldObject } from "../types";
 
-
-
+function fieldInput(
+  inputStyle: CSSProperties | undefined,
+  muted: string,
+  label: string,
+  value: string | number | undefined,
+  onChange: (value: string) => void,
+  type = "text",
+) {
+  return (
+    <label className="grid gap-1.5">
+      <ConfigLabel title={label} description={CONFIG_DESCRIPTIONS[label] ?? "Configura como se comporta este valor en el formulario final."} muted={muted} />
+      <input
+        type={type}
+        value={value ?? ""}
+        onChange={(event: ChangeEvent<HTMLInputElement>) => onChange(event.target.value)}
+        className={`
+          rounded-xl border px-3 py-2 text-sm outline-none
+          ${type === "number"
+            ? "[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            : ""
+          }
+        `}
+        style={inputStyle}
+      />
+    </label>
+  );
+}
 
 export default function DynamicFields( { cardStyle, inputStyle, text, muted, selectedForm, updateForm, addField, removeField, updateField, updateFieldSection, sectionOptions, isDark }: dynamicFieldObject ) {
     
@@ -138,6 +163,8 @@ export default function DynamicFields( { cardStyle, inputStyle, text, muted, sel
                           onChange={(value) => updateFieldSection(field.id, value)}
                           options={sectionOptions}
                           allowCustom
+                          customCreateLabel="Crear submenu"
+                          customValueMaxLength={80}
                           placeholder="Buscar o crear submenu"
                           className="text-sm"
                           style={inputStyle}

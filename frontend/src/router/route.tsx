@@ -44,8 +44,8 @@ export default function AppRouter() {
           <Route path="/Noticias/:slug" element={<NewsDetailPage />} />
           <Route path="/certificates" element={<PublicCertificatePage />} />
           <Route path="/certificates/:certificateId" element={<PublicCertificatePage />} />
-          <Route path="/donaciones" element={<PublicDonationFormsPage />} />
-          <Route path="/donaciones/:slug" element={<PublicDonationFormPage />} />
+          <Route path="/formularios" element={<PublicDonationFormsPage />} />
+          <Route path="/formularios/:slug" element={<PublicDonationFormPage />} />
 
           {/* ── Plataforma / Auth ── */}
           <Route path="/plataforma/login"              element={<LoginPage />} />
@@ -117,7 +117,7 @@ export default function AppRouter() {
             />
 
             <Route
-              path="donaciones"
+              path="formularios"
               element={
                 <ProtectedRoute>
                   <AdminDonationsPage />

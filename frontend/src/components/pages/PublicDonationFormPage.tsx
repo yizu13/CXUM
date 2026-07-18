@@ -273,7 +273,7 @@ export default function PublicDonationFormPage() {
               {loading ? "Estamos preparando el formulario." : loadError || "Puede estar oculto, en borrador o haber cambiado de enlace."}
             </p>
             {!loading && (
-              <Link to="/donaciones" className="inline-flex mt-5 px-4 py-2 rounded-xl text-sm font-black text-white" style={{ background: "#f59e0b" }}>
+              <Link to="/formularios" className="inline-flex mt-5 px-4 py-2 rounded-xl text-sm font-black text-white" style={{ background: "#f59e0b" }}>
                 Ver formularios publicados
               </Link>
             )}
@@ -293,7 +293,7 @@ export default function PublicDonationFormPage() {
           onSubmit={handleSubmit}
           className="max-w-3xl mx-auto"
         >
-          <Link to="/donaciones" className="inline-flex items-center gap-2 text-xs font-black mb-5" style={{ color: muted }}>
+          <Link to="/formularios" className="inline-flex items-center gap-2 text-xs font-black mb-5" style={{ color: muted }}>
             <Iconify IconString="solar:alt-arrow-left-linear" Size={15} />
             Formularios
           </Link>
@@ -322,7 +322,7 @@ export default function PublicDonationFormPage() {
                 <Iconify IconString="solar:check-circle-bold-duotone" Size={52} Style={{ color: "#22c55e", margin: "0 auto 14px" }} />
                 <h2 className="text-2xl font-black" style={{ color: text }}>Registro recibido</h2>
                 <p className="text-sm mt-3 max-w-md mx-auto" style={{ color: muted }}>{form.thankYouMessage}</p>
-                <Link to="/donaciones" className="inline-flex mt-6 px-4 py-2 rounded-xl text-sm font-black text-white" style={{ background: "#f59e0b" }}>
+                <Link to="/formularios" className="inline-flex mt-6 px-4 py-2 rounded-xl text-sm font-black text-white" style={{ background: "#f59e0b" }}>
                   Ver mas formularios
                 </Link>
               </div>

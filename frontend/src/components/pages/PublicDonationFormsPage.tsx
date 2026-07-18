@@ -20,7 +20,7 @@ export default function PublicDonationFormsPage() {
   const loadForms = useCallback(() => {
     getPublicDonationForms()
       .then((data) => {
-        setForms(data.forms);
+        setForms(data.forms.filter((form) => form.status === "published"));
         setError("");
       })
       .catch((err: unknown) => {
@@ -118,7 +118,7 @@ export default function PublicDonationFormsPage() {
                   transition={{ delay: index * 0.06 }}
                 >
                   <Link
-                    to={`/donaciones/${form.slug}`}
+                    to={`/formularios/${form.slug}`}
                     className="group flex flex-col sm:flex-row sm:items-center gap-4 rounded-2xl border p-4 sm:p-5 transition-all"
                     style={card}
                   >
