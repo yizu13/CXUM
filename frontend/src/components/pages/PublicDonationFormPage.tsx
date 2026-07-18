@@ -8,7 +8,7 @@ import Footer from "../layout/Footer";
 import Iconify from "../modularUI/IconsMock";
 import type { DonationField, DonationForm } from "../../platform/donations/types";
 import { getPublicDonationForm, submitDonationResponse } from "../../platform/APIs/donations";
-import { getGuidedFormSteps, visibleFields } from "../../platform/donations/analytics";
+import { getGuidedFormSteps, shouldDeferCardNavigation, visibleFields } from "../../platform/donations/analytics";
 import DonationOptionPicker from "../../platform/donations/DonationOptionPicker";
 import { formatDonationDate } from "../../platform/donations/dates";
 import { resolveDonationFormIcon } from "../../platform/donations/icons";
@@ -245,6 +245,7 @@ export default function PublicDonationFormPage() {
             display={field.selectDisplay ?? "autocomplete"}
             optionSubmenus={field.optionSubmenus}
             onChange={(nextValue) => setFieldValue(field, nextValue)}
+            shouldDeferNavigation={(option) => Boolean(form && shouldDeferCardNavigation(form, field.id, option, values))}
             onNavigate={(section) => {
               if (form?.mode === "guided") setPendingSection(section);
             }}
